@@ -1,12 +1,31 @@
-# React + Vite
+# PONS Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern website for the Finnish sports club **PONS**.
 
-Currently, two official plugins are available:
+## 🔍 Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This web application provides:
 
-## Expanding the ESLint configuration
+- User registration with email confirmation
+- Private dashboard with personal info, invoices, notifications
+- Admin panel for content and order management
+- PDF invoice generation
+- REST API (Node.js + Express)
+- Frontend built with React and W3.CSS + Tailwind
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📦 Tech Stack
+
+- **Frontend**: React, Vite, W3.CSS, TailwindCSS
+- **Backend**: Node.js, Express, MariaDB
+- **Auth**: Email/password (JWT), role-based access
+- **PDF**: pdfkit / puppeteer
+- **Mail**: Nodemailer + SMTP (Mailjet, SendGrid, etc.)
+- **Deployment**: Azure (manual at first)
+
+## 🚀 Project Goals
+
+Build a scalable and modern website for PONS with a smooth user experience and admin capabilities.
+
+## 📄 License
+
+MIT
