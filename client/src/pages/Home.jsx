@@ -1,135 +1,116 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Home = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const openNav = () => setSidebarOpen(true);
+  const closeNav = () => setSidebarOpen(false);
+
   return (
     <>
-      {/*<!-- Sidebar on click -->*/}
+      {/* Sidebar */}
       <nav
-        class="w3-sidebar w3-bar-block w3-white w3-card w3-animate-left w3-xxlarge"
-        style="display:none;z-index:2"
+        className="w3-sidebar w3-bar-block w3-white w3-card w3-animate-left w3-xxlarge"
+        style={{ display: sidebarOpen ? "block" : "none", zIndex: 2 }}
         id="mySidebar"
       >
-        <a
-          href="javascript:void(0)"
-          onclick="w3_close()"
-          class="w3-bar-item w3-button w3-display-topright w3-text-teal"
+        <button
+          className="w3-bar-item w3-button w3-display-topright w3-text-teal"
+          onClick={closeNav}
         >
-          Close
-          <i class="fa fa-remove"></i>
-        </a>
-        <a href="#" class="w3-bar-item w3-button">
+          Close <i className="fa fa-remove"></i>
+        </button>
+        <a href="#" className="w3-bar-item w3-button">
           Link 1
         </a>
-        <a href="#" class="w3-bar-item w3-button">
+        <a href="#" className="w3-bar-item w3-button">
           Link 2
         </a>
-        <a href="#" class="w3-bar-item w3-button">
+        <a href="#" className="w3-bar-item w3-button">
           Link 3
         </a>
-        <a href="#" class="w3-bar-item w3-button">
+        <a href="#" className="w3-bar-item w3-button">
           Link 4
         </a>
-        <a href="#" class="w3-bar-item w3-button">
+        <a href="#" className="w3-bar-item w3-button">
           Link 5
         </a>
       </nav>
 
-      {/*<!-- Navbar -->*/}
-      <div class="w3-top">
-        <div class="w3-bar w3-theme-d2 w3-left-align">
-          <a
-            class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2"
-            href="javascript:void(0);"
-            onclick="openNav()"
+      {/* Navbar */}
+      <div className="w3-top">
+        <div className="w3-bar w3-theme-d2 w3-left-align">
+          <button
+            className="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2"
+            onClick={openNav}
           >
-            <i class="fa fa-bars"></i>
-          </a>
-          <a href="#" class="w3-bar-item w3-button w3-teal">
-            <i class="fa fa-home w3-margin-right"></i>Logo
+            <i className="fa fa-bars"></i>
+          </button>
+          <a href="#" className="w3-bar-item w3-button w3-teal">
+            <i className="fa fa-home w3-margin-right"></i>Logo
           </a>
           <a
             href="#team"
-            class="w3-bar-item w3-button w3-hide-small w3-hover-white"
+            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
           >
             Team
           </a>
           <a
             href="#work"
-            class="w3-bar-item w3-button w3-hide-small w3-hover-white"
+            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
           >
             Work
           </a>
           <a
             href="#pricing"
-            class="w3-bar-item w3-button w3-hide-small w3-hover-white"
+            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
           >
             Price
           </a>
           <a
             href="#contact"
-            class="w3-bar-item w3-button w3-hide-small w3-hover-white"
+            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
           >
             Contact
           </a>
-          <div class="w3-dropdown-hover w3-hide-small">
-            <button class="w3-button" title="Notifications">
-              Dropdown <i class="fa fa-caret-down"></i>
+          <div className="w3-dropdown-hover w3-hide-small">
+            <button className="w3-button" title="Notifications">
+              Dropdown <i className="fa fa-caret-down"></i>
             </button>
-            <div class="w3-dropdown-content w3-card-4 w3-bar-block">
-              <a href="#" class="w3-bar-item w3-button">
+            <div className="w3-dropdown-content w3-card-4 w3-bar-block">
+              <a href="#" className="w3-bar-item w3-button">
                 Link
               </a>
-              <a href="#" class="w3-bar-item w3-button">
+              <a href="#" className="w3-bar-item w3-button">
                 Link
               </a>
-              <a href="#" class="w3-bar-item w3-button">
+              <a href="#" className="w3-bar-item w3-button">
                 Link
               </a>
             </div>
           </div>
           <a
             href="#"
-            class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-teal"
+            className="w3-bar-item w3-button w3-hide-small w3-right w3-hover-teal"
             title="Search"
           >
-            <i class="fa fa-search"></i>
-          </a>
-        </div>
-
-        {/*<!-- Navbar on small screens -->*/}
-        <div
-          id="navDemo"
-          class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium"
-        >
-          <a href="#team" class="w3-bar-item w3-button">
-            Team
-          </a>
-          <a href="#work" class="w3-bar-item w3-button">
-            Work
-          </a>
-          <a href="#pricing" class="w3-bar-item w3-button">
-            Price
-          </a>
-          <a href="#contact" class="w3-bar-item w3-button">
-            Contact
-          </a>
-          <a href="#" class="w3-bar-item w3-button">
-            Search
+            <i className="fa fa-search"></i>
           </a>
         </div>
       </div>
 
-      {/*<!-- Image Header -->*/}
-      <div class="w3-display-container w3-animate-opacity">
+      {/* Hero image */}
+      <div className="w3-display-container w3-animate-opacity">
         <img
-          src="/w3images/sailboat.jpg"
+          src="https://www.w3schools.com/w3images/sailboat.jpg"
           alt="boat"
-          style="width:100%;min-height:350px;max-height:600px;"
+          style={{ width: "100%", minHeight: "350px", maxHeight: "600px" }}
         />
-        <div class="w3-container w3-display-bottomleft w3-margin-bottom">
+        <div className="w3-container w3-display-bottomleft w3-margin-bottom">
           <button
-            onclick="document.getElementById('id01').style.display='block'"
-            class="w3-button w3-xlarge w3-theme w3-hover-teal"
+            onClick={() => setModalOpen(true)}
+            className="w3-button w3-xlarge w3-theme w3-hover-teal"
             title="Go To W3.CSS"
           >
             LEARN W3.CSS
@@ -137,359 +118,241 @@ const Home = () => {
         </div>
       </div>
 
-      {/*<!-- Modal -->*/}
-      <div id="id01" class="w3-modal">
-        <div class="w3-modal-content w3-card-4 w3-animate-top">
-          <header class="w3-container w3-teal w3-display-container">
-            <span
-              onclick="document.getElementById('id01').style.display='none'"
-              class="w3-button w3-teal w3-display-topright"
-            >
-              <i class="fa fa-remove"></i>
-            </span>
-            <h4>Oh snap! We just showed you a modal..</h4>
-            <h5>
-              Because we can <i class="fa fa-smile-o"></i>
-            </h5>
-          </header>
-          <div class="w3-container">
-            <p>Cool huh? Ok, enough teasing around..</p>
-            <p>
-              Go to our{" "}
-              <a class="w3-text-teal" href="/w3css/default.asp">
-                W3.CSS Tutorial
-              </a>{" "}
-              to learn more!
-            </p>
-          </div>
-          <footer class="w3-container w3-teal">
-            <p>Modal footer</p>
-          </footer>
-        </div>
-      </div>
-
-      {/*<!-- Team Container -->*/}
-      <div class="w3-container w3-padding-64 w3-center" id="team">
-        <h2>OUR TEAM</h2>
-        <p>Meet the team - our office rats:</p>
-
-        <div class="w3-row">
-          <br />
-
-          <div class="w3-quarter">
-            <img
-              src="/w3images/avatar.jpg"
-              alt="Boss"
-              style="width:45%"
-              class="w3-circle w3-hover-opacity"
-            />
-            <h3>Johnny Walker</h3>
-            <p>Web Designer</p>
-          </div>
-
-          <div class="w3-quarter">
-            <img
-              src="/w3images/avatar.jpg"
-              alt="Boss"
-              style="width:45%"
-              class="w3-circle w3-hover-opacity"
-            />
-            <h3>Rebecca Flex</h3>
-            <p>Support</p>
-          </div>
-
-          <div class="w3-quarter">
-            <img
-              src="/w3images/avatar.jpg"
-              alt="Boss"
-              style="width:45%"
-              class="w3-circle w3-hover-opacity"
-            />
-            <h3>Jan Ringo</h3>
-            <p>Boss man</p>
-          </div>
-
-          <div class="w3-quarter">
-            <img
-              src="/w3images/avatar.jpg"
-              alt="Boss"
-              style="width:45%"
-              class="w3-circle w3-hover-opacity"
-            />
-            <h3>Kai Ringo</h3>
-            <p>Fixer</p>
-          </div>
-        </div>
-      </div>
-
-      {/*<!-- Work Row -->*/}
-      <div class="w3-row-padding w3-padding-64 w3-theme-l1" id="work">
-        <div class="w3-quarter">
-          <h2>Our Work</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </p>
-        </div>
-
-        <div class="w3-quarter">
-          <div class="w3-card w3-white">
-            <img src="/w3images/snow.jpg" alt="Snow" style="width:100%" />
-            <div class="w3-container">
-              <h3>Customer 1</h3>
-              <h4>Trade</h4>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="w3-quarter">
-          <div class="w3-card w3-white">
-            <img src="/w3images/lights.jpg" alt="Lights" style="width:100%" />
-            <div class="w3-container">
-              <h3>Customer 2</h3>
-              <h4>Trade</h4>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="w3-quarter">
-          <div class="w3-card w3-white">
-            <img
-              src="/w3images/mountains.jpg"
-              alt="Mountains"
-              style="width:100%"
-            />
-            <div class="w3-container">
-              <h3>Customer 3</h3>
-              <h4>Trade</h4>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-              <p>Blablabla</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/*<!-- Container -->*/}
-      <div class="w3-container" style="position:relative">
-        <a
-          onclick="w3_open()"
-          class="w3-button w3-xlarge w3-circle w3-teal"
-          style="position:absolute;top:-28px;right:24px"
-        >
-          +
-        </a>
-      </div>
-
-      {/*<!-- Pricing Row -->*/}
-      <div class="w3-row-padding w3-center w3-padding-64" id="pricing">
-        <h2>PRICING</h2>
-        <p>Choose a pricing plan that fits your needs.</p>
-        <br />
-        <div class="w3-third w3-margin-bottom">
-          <ul class="w3-ul w3-border w3-hover-shadow">
-            <li class="w3-theme">
-              <p class="w3-xlarge">Basic</p>
-            </li>
-            <li class="w3-padding-16">
-              <b>10GB</b> Storage
-            </li>
-            <li class="w3-padding-16">
-              <b>10</b> Emails
-            </li>
-            <li class="w3-padding-16">
-              <b>10</b> Domains
-            </li>
-            <li class="w3-padding-16">
-              <b>Endless</b> Support
-            </li>
-            <li class="w3-padding-16">
-              <h2 class="w3-wide">
-                <i class="fa fa-usd"></i> 10
-              </h2>
-              <span class="w3-opacity">per month</span>
-            </li>
-            <li class="w3-theme-l5 w3-padding-24">
-              <button class="w3-button w3-teal w3-padding-large">
-                <i class="fa fa-check"></i> Sign Up
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <div class="w3-third w3-margin-bottom">
-          <ul class="w3-ul w3-border w3-hover-shadow">
-            <li class="w3-theme-l2">
-              <p class="w3-xlarge">Pro</p>
-            </li>
-            <li class="w3-padding-16">
-              <b>25GB</b> Storage
-            </li>
-            <li class="w3-padding-16">
-              <b>25</b> Emails
-            </li>
-            <li class="w3-padding-16">
-              <b>25</b> Domains
-            </li>
-            <li class="w3-padding-16">
-              <b>Endless</b> Support
-            </li>
-            <li class="w3-padding-16">
-              <h2 class="w3-wide">
-                <i class="fa fa-usd"></i> 25
-              </h2>
-              <span class="w3-opacity">per month</span>
-            </li>
-            <li class="w3-theme-l5 w3-padding-24">
-              <button class="w3-button w3-teal w3-padding-large">
-                <i class="fa fa-check"></i> Sign Up
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <div class="w3-third w3-margin-bottom">
-          <ul class="w3-ul w3-border w3-hover-shadow">
-            <li class="w3-theme">
-              <p class="w3-xlarge">Premium</p>
-            </li>
-            <li class="w3-padding-16">
-              <b>50GB</b> Storage
-            </li>
-            <li class="w3-padding-16">
-              <b>50</b> Emails
-            </li>
-            <li class="w3-padding-16">
-              <b>50</b> Domains
-            </li>
-            <li class="w3-padding-16">
-              <b>Endless</b> Support
-            </li>
-            <li class="w3-padding-16">
-              <h2 class="w3-wide">
-                <i class="fa fa-usd"></i> 50
-              </h2>
-              <span class="w3-opacity">per month</span>
-            </li>
-            <li class="w3-theme-l5 w3-padding-24">
-              <button class="w3-button w3-teal w3-padding-large">
-                <i class="fa fa-check"></i> Sign Up
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/*<!-- Contact Container -->*/}
-      <div class="w3-container w3-padding-64 w3-theme-l5" id="contact">
-        <div class="w3-row">
-          <div class="w3-col m5">
-            <div class="w3-padding-16">
-              <span class="w3-xlarge w3-border-teal w3-bottombar">
-                Contact Us
+      {/* Modal */}
+      {modalOpen && (
+        <div className="w3-modal" style={{ display: "block" }}>
+          <div className="w3-modal-content w3-card-4 w3-animate-top">
+            <header className="w3-container w3-teal w3-display-container">
+              <span
+                onClick={() => setModalOpen(false)}
+                className="w3-button w3-teal w3-display-topright"
+              >
+                <i className="fa fa-remove"></i>
               </span>
+              <h4>Oh snap! We just showed you a modal..</h4>
+              <h5>
+                Because we can <i className="fa fa-smile-o"></i>
+              </h5>
+            </header>
+            <div className="w3-container">
+              <p>Cool huh? Ok, enough teasing around..</p>
+              <p>
+                Go to our{" "}
+                <a className="w3-text-teal" href="/w3css/default.asp">
+                  W3.CSS Tutorial
+                </a>{" "}
+                to learn more!
+              </p>
             </div>
-            <h3>Address</h3>
-            <p>Swing by for a cup of coffee, or whatever.</p>
-            <p>
-              <i class="fa fa-map-marker w3-text-teal w3-xlarge"></i>
-              {"  "}Chicago, US
-            </p>
-            <p>
-              <i class="fa fa-phone w3-text-teal w3-xlarge"></i>
-              {"  "}+00 1515151515
-            </p>
-            <p>
-              <i class="fa fa-envelope-o w3-text-teal w3-xlarge"></i>
-              {"  "}test@test.com
-            </p>
+            <footer className="w3-container w3-teal">
+              <p>Modal footer</p>
+            </footer>
           </div>
-          <div class="w3-col m7">
+        </div>
+      )}
+
+      {/* More sections (Team, Work, Pricing, Contact) can be added below */}
+      <section className="w3-container w3-padding-64 w3-center" id="team">
+        <h2 className="w3-text-teal">Our Team</h2>
+        <p>Meet the amazing people behind our success</p>
+
+        <div className="w3-row-padding w3-margin-top">
+          <div className="w3-third">
+            <img
+              src="https://www.w3schools.com/w3images/team1.jpg"
+              alt="Member 1"
+              style={{ width: "100%" }}
+              className="w3-circle w3-hover-opacity"
+            />
+            <h3>Anna Smith</h3>
+            <p>CEO &amp; Founder</p>
+          </div>
+
+          <div className="w3-third">
+            <img
+              src="https://www.w3schools.com/w3images/team2.jpg"
+              alt="Member 2"
+              style={{ width: "100%" }}
+              className="w3-circle w3-hover-opacity"
+            />
+            <h3>John Doe</h3>
+            <p>Lead Developer</p>
+          </div>
+
+          <div className="w3-third">
+            <img
+              src="https://www.w3schools.com/w3images/team3.jpg"
+              alt="Member 3"
+              style={{ width: "100%" }}
+              className="w3-circle w3-hover-opacity"
+            />
+            <h3>Mary Johnson</h3>
+            <p>Marketing Specialist</p>
+          </div>
+        </div>
+      </section>
+      <section className="w3-container w3-padding-64 w3-light-grey" id="work">
+        <h2 className="w3-text-teal w3-center">Our Work</h2>
+        <p className="w3-center">Some examples of our projects</p>
+
+        <div className="w3-row-padding w3-margin-top">
+          <div className="w3-third w3-margin-bottom">
+            <img
+              src="https://www.w3schools.com/w3images/work1.jpg"
+              alt="Project 1"
+              style={{ width: "100%" }}
+            />
+            <h3>Project One</h3>
+            <p>Description of project one.</p>
+          </div>
+
+          <div className="w3-third w3-margin-bottom">
+            <img
+              src="https://www.w3schools.com/w3images/work2.jpg"
+              alt="Project 2"
+              style={{ width: "100%" }}
+            />
+            <h3>Project Two</h3>
+            <p>Description of project two.</p>
+          </div>
+
+          <div className="w3-third w3-margin-bottom">
+            <img
+              src="https://www.w3schools.com/w3images/work3.jpg"
+              alt="Project 3"
+              style={{ width: "100%" }}
+            />
+            <h3>Project Three</h3>
+            <p>Description of project three.</p>
+          </div>
+        </div>
+      </section>
+      <section className="w3-container w3-padding-64 w3-center" id="pricing">
+        <h2 className="w3-text-teal">Pricing</h2>
+        <p>Choose the best plan for your needs</p>
+
+        <div className="w3-row-padding w3-margin-top">
+          <div className="w3-third w3-card w3-padding w3-margin-bottom">
+            <h3>Basic</h3>
+            <p className="w3-large">$10 / month</p>
+            <p>Essential features</p>
+            <button className="w3-button w3-teal w3-round">Sign Up</button>
+          </div>
+
+          <div className="w3-third w3-card w3-padding w3-margin-bottom w3-teal w3-text-white">
+            <h3>Pro</h3>
+            <p className="w3-large">$30 / month</p>
+            <p>Most popular features</p>
+            <button className="w3-button w3-white w3-round">Sign Up</button>
+          </div>
+
+          <div className="w3-third w3-card w3-padding w3-margin-bottom">
+            <h3>Enterprise</h3>
+            <p className="w3-large">$100 / month</p>
+            <p>All features included</p>
+            <button className="w3-button w3-teal w3-round">Sign Up</button>
+          </div>
+        </div>
+      </section>
+      <section className="w3-container w3-padding-64" id="contact">
+        <h2 className="w3-text-teal w3-center">Contact Us</h2>
+        <p className="w3-center">We&apos;d love to hear from you</p>
+
+        <div className="w3-row-padding w3-margin-top">
+          <div className="w3-half">
             <form
-              class="w3-container w3-card-4 w3-padding-16 w3-white"
-              action="/action_page.php"
-              target="_blank"
+              action="/submit_contact"
+              method="post"
+              className="w3-container w3-card w3-padding"
             >
-              <div class="w3-section">
+              <p>
                 <label>Name</label>
-                <input class="w3-input" type="text" name="Name" required />
-              </div>
-              <div class="w3-section">
+                <input
+                  className="w3-input w3-border"
+                  type="text"
+                  name="name"
+                  required
+                />
+              </p>
+              <p>
                 <label>Email</label>
-                <input class="w3-input" type="text" name="Email" required />
-              </div>
-              <div class="w3-section">
+                <input
+                  className="w3-input w3-border"
+                  type="email"
+                  name="email"
+                  required
+                />
+              </p>
+              <p>
                 <label>Message</label>
-                <input class="w3-input" type="text" name="Message" required />
-              </div>
-              <input class="w3-check" type="checkbox" checked name="Like" />
-              <label>I Like it!</label>
-              <button type="submit" class="w3-button w3-right w3-theme">
-                Send
-              </button>
+                <textarea
+                  className="w3-input w3-border"
+                  name="message"
+                  rows="5"
+                  required
+                />
+              </p>
+              <p>
+                <button className="w3-button w3-teal" type="submit">
+                  Send
+                </button>
+              </p>
             </form>
           </div>
-        </div>
-      </div>
 
+          <div className="w3-half w3-container">
+            <h3>Our Office</h3>
+            <p>1234 Street Name</p>
+            <p>City, State, ZIP</p>
+            <p>Phone: +1 234 567 890</p>
+            <p>Email: info@example.com</p>
+          </div>
+        </div>
+      </section>
       {/*<!-- Image of location/map -->*/}
       <img
-        src="/w3images/map.jpg"
-        class="w3-image w3-greyscale-min"
-        style="width:100%;"
+        src="https://www.w3schools.com/w3images/map.jpg"
+        className="w3-image w3-greyscale-min"
+        style={{ width: "100%" }}
       />
 
       {/*<!-- Footer -->*/}
-      <footer class="w3-container w3-padding-32 w3-theme-d1 w3-center">
+      <footer className="w3-container w3-padding-32 w3-theme-d1 w3-center">
         <h4>Follow Us</h4>
         <a
-          class="w3-button w3-large w3-teal"
+          className="w3-button w3-large w3-teal"
           href="javascript:void(0)"
           title="Facebook"
         >
-          <i class="fa fa-facebook"></i>
+          <i className="fa fa-facebook"></i>
         </a>
         <a
-          class="w3-button w3-large w3-teal"
+          className="w3-button w3-large w3-teal"
           href="javascript:void(0)"
           title="Twitter"
         >
-          <i class="fa fa-twitter"></i>
+          <i className="fa fa-twitter"></i>
         </a>
         <a
-          class="w3-button w3-large w3-teal"
+          className="w3-button w3-large w3-teal"
           href="javascript:void(0)"
           title="Google +"
         >
-          <i class="fa fa-google-plus"></i>
+          <i className="fa fa-google-plus"></i>
         </a>
         <a
-          class="w3-button w3-large w3-teal"
+          className="w3-button w3-large w3-teal"
           href="javascript:void(0)"
           title="Google +"
         >
-          <i class="fa fa-instagram"></i>
+          <i className="fa fa-instagram"></i>
         </a>
         <a
-          class="w3-button w3-large w3-teal w3-hide-small"
+          className="w3-button w3-large w3-teal w3-hide-small"
           href="javascript:void(0)"
           title="Linkedin"
         >
-          <i class="fa fa-linkedin"></i>
+          <i className="fa fa-linkedin"></i>
         </a>
         <p>
           Powered by{" "}
@@ -499,15 +362,15 @@ const Home = () => {
         </p>
 
         <div
-          style="position:relative;bottom:100px;z-index:1;"
-          class="w3-tooltip w3-right"
+          style={{ position: "relative", bottom: "100px", zIndex: "1" }}
+          className="w3-tooltip w3-right"
         >
-          <span class="w3-text w3-padding w3-teal w3-hide-small">
+          <span className="w3-text w3-padding w3-teal w3-hide-small">
             Go To Top
           </span>
-          <a class="w3-button w3-theme" href="#myPage">
-            <span class="w3-xlarge">
-              <i class="fa fa-chevron-circle-up"></i>
+          <a className="w3-button w3-theme" href="#myPage">
+            <span className="w3-xlarge">
+              <i className="fa fa-chevron-circle-up"></i>
             </span>
           </a>
         </div>
