@@ -1,3 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* W3.CSS fallback (можно позже перенести или заменить Tailwind-компонентами) */
+@import url("https://www.w3schools.com/w3css/4/w3.css");
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
