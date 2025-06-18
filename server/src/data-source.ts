@@ -1,5 +1,11 @@
 import { DataSource } from "typeorm";
-import { User } from "./models/User";
+import { User } from "./entities/User";
+import { Role } from "./entities/Role";
+import { Session } from "./entities/Session";
+import { Product } from "./entities/Product";
+import { Order } from "./entities/Order";
+import { OrderItem } from "./entities/OrderItem";
+import { License } from "./entities/License";
 
 export const AppDataSource = new DataSource({
   type: "mariadb",
