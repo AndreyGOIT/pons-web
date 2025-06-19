@@ -1,5 +1,5 @@
 import { AppDataSource } from "./data-source";
-import { Role } from "./entities/Role";
+import { Role } from "@entities/Role";
 
 async function seed() {
   await AppDataSource.initialize();
@@ -21,6 +21,7 @@ async function seed() {
   }
 
   console.log("Роли добавлены!");
+  await AppDataSource.destroy();
   process.exit();
 }
 
