@@ -3,6 +3,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { AppDataSource } from './data-source';
 import userRoutes from './routes/userRoutes';
+import courseRoutes from './routes/courseRoutes';
+import enrollmentRoutes from './routes/enrollmentRoutes';
 
 dotenv.config();
 
@@ -11,6 +13,8 @@ const PORT = process.env.PORT || 5050;
 
 app.use(express.json());
 app.use('/api/users', userRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/enroll', enrollmentRoutes);
 
 AppDataSource.initialize()
   .then(() => {
