@@ -5,6 +5,7 @@ import { AppDataSource } from '../data-source';
 import { User } from '../models/User';
 import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
+import jwt from 'jsonwebtoken';
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -50,7 +51,21 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    res.json({ message: 'Login successful', user: { id: user.id, name: user.name, email: user.email } });
+    // 🔐 Генерация токена
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+        expiresIn: '1h',
+      });
+  
+      // ✅ Ответ клиенту
+      res.json({
+        message: 'Login successful',
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+        token, // <-- добавляем токен
+      });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
