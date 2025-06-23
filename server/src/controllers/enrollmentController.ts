@@ -28,20 +28,32 @@ export const enrollUser = async (req: Request, res: Response) => {
   }
 };
 
-export const markAsPaid = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-
-  try {
-    const enrollment = await enrollmentRepo.findOneBy({ id });
-    if (!enrollment) {
-      return res.status(404).json({ message: 'Enrollment not found' });
+export const updateInvoiceStatus = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { invoiceSent, invoicePaid } = req.body;
+  
+      const enrollment = await enrollmentRepo.findOne({
+        where: { id: parseInt(id) },
+        relations: ['user', 'course'],
+      });
+  
+      if (!enrollment) {
+        return res.status(404).json({ message: 'Enrollment not found' });
+      }
+  
+      // Обновляем поля, только если они переданы
+      if (typeof invoiceSent === 'boolean') {
+        enrollment.invoiceSent = invoiceSent;
+      }
+      if (typeof invoicePaid === 'boolean') {
+        enrollment.invoicePaid = invoicePaid;
+      }
+  
+      await enrollmentRepo.save(enrollment);
+  
+      res.json({ message: 'Invoice status updated', enrollment });
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err });
     }
-
-    enrollment.invoicePaid = true;
-    await enrollmentRepo.save(enrollment);
-
-    res.json({ message: 'Marked as paid', enrollment });
-  } catch (err) {
-    res.status(500).json({ message: 'Error updating payment status', error: err });
-  }
-};
+  };
