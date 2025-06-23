@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "description": "",
+  "description": "web-server with typescript and typeorm and sqlite",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",

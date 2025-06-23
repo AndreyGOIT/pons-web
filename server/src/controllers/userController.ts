@@ -55,3 +55,64 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error', error: err });
   }
 };
+
+// Получить всех пользователей
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+      const users = await userRepo.find();
+      const withoutPasswords = users.map(({ password, ...rest }) => rest);
+      res.json(withoutPasswords);
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err });
+    }
+  };
+  
+  // Получить одного пользователя
+  export const getUserById = async (req: Request, res: Response) => {
+    try {
+      const user = await userRepo.findOne({ where: { id: Number(req.params.id) } });
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      const { password, ...userData } = user;
+      res.json(userData);
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err });
+    }
+  };
+  
+  // Обновить пользователя
+  export const updateUser = async (req: Request, res: Response) => {
+    try {
+      const user = await userRepo.findOne({ where: { id: Number(req.params.id) } });
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      const { name, email, password } = req.body;
+  
+      if (name) user.name = name;
+      if (email) user.email = email;
+      if (password) user.password = await bcrypt.hash(password, 10);
+  
+      const errors = await validate(user);
+      if (errors.length > 0) {
+        return res.status(400).json(errors);
+      }
+  
+      const updated = await userRepo.save(user);
+      const { password: _, ...updatedWithoutPassword } = updated;
+      res.json(updatedWithoutPassword);
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err });
+    }
+  };
+  
+  // Удалить пользователя
+  export const deleteUser = async (req: Request, res: Response) => {
+    try {
+      const result = await userRepo.delete(Number(req.params.id));
+      if (result.affected === 0) return res.status(404).json({ message: 'User not found' });
+  
+      res.status(204).send(); // No content
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err });
+    }
+  };
