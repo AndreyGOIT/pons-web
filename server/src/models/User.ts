@@ -8,6 +8,11 @@ import {
 } from 'typeorm';
 import { Length, IsEmail } from 'class-validator';
 
+export enum UserRole {
+  ADMIN = 'admin',
+  TRAINER = 'trainer',
+  CLIENT = 'client',
+}
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -23,6 +28,12 @@ export class User {
 
   @Column()
   password!: string;
+
+  @Column({
+    type: 'text',
+    default: UserRole.CLIENT,
+  })
+  role!: UserRole;
 
   @CreateDateColumn()
   createdAt!: Date;

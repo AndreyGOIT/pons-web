@@ -2,7 +2,7 @@
 
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
-import { User } from '../models/User';
+import { User, UserRole } from '../models/User';
 import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
 import jwt from 'jsonwebtoken';
@@ -11,12 +11,18 @@ const userRepo = AppDataSource.getRepository(User);
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
+
+    // Проверка на корректную роль
+    if (!Object.values(UserRole).includes(role)) {
+      return res.status(400).json({ message: 'Invalid role' });
+    }
 
     const user = new User();
     user.name = name;
     user.email = email;
     user.password = await bcrypt.hash(password, 10);
+    user.role = role;
 
     const errors = await validate(user);
     if (errors.length > 0) {
@@ -39,7 +45,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     const user = await userRepo.findOne({ where: { email } });
     if (!user) {
@@ -63,6 +69,7 @@ export const loginUser = async (req: Request, res: Response) => {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role,
         },
         token, // <-- добавляем токен
       });

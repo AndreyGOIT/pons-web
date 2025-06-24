@@ -1,24 +1,49 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { AppDataSource } from '../data-source';
+import { User } from '../models/User';
+import { UserRole } from '../models/User'; 
 
-interface AuthRequest extends Request {
-  userId?: number;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        role: UserRole;
+      };
+    }
+  }
 }
 
-export const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+const userRepo = AppDataSource.getRepository(User);
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Not authorized, token missing' });
-  }
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+  
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+  
+    const token = authHeader.split(' ')[1];
+  
+    try {
+        const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret';
 
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
-    req.userId = decoded.userId;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'Not authorized, token invalid' });
-  }
-};
+      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+      console.log('decoded token:', decoded);
+      const user = await userRepo.findOneBy({ id: decoded.userId });
+      console.log('user found:', user);
+      if (!user || !Object.values(UserRole).includes(user.role)) {
+        return res.status(401).json({ message: 'User not found or has invalid role' });
+      }
+  
+      req.user = {
+        id: user.id,
+        role: user.role,
+      };
+  
+      next();
+    } catch (err) {
+      return res.status(401).json({ message: 'Invalid token', error: err });
+    }
+  };
