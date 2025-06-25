@@ -29,16 +29,16 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     try {
         const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret';
 
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
       console.log('decoded token:', decoded);
-      const user = await userRepo.findOneBy({ id: decoded.userId });
+      const user = await userRepo.findOneBy({ id: decoded.id });
       console.log('user found:', user);
       if (!user || !Object.values(UserRole).includes(user.role)) {
         return res.status(401).json({ message: 'User not found or has invalid role' });
       }
-  
+      console.log('typeof user.id:', typeof user.id); // <- это должен быть "number"
       req.user = {
-        id: user.id,
+        id: Number(user.id), // ← гарантируем числовой тип
         role: user.role,
       };
   

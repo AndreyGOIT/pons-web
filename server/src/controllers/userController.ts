@@ -7,8 +7,15 @@ import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
 import jwt from 'jsonwebtoken';
 
-const userRepo = AppDataSource.getRepository(User);
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: number;
+    role: UserRole;
+  };
+}
 
+const userRepo = AppDataSource.getRepository(User);
+//user registration
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
@@ -42,12 +49,13 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error', error: err });
   }
 };
-
+//user login
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password, role } = req.body;
 
     const user = await userRepo.findOne({ where: { email } });
+    console.log('user в логине из репо юзеров:', user);
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -58,7 +66,7 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     // 🔐 Генерация токена
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
         expiresIn: '1h',
       });
   
@@ -75,6 +83,50 @@ export const loginUser = async (req: Request, res: Response) => {
       });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+  }
+};
+
+export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
+  console.log('✅ getCurrentUser called with req.user:', req.user);
+
+  if (!req.user) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+
+  const userId = Number((req.user as any)?.id); // или создать типизацию правильно
+  console.log('req.user:', req.user);
+  console.log('userId:', userId, typeof userId);
+
+  if (typeof userId !== 'number') {
+    return res.status(400).json({ message: 'Invalid user context' });
+  }
+
+  try {
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { id: userId },
+      select: ['id', 'name', 'email', 'role'],
+    });
+console.log("user in getCurrentUser:", user);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    try {
+      console.log('📤 Sending response with user data...');
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      });
+      console.log('✅ Response successfully sent');
+    } catch (err) {
+      console.error('❌ Failed to send response:', err);
+      res.status(500).json({ message: 'Server error while sending response' });
+    }
+  } catch (err) {
+    console.error('getCurrentUser error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
