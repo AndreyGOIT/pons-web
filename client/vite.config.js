@@ -7,7 +7,11 @@ export default defineConfig({
     port: 5173,
     open: true,
     proxy: {
-      "/api": "http://localhost:3000",
+      "/api": {
+        target: "http://localhost:5050",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "/api"), // важно сохранить путь
+      },
     },
   },
   resolve: {

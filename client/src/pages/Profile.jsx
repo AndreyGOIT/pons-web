@@ -1,99 +1,136 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
-  const [userData, setUserData] = useState(null);
+function Profile() {
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/");
+      navigate("/login");
       return;
     }
 
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const decodedPayload = JSON.parse(window.atob(base64));
-      setUserData(decodedPayload);
-    } catch (error) {
-      console.error("Invalid token", error);
-      localStorage.removeItem("token");
-      navigate("/");
-    }
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (!res.ok)
+          throw new Error("Ошибка при получении данных пользователя");
+
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error("❌ Ошибка:", err);
+        setError("Не удалось загрузить профиль. Авторизуйтесь снова.");
+      }
+    };
+
+    fetchProfile();
   }, [navigate]);
 
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
-  const deleteAccount = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete your account? This cannot be undone."
-      )
-    ) {
-      return;
-    }
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Вы уверены, что хотите удалить аккаунт?");
+    if (!confirmed) return;
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/users/me", {
+      const res = await fetch("/api/users/delete", {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (response.ok) {
-        alert("Account deleted.");
-        localStorage.removeItem("token");
-        navigate("/");
-      } else {
-        alert("Failed to delete account.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error deleting account.");
+      if (!res.ok) throw new Error("Ошибка при удалении аккаунта");
+
+      localStorage.removeItem("token");
+      navigate("/register");
+    } catch (err) {
+      console.error("❌ Ошибка удаления:", err);
+      alert("Не удалось удалить аккаунт");
     }
   };
 
-  if (!userData) return null;
+  const roleColor = {
+    admin: "bg-red-100 text-red-700 border-red-300",
+    coach: "bg-blue-100 text-blue-700 border-blue-300",
+    client: "bg-green-100 text-green-700 border-green-300",
+  };
+
+  if (error) {
+    return <div className="text-red-500 p-4">{error}</div>;
+  }
+
+  if (!user) {
+    return <div className="p-4">Загрузка...</div>;
+  }
+
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    user.name
+  )}&background=random&size=128`;
 
   return (
-    <div
-      className="w3-container w3-content"
-      style={{ maxWidth: "600px", marginTop: "80px" }}
-    >
-      <h2 className="w3-center">
-        Welcome, {userData.username || userData.email}!
-      </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-gray-200 p-8 text-center">
+        <img
+          src={avatarUrl}
+          alt="Аватар"
+          className="w-24 h-24 rounded-full mx-auto mb-4 shadow"
+        />
+        <h1 className="text-2xl font-bold mb-1">{user.name}</h1>
+        <p className="text-gray-600">{user.email}</p>
 
-      <div className="w3-card w3-padding w3-margin-top">
-        <p>
-          <strong>Email:</strong> {userData.email}
-        </p>
-        <p>
-          <strong>Username:</strong> {userData.username || "N/A"}
-        </p>
-        <p>
-          <strong>Registered:</strong>{" "}
-          {new Date(userData.iat * 1000).toLocaleString()}
-        </p>
-      </div>
+        <span
+          className={`inline-block mt-3 px-3 py-1 text-sm font-semibold border rounded-full ${
+            roleColor[user.role] || "bg-gray-100 text-gray-700 border-gray-300"
+          }`}
+        >
+          {user.role}
+        </span>
 
-      <div className="w3-center w3-margin-top">
-        <button className="w3-button w3-teal w3-margin-right" onClick={logout}>
-          Logout
-        </button>
-        <button className="w3-button w3-red" onClick={deleteAccount}>
-          Delete Account
-        </button>
+        {user.createdAt && (
+          <p className="text-sm text-gray-500 mt-2">
+            Зарегистрирован:{" "}
+            {new Date(user.createdAt).toLocaleDateString("ru-RU")}
+          </p>
+        )}
+
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-gray-800 text-white py-2 rounded-xl hover:bg-gray-900 transition"
+          >
+            Выйти
+          </button>
+          <button
+            onClick={handleDelete}
+            className="w-full border border-red-500 text-red-600 py-2 rounded-xl hover:bg-red-50 transition"
+          >
+            Удалить аккаунт
+          </button>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default Profile;
