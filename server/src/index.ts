@@ -16,7 +16,7 @@ app.use(express.json());
 app.use('/api/admin/users', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
-app.use('/api/enroll', enrollmentRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 AppDataSource.initialize()
   .then(() => {

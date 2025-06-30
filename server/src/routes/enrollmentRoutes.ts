@@ -1,14 +1,20 @@
+// src/routes/enrollmentRoutes.ts
 import { Router } from 'express';
-import { enrollUser, updateInvoiceStatus } from '../controllers/enrollmentController';
-import { requireRole } from '../middlewares/roleMiddleware';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import {
+  enrollToCourse,
+  getMyEnrollments,
+  markInvoiceAsPaid,
+  confirmPaymentByAdmin,
+  getEnrollmentReport,
+} from '../controllers/enrollmentController';
+import { catchAsync } from '../utils/catchAsync';
 
 const router = Router();
 
-router.post('/', enrollUser as any);
-router.patch('/:id/invoice',
-    authMiddleware as any,
-    requireRole(['admin', 'trainer']) as any,  // Только админ и тренер могут обновлять статус оплаты
-    updateInvoiceStatus as any);
+router.post('/', catchAsync(enrollToCourse));
+router.get('/mine', getMyEnrollments);
+router.patch('/:id/mark-paid', catchAsync(markInvoiceAsPaid));
+router.patch('/:id/confirm', catchAsync(confirmPaymentByAdmin));
+router.get('/report', getEnrollmentReport);
 
 export default router;
