@@ -16,13 +16,14 @@ interface AuthenticatedRequest extends Request {
 
 const userRepo = AppDataSource.getRepository(User);
 //user registration
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password, role } = req.body;
 
     // Проверка на корректную роль
     if (!Object.values(UserRole).includes(role)) {
-      return res.status(400).json({ message: 'Invalid role' });
+      res.status(400).json({ message: 'Invalid role' });
+      return;
     }
 
     const user = new User();
@@ -33,12 +34,14 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const errors = await validate(user);
     if (errors.length > 0) {
-      return res.status(400).json(errors);
+      res.status(400).json(errors);
+      return;
     }
 
     const existing = await userRepo.findOne({ where: { email } });
     if (existing) {
-      return res.status(409).json({ message: 'Email already in use' });
+      res.status(409).json({ message: 'Email already in use' });
+      return;
     }
 
     const savedUser = await userRepo.save(user);
@@ -50,19 +53,21 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 //user login
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, role } = req.body;
 
     const user = await userRepo.findOne({ where: { email } });
     console.log('user в логине из репо юзеров:', user);
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
     }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
     }
 
     // 🔐 Генерация токена
@@ -86,11 +91,12 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
+export const getCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   console.log('✅ getCurrentUser called with req.user:', req.user);
 
   if (!req.user) {
-    return res.status(401).json({ message: 'Not authenticated' });
+    res.status(401).json({ message: 'Not authenticated' });
+    return;
   }
 
   const userId = Number((req.user as any)?.id); // или создать типизацию правильно
@@ -98,17 +104,19 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
   console.log('userId:', userId, typeof userId);
 
   if (typeof userId !== 'number') {
-    return res.status(400).json({ message: 'Invalid user context' });
+    res.status(400).json({ message: 'Invalid user context' });
+    return;
   }
 
   try {
     const user = await AppDataSource.getRepository(User).findOne({
       where: { id: userId },
-      select: ['id', 'name', 'email', 'role'],
+      select: ['id', 'name', 'email', 'role', 'createdAt', 'updatedAt'],
     });
 console.log("user in getCurrentUser:", user);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
 
     try {
@@ -118,6 +126,8 @@ console.log("user in getCurrentUser:", user);
         name: user.name,
         email: user.email,
         role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       });
       console.log('✅ Response successfully sent');
     } catch (err) {
@@ -131,7 +141,7 @@ console.log("user in getCurrentUser:", user);
 };
 
 // Получить всех пользователей
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
     try {
       const users = await userRepo.find();
       const withoutPasswords = users.map(({ password, ...rest }) => rest);
@@ -142,10 +152,13 @@ export const getUsers = async (req: Request, res: Response) => {
   };
   
   // Получить одного пользователя
-  export const getUserById = async (req: Request, res: Response) => {
+  export const getUserById = async (req: Request, res: Response): Promise<void> => {
     try {
       const user = await userRepo.findOne({ where: { id: Number(req.params.id) } });
-      if (!user) return res.status(404).json({ message: 'User not found' });
+      if (!user) {
+        res.status(404).json({ message: 'User not found' })
+        return;
+      }
   
       const { password, ...userData } = user;
       res.json(userData);
@@ -155,38 +168,62 @@ export const getUsers = async (req: Request, res: Response) => {
   };
   
   // Обновить пользователя
-  export const updateUser = async (req: Request, res: Response) => {
+  export const updateCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const userId = Number((req.user as any)?.id);
+    if (!userId) {
+      res.status(401).json({ message: "Not authenticated" });
+      return;
+    }
+  
     try {
-      const user = await userRepo.findOne({ where: { id: Number(req.params.id) } });
-      if (!user) return res.status(404).json({ message: 'User not found' });
+      const user = await userRepo.findOne({ where: { id: userId } });
+  
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
   
       const { name, email, password } = req.body;
   
       if (name) user.name = name;
       if (email) user.email = email;
-      if (password) user.password = await bcrypt.hash(password, 10);
-  
-      const errors = await validate(user);
-      if (errors.length > 0) {
-        return res.status(400).json(errors);
+      if (password) {
+        // тут может быть хэширование, если используешь bcrypt
+        user.password = password;
       }
   
-      const updated = await userRepo.save(user);
-      const { password: _, ...updatedWithoutPassword } = updated;
-      res.json(updatedWithoutPassword);
+      const updatedUser = await userRepo.save(user);
+  
+      res.json({
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+      });
     } catch (err) {
-      res.status(500).json({ message: 'Server error', error: err });
+      console.error("Update error:", err);
+      res.status(500).json({ message: "Server error" });
     }
   };
   
   // Удалить пользователя
-  export const deleteUser = async (req: Request, res: Response) => {
+  export const deleteCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const userId = Number((req.user as any)?.id);
+    if (!userId) {
+      res.status(401).json({ message: "Not authenticated" });
+      return;
+    }
+  
     try {
-      const result = await userRepo.delete(Number(req.params.id));
-      if (result.affected === 0) return res.status(404).json({ message: 'User not found' });
+      const result = await userRepo.delete(userId);
+  
+      if (result.affected === 0) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
   
       res.status(204).send(); // No content
     } catch (err) {
-      res.status(500).json({ message: 'Server error', error: err });
+      res.status(500).json({ message: "Server error", error: err });
     }
   };

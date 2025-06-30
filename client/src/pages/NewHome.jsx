@@ -1,9 +1,20 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const NewHome = () => {
+  const navigate = useNavigate();
+
+  const handleKNrek = () => {
+    if (localStorage.getItem("token")) {
+      navigate("/profile");
+    } else {
+      // setShowLoginModal(true);
+    }
+  };
+
   return (
     <div>
-      {/* More sections (Team, Work, Pricing, Contact) can be added below */}
+      {/* Team Section */}
       <section className="w3-container w3-padding-64 w3-center" id="team">
         <h2 className="w3-text-teal">Our Team</h2>
         <p>Meet the amazing people behind our success</p>
@@ -43,6 +54,7 @@ const NewHome = () => {
           </div>
         </div>
       </section>
+      {/* Work Section */}
       <section className="w3-container w3-padding-64 w3-light-grey" id="work">
         <h2 className="w3-text-teal w3-center">Our Work</h2>
         <p className="w3-center">Some examples of our projects</p>
@@ -79,16 +91,25 @@ const NewHome = () => {
           </div>
         </div>
       </section>
+      {/* Pricing */}
       <section className="w3-container w3-padding-64 w3-center" id="pricing">
         <h2 className="w3-text-teal">Pricing</h2>
         <p>Choose the best plan for your needs</p>
 
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-third w3-card w3-padding w3-margin-bottom">
-            <h3>Basic</h3>
-            <p className="w3-large">$10 / month</p>
-            <p>Essential features</p>
-            <button className="w3-button w3-teal w3-round">Sign Up</button>
+            <h3>Kuntonyrkkeily</h3>
+            <p className="w3-large">€175 / syyskausi</p>
+            <p>
+              Monipuolionen ja aktiivinen treeni, joten tulen hyvään kuntoon.
+            </p>
+            <p>Ikä: 15 vuotta alkaen</p>
+            <button
+              className="w3-button w3-teal w3-round"
+              onClick={handleKNrek}
+            >
+              Sign Up
+            </button>
           </div>
 
           <div className="w3-third w3-card w3-padding w3-margin-bottom w3-teal w3-text-white">
@@ -106,6 +127,7 @@ const NewHome = () => {
           </div>
         </div>
       </section>
+      {/* Contact Us section */}
       <section className="w3-container w3-padding-64" id="contact">
         <h2 className="w3-text-teal w3-center">Contact Us</h2>
         <p className="w3-center">We&apos;d love to hear from you</p>

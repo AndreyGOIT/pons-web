@@ -17,11 +17,12 @@ declare global {
 
 const userRepo = AppDataSource.getRepository(User);
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
   
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'No token provided' });
+      res.status(401).json({ message: 'No token provided' });
+      return;
     }
   
     const token = authHeader.split(' ')[1];
@@ -34,7 +35,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       const user = await userRepo.findOneBy({ id: decoded.id });
       console.log('user found:', user);
       if (!user || !Object.values(UserRole).includes(user.role)) {
-        return res.status(401).json({ message: 'User not found or has invalid role' });
+        res.status(401).json({ message: 'User not found or has invalid role' });
+        return;
       }
       console.log('typeof user.id:', typeof user.id); // <- это должен быть "number"
       req.user = {
@@ -44,6 +46,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   
       next();
     } catch (err) {
-      return res.status(401).json({ message: 'Invalid token', error: err });
+      res.status(401).json({ message: 'Invalid token', error: err });
+      return;
     }
   };

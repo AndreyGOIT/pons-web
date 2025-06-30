@@ -2,8 +2,8 @@
 import { Router } from 'express';
 import { registerUser, loginUser, getCurrentUser, getUsers,
     getUserById,
-    updateUser,
-    deleteUser,
+    updateCurrentUser,
+    deleteCurrentUser,
 } from '../controllers/userController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
@@ -14,8 +14,8 @@ router.post('/login', loginUser as any);
 router.get('/me', authMiddleware as any, getCurrentUser as any);
 router.get('/', authMiddleware as any, getUsers);
 router.get('/:id', authMiddleware as any,  getUserById as any);
-router.put('/:id', authMiddleware as any,  updateUser as any);
-router.delete('/:id', authMiddleware as any, deleteUser as any);
+router.put('/me', authMiddleware as any,  updateCurrentUser as any);
+router.delete('/me', authMiddleware as any, deleteCurrentUser as any);
 
 
 export default router;

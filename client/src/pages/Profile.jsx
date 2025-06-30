@@ -33,6 +33,7 @@ function Profile() {
           throw new Error("Ошибка при получении данных пользователя");
 
         const data = await res.json();
+        console.log("🚀 Данные пользователя в профиле:", data);
         setUser(data);
       } catch (err) {
         console.error("❌ Ошибка:", err);
