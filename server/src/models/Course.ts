@@ -1,13 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+// src/models/Course.ts
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
+import { CourseType } from '../enums/CourseType';
 
 @Entity()
 export class Course {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  title!: string;
+  @Column({ type: 'enum', enum: CourseType })
+  title!: CourseType;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   description!: string;
+
+  @Column({ type: 'decimal', default: 0 })
+  price!: number;
+
+  @CreateDateColumn()
+  createdAt!: Date;
 }
