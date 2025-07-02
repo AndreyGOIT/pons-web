@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const RegisterModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -8,19 +8,49 @@ const RegisterModal = ({ onClose, onSuccess }) => {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const handleClickOutside = (e) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      onClose();
+    }
+  };
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const validate = () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setError("Invalid email format");
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return false;
+    }
+    return true;
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+    if (!validate()) return;
 
+    setLoading(true);
     try {
       const res = await fetch("/api/users/register", {
         method: "POST",
@@ -32,24 +62,37 @@ const RegisterModal = ({ onClose, onSuccess }) => {
         }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         setError(data.message || "Registration failed");
         return;
       }
 
-      const { token } = await res.json();
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", data.token);
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
       onSuccess();
     } catch (err) {
       console.error(err);
       setError("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w3-modal" style={{ display: "block" }}>
+    <div
+      className="w3-modal"
+      style={{ display: "block" }}
+      onClick={handleClickOutside}
+    >
       <div
+        ref={modalRef}
         className="w3-modal-content w3-animate-top w3-card-4"
         style={{ maxWidth: 450 }}
       >
@@ -111,8 +154,12 @@ const RegisterModal = ({ onClose, onSuccess }) => {
               />
             </p>
             <p>
-              <button type="submit" className="w3-button w3-teal w3-block">
-                Register
+              <button
+                type="submit"
+                disabled={loading}
+                className="w3-button w3-teal w3-block"
+              >
+                {loading ? "Please wait..." : "Register"}
               </button>
             </p>
           </form>

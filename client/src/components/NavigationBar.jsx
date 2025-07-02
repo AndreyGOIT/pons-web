@@ -1,29 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import LoginModal from "./auth/LoginModal";
 import RegisterModal from "./auth/RegisterModal";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth"; // <-- импортируем хук из контекста
 
 const NavigationBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    navigate("/");
-  };
+  const { isAuthenticated, login, logout } = useAuth(); // <-- получаем из контекста
 
   const openNav = () => setSidebarOpen(true);
   const closeNav = () => setSidebarOpen(false);
-
   const goToProfile = () => navigate("/profile");
 
   return (
@@ -73,7 +62,13 @@ const NavigationBar = () => {
             <button className="w3-bar-item w3-button" onClick={goToProfile}>
               Profile
             </button>
-            <button className="w3-bar-item w3-button" onClick={logout}>
+            <button
+              className="w3-bar-item w3-button"
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+            >
               Logout
             </button>
           </>
@@ -141,7 +136,13 @@ const NavigationBar = () => {
                 >
                   Profile
                 </button>
-                <button className="w3-button w3-hover-white" onClick={logout}>
+                <button
+                  className="w3-button w3-hover-white"
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                >
                   Logout
                 </button>
               </>
@@ -153,10 +154,12 @@ const NavigationBar = () => {
       {showLoginModal && (
         <LoginModal
           onClose={() => setShowLoginModal(false)}
-          onSuccess={() => {
-            setIsAuthenticated(true);
+          onSuccess={(token) => {
+            login(token); // <-- вызываем login из контекста
             setShowLoginModal(false);
-            navigate("/profile");
+            setTimeout(() => {
+              navigate("/profile");
+            }, 0);
           }}
         />
       )}
@@ -164,8 +167,8 @@ const NavigationBar = () => {
       {showRegisterModal && (
         <RegisterModal
           onClose={() => setShowRegisterModal(false)}
-          onSuccess={() => {
-            setIsAuthenticated(true);
+          onSuccess={(token) => {
+            login(token); // <-- вызываем login из контекста
             setShowRegisterModal(false);
             navigate("/profile");
           }}

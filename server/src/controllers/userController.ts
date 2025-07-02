@@ -69,12 +69,12 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
-
+console.log('проверка пароля, что он верный:', isValid);
     // 🔐 Генерация токена
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
         expiresIn: '1h',
       });
-  
+  console.log('token при логине сгенерирован: ', token);
       // ✅ Ответ клиенту
       res.json({
         message: 'Login successful',
@@ -86,6 +86,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         },
         token, // <-- добавляем токен
       });
+    console.log('ответ клиенту с токеном:', res.json);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }

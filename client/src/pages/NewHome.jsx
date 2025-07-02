@@ -1,14 +1,62 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+
+const courses = {
+  KN: { id: "1", title: "Kuntonyrkkeily" },
+  NUORISO: { id: "2", title: "Nuoriso ryhmä" },
+  KILPA: { id: "3", title: "Kilparyhmä" },
+};
 
 const NewHome = () => {
-  const navigate = useNavigate();
+  const { user } = useContext(AuthContext); // Предполагается, что user = { id, name, email, ... }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleKNrek = () => {
-    if (localStorage.getItem("token")) {
-      navigate("/profile");
-    } else {
-      // setShowLoginModal(true);
+  const handleOpenModal = (courseKey) => {
+    if (!user) {
+      alert("Kirjaudu ensin sisään ilmoittautuaksesi.");
+      return;
+    }
+
+    setSelectedCourse(courses[courseKey]);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCourse(null);
+    setSuccessMessage("");
+    setErrorMessage("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          courseId: selectedCourse.id,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Enrollment failed.");
+
+      const result = await response.json();
+      console.log("результат при регистрации: ", result);
+      setSuccessMessage("Ilmoittautuminen onnistui!");
+      setTimeout(() => handleCloseModal(), 2000);
+    } catch (err) {
+      console.error("error: ", err);
+      setErrorMessage("Virhe ilmoittautumisessa. Yritä uudelleen.");
     }
   };
 
@@ -98,35 +146,83 @@ const NewHome = () => {
 
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-third w3-card w3-padding w3-margin-bottom">
-            <h3>Kuntonyrkkeily</h3>
+            <h3>{courses.KN.title} / KN</h3>
             <p className="w3-large">€175 / syyskausi</p>
             <p>
-              Monipuolionen ja aktiivinen treeni, joten tulen hyvään kuntoon.
+              Monipuolinen ja aktiivinen treeni, joten tulet hyvään kuntoon.
             </p>
             <p>Ikä: 15 vuotta alkaen</p>
             <button
               className="w3-button w3-teal w3-round"
-              onClick={handleKNrek}
+              onClick={() => handleOpenModal("KN")}
             >
               Sign Up
             </button>
           </div>
 
           <div className="w3-third w3-card w3-padding w3-margin-bottom w3-teal w3-text-white">
-            <h3>Pro</h3>
-            <p className="w3-large">$30 / month</p>
-            <p>Most popular features</p>
-            <button className="w3-button w3-white w3-round">Sign Up</button>
+            <h3>{courses.NUORISO.title}</h3>
+            <p className="w3-large">€150 / syyskausi</p>
+            <p>Nyrkkeilytreeni ja aktiviteetti nuorisolle</p>
+            <p>Ikä: 10–14 vuotta</p>
+            <button
+              className="w3-button w3-white w3-round"
+              onClick={() => handleOpenModal("NUORISO")}
+            >
+              Sign Up
+            </button>
           </div>
 
           <div className="w3-third w3-card w3-padding w3-margin-bottom">
-            <h3>Enterprise</h3>
-            <p className="w3-large">$100 / month</p>
-            <p>All features included</p>
-            <button className="w3-button w3-teal w3-round">Sign Up</button>
+            <h3>{courses.KILPA.title}</h3>
+            <p className="w3-large">€200 / syyskausi</p>
+            <p>Nyrkkeilytreenit kilpaavalle treenaajalle</p>
+            <p>Ikä: 15 vuotta alkaen</p>
+            <button
+              className="w3-button w3-teal w3-round"
+              onClick={() => handleOpenModal("KILPA")}
+            >
+              Sign Up
+            </button>
           </div>
         </div>
       </section>
+
+      {/* Modal */}
+      {isModalOpen && selectedCourse && (
+        <div className="w3-modal" style={{ display: "block" }}>
+          <div className="w3-modal-content w3-animate-top w3-card-4 w3-padding">
+            <span
+              onClick={handleCloseModal}
+              className="w3-button w3-display-topright"
+            >
+              &times;
+            </span>
+            <h2>Ilmoittautuminen: {selectedCourse.title}</h2>
+
+            <form onSubmit={handleSubmit} className="w3-container">
+              <p>Käyttäjä: {user?.name}</p>
+              <p>Sähköposti: {user?.email}</p>
+
+              <button className="w3-button w3-teal w3-round" type="submit">
+                Vahvista ilmoittautuminen
+              </button>
+            </form>
+
+            {successMessage && (
+              <div className="w3-panel w3-green w3-margin-top">
+                {successMessage}
+              </div>
+            )}
+            {errorMessage && (
+              <div className="w3-panel w3-red w3-margin-top">
+                {errorMessage}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Contact Us section */}
       <section className="w3-container w3-padding-64" id="contact">
         <h2 className="w3-text-teal w3-center">Contact Us</h2>

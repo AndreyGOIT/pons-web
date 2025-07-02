@@ -29,12 +29,12 @@ export class Enrollment {
   @Column({ default: false })
   invoicePaid!: boolean;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   userPaymentMarkedAt!: Date;
 
   @Column({ default: false })
   paymentConfirmedByAdmin!: boolean;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   adminConfirmedAt!: Date;
 }

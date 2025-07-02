@@ -12,7 +12,8 @@ export class Course {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'enum', enum: CourseType })
+  // @Column({ type: 'enum', enum: CourseType }) // Use the enum type
+  @Column({ type: 'text' }) //for SQLITE
   title!: CourseType;
 
   @Column({ type: 'text', nullable: true })

@@ -6,6 +6,7 @@ import adminRoutes from './routes/adminRoutes';
 import userRoutes from './routes/userRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
+import { initializeDatabase } from './initializeData';
 
 dotenv.config();
 
@@ -18,12 +19,18 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 
+// ИНИЦИАЛИЗАЦИЯ БАЗЫ + СТАРТ СЕРВЕРА
 AppDataSource.initialize()
-  .then(() => {
-      console.log('📦 Data Source has been initialized');
-      app.get('/', (req, res) => {
-        res.send('API is running...');
-      });
+  .then(async () => {
+    console.log('📦 Data Source has been initialized');
+
+    // теперь можно безопасно вызвать инициализацию стартовых данных
+    await initializeDatabase();
+
+    app.get('/', (req, res) => {
+      res.send('API is running...');
+    });
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
