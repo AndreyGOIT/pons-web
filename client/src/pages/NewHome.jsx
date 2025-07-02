@@ -9,6 +9,7 @@ const courses = {
 
 const NewHome = () => {
   const { user } = useContext(AuthContext); // Предполагается, что user = { id, name, email, ... }
+  console.log("User from AuthContext:", user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
@@ -19,7 +20,7 @@ const NewHome = () => {
       alert("Kirjaudu ensin sisään ilmoittautuaksesi.");
       return;
     }
-
+    console.log("user в сеансе выбора курса существует: ", user);
     setSelectedCourse(courses[courseKey]);
     setIsModalOpen(true);
   };
