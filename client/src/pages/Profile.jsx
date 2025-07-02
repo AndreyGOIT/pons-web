@@ -63,6 +63,57 @@ function Profile() {
     };
   }, [navigate]);
 
+  const handleMarkAsPaid = async (enrollmentId) => {
+    try {
+      console.log(
+        `Отправка PATCH-запроса на /api/enrollments/${enrollmentId}/mark-paid`
+      );
+      const response = await fetch(
+        `/api/enrollments/${enrollmentId}/mark-paid`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Ошибка сервера:", response.status, errorText);
+        throw new Error("Ошибка при отметке оплаты");
+      }
+
+      // Обновим локальное состояние — если используешь useState
+      setEnrollments((prev) =>
+        prev.map((e) =>
+          e.id === enrollmentId ? { ...e, invoicePaid: true } : e
+        )
+      );
+    } catch (error) {
+      console.error("Ошибка при отметке оплаты:", error);
+    }
+  };
+
+  const handleCancelEnrollment = async (enrollmentId) => {
+    if (!window.confirm("Вы уверены, что хотите отменить регистрацию?")) return;
+
+    try {
+      const response = await fetch(`/api/enrollments/${enrollmentId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Ошибка при удалении регистрации");
+      }
+
+      // Удалим из локального состояния
+      setEnrollments((prev) => prev.filter((e) => e.id !== enrollmentId));
+    } catch (error) {
+      console.error("Ошибка при отмене регистрации:", error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
@@ -136,6 +187,7 @@ function Profile() {
         {/*render enrollments*/}
         <div className="mt-8 text-left">
           <h2 className="text-xl font-semibold mb-2">Мои курсы</h2>
+
           {enrollments.length > 0 ? (
             <ul className="space-y-4">
               {enrollments.map((enrollment) => (
@@ -147,42 +199,59 @@ function Profile() {
                     {enrollment.course?.title || "Без названия"}
                   </h3>
 
-                  <p className="text-sm text-gray-600 mt-1">
-                    Дата регистрации:{" "}
-                    <span className="font-medium">
-                      {new Date(enrollment.invoiceSentDate).toLocaleDateString(
-                        "ru-RU"
-                      )}
-                    </span>
-                  </p>
+                  <div className="mt-2 text-sm space-y-1">
+                    {/* invoiceSent */}
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={!!enrollment.invoiceSent}
+                        disabled
+                      />
+                      Счёт выставлен
+                    </label>
 
-                  <p className="text-sm mt-1">
-                    Статус счета:{" "}
-                    <span
-                      className={`font-medium ${
-                        enrollment.invoicePaid
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {enrollment.invoicePaid ? "Оплачен" : "Не оплачен"}
-                    </span>
-                  </p>
+                    {/* invoiceSentDate */}
+                    {enrollment.invoiceSentDate && (
+                      <p className="text-gray-600 ml-6">
+                        Дата счёта:{" "}
+                        {new Date(
+                          enrollment.invoiceSentDate
+                        ).toLocaleDateString("ru-RU")}
+                      </p>
+                    )}
 
-                  <p className="text-sm mt-1">
-                    Подтверждение админом:{" "}
-                    <span
-                      className={`font-medium ${
-                        enrollment.paymentConfirmedByAdmin
-                          ? "text-green-600"
-                          : "text-gray-500"
-                      }`}
+                    {/* invoicePaid */}
+                    {user.id === enrollment.user.id && (
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={!!enrollment.invoicePaid}
+                          onChange={() => handleMarkAsPaid(enrollment.id)}
+                        />
+                        Оплачено пользователем
+                      </label>
+                    )}
+
+                    {/* paymentConfirmedByAdmin */}
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={!!enrollment.paymentConfirmedByAdmin}
+                        disabled
+                      />
+                      Подтверждено админом
+                    </label>
+                  </div>
+
+                  {/* Delete button */}
+                  <div className="mt-4">
+                    <button
+                      onClick={() => handleCancelEnrollment(enrollment.id)}
+                      className="text-sm text-red-600 hover:underline"
                     >
-                      {enrollment.paymentConfirmedByAdmin
-                        ? "Подтверждено"
-                        : "Ожидает подтверждения"}
-                    </span>
-                  </p>
+                      Отменить регистрацию
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

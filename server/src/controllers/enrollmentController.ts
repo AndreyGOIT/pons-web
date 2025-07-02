@@ -58,12 +58,22 @@ export const getMyEnrollments = async (req: Request, res: Response) => {
 // PATCH /enrollments/:id/mark-paid
 export const markInvoiceAsPaid = async (req: Request, res: Response): Promise<void> => {
   const id = Number(req.params.id);
+  const userId = req.user?.id; // предполагаем, что user уже добавлен в req через middleware
 
   try {
-    const enrollment = await enrollmentRepo.findOneBy({ id });
+    console.log('PATCH /enrollments/:id/mark-paid', req.params.id);
+    const enrollment = await enrollmentRepo.findOne({
+      where: { id },
+      relations: { user: true }, // подтягиваем пользователя
+    });
 
     if (!enrollment) {
       res.status(404).json({ message: 'Enrollment not found' });
+      return;
+    }
+
+    if (enrollment.user.id !== userId) {
+      res.status(403).json({ message: 'Forbidden: Cannot mark another user\'s enrollment' });
       return;
     }
 
@@ -73,6 +83,7 @@ export const markInvoiceAsPaid = async (req: Request, res: Response): Promise<vo
     await enrollmentRepo.save(enrollment);
     res.json({ message: 'Invoice marked as paid' });
   } catch (err) {
+    console.error("Error marking invoice as paid:", err);
     res.status(500).json({ message: 'Error marking payment', error: err });
   }
 };
@@ -124,5 +135,24 @@ export const getEnrollmentReport = async (req: Request, res: Response) => {
     res.json(report);
   } catch (err) {
     res.status(500).json({ message: 'Error generating report', error: err });
+  }
+};
+// DELETE /enrollments/:id
+export const deleteEnrollment = async (req: Request, res: Response): Promise<void> => {
+  const id = Number(req.params.id);
+
+  try {
+    const enrollment = await enrollmentRepo.findOneBy({ id });
+
+    if (!enrollment) {
+      res.status(404).json({ message: 'Enrollment not found' });
+      return;
+    }
+
+    await enrollmentRepo.remove(enrollment);
+    res.json({ message: 'Enrollment deleted successfully' });
+  } catch (err) {
+    console.error("Error deleting enrollment:", err);
+    res.status(500).json({ message: 'Error deleting enrollment', error: err });
   }
 };

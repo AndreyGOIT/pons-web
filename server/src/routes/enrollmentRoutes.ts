@@ -6,6 +6,7 @@ import {
   markInvoiceAsPaid,
   confirmPaymentByAdmin,
   getEnrollmentReport,
+  deleteEnrollment
 } from '../controllers/enrollmentController';
 import { catchAsync } from '../utils/catchAsync';
 
@@ -16,5 +17,6 @@ router.get('/mine', getMyEnrollments);
 router.patch('/:id/mark-paid', catchAsync(markInvoiceAsPaid));
 router.patch('/:id/confirm', catchAsync(confirmPaymentByAdmin));
 router.get('/report', getEnrollmentReport);
+router.delete('/:id', catchAsync(deleteEnrollment));
 
 export default router;
