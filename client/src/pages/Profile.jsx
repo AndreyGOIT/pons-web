@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Profile() {
   const [user, setUser] = useState(null);
+  const [enrollments, setEnrollments] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -35,6 +36,7 @@ function Profile() {
         const data = await res.json();
         console.log("🚀 Данные пользователя в профиле:", data);
         setUser(data);
+        fetchEnrollments(data.id);
       } catch (err) {
         console.error("❌ Ошибка:", err);
         setError("Не удалось загрузить профиль. Авторизуйтесь снова.");
@@ -42,6 +44,23 @@ function Profile() {
     };
 
     fetchProfile();
+    const fetchEnrollments = async (userId) => {
+      try {
+        const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Ошибка при получении регистраций");
+
+        const data = await res.json();
+        console.log("🎓 Курсы пользователя:", data);
+        setEnrollments(data);
+      } catch (err) {
+        console.error("❌ Ошибка загрузки курсов:", err);
+      }
+    };
   }, [navigate]);
 
   const handleLogout = () => {
@@ -114,7 +133,66 @@ function Profile() {
             {new Date(user.createdAt).toLocaleDateString("ru-RU")}
           </p>
         )}
+        {/*render enrollments*/}
+        <div className="mt-8 text-left">
+          <h2 className="text-xl font-semibold mb-2">Мои курсы</h2>
+          {enrollments.length > 0 ? (
+            <ul className="space-y-4">
+              {enrollments.map((enrollment) => (
+                <li
+                  key={enrollment.id}
+                  className="border rounded-xl p-4 shadow-sm bg-gray-50"
+                >
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {enrollment.course?.title || "Без названия"}
+                  </h3>
 
+                  <p className="text-sm text-gray-600 mt-1">
+                    Дата регистрации:{" "}
+                    <span className="font-medium">
+                      {new Date(enrollment.invoiceSentDate).toLocaleDateString(
+                        "ru-RU"
+                      )}
+                    </span>
+                  </p>
+
+                  <p className="text-sm mt-1">
+                    Статус счета:{" "}
+                    <span
+                      className={`font-medium ${
+                        enrollment.invoicePaid
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {enrollment.invoicePaid ? "Оплачен" : "Не оплачен"}
+                    </span>
+                  </p>
+
+                  <p className="text-sm mt-1">
+                    Подтверждение админом:{" "}
+                    <span
+                      className={`font-medium ${
+                        enrollment.paymentConfirmedByAdmin
+                          ? "text-green-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {enrollment.paymentConfirmedByAdmin
+                        ? "Подтверждено"
+                        : "Ожидает подтверждения"}
+                    </span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">
+              Вы ещё не зарегистрированы ни на один курс.
+            </p>
+          )}
+        </div>
+        {/*render buttons*/}
         <div className="mt-6 space-y-3">
           <button
             onClick={handleLogout}
