@@ -5,6 +5,7 @@ import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
 import { Course } from '../models/Course';
 
+// Получение всех записей
 const enrollmentRepo = AppDataSource.getRepository(Enrollment);
 const userRepo = AppDataSource.getRepository(User);
 const courseRepo = AppDataSource.getRepository(Course);
@@ -12,7 +13,12 @@ const courseRepo = AppDataSource.getRepository(Course);
 // POST /enrollments
 export const enrollToCourse = async (req: Request, res: Response): Promise<void> => {
   const { userId, courseId } = req.body;
-
+  console.log("Запись на курс - userId: ", userId, "courseId: ", courseId);
+  
+  if (!userId || !courseId) {
+    res.status(400).json({ message: 'userId and courseId are required' });
+    return;
+  }
   try {
     const user = await userRepo.findOneBy({ id: userId });
     const course = await courseRepo.findOneBy({ id: courseId });
@@ -28,14 +34,38 @@ export const enrollToCourse = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    const enrollment = enrollmentRepo.create({
-      user,
-      course,
-      invoiceSent: true, // счет создается автоматически
-    });
+    // Генерация базовых реквизитов
+  const invoiceAmount = 199.00; // 💰 Стоимость курса
+  const paymentIban = 'FI21 1234 5600 0007 85'; // ← пример IBAN
+  const paymentReference = `COURSE-${course.id}-${Date.now()}`;
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + 7); // 7 дней на оплату
 
-    await enrollmentRepo.save(enrollment);
-    res.status(201).json(enrollment);
+  const enrollment = enrollmentRepo.create({
+    user,
+    course,
+    invoiceSent: true,
+    invoiceSentDate: new Date(),
+    invoiceAmount,
+    paymentIban,
+    paymentReference,
+    invoiceDueDate: dueDate,
+  });
+
+  await enrollmentRepo.save(enrollment);
+
+   res.status(201).json({
+    message: 'Enrollment created',
+    enrollment: {
+      id: enrollment.id,
+      courseTitle: course.title,
+      invoiceAmount,
+      paymentIban,
+      paymentReference,
+      invoiceDueDate: dueDate.toISOString().split('T')[0],
+    },
+  });
+  
   } catch (err) {
     res.status(500).json({ message: 'Error enrolling', error: err });
   }

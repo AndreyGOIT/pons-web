@@ -26,6 +26,18 @@ export class Enrollment {
   @CreateDateColumn()
   invoiceSentDate!: Date;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+invoiceAmount!: number;
+
+@Column({ type: 'varchar', length: 34, nullable: true })
+paymentIban!: string;
+
+@Column({ type: 'varchar', length: 255, nullable: true })
+paymentReference!: string;
+
+@Column({ type: 'datetime', nullable: true })
+invoiceDueDate!: Date;
+
   @Column({ default: false })
   invoicePaid!: boolean;
 

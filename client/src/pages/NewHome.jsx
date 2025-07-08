@@ -37,11 +37,13 @@ const NewHome = () => {
     setSuccessMessage("");
     setErrorMessage("");
 
+    const token = localStorage.getItem("token"); // или из контекста
     try {
       const response = await fetch("/api/enrollments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           userId: user.id,
@@ -53,8 +55,14 @@ const NewHome = () => {
 
       const result = await response.json();
       console.log("результат при регистрации: ", result);
-      setSuccessMessage("Ilmoittautuminen onnistui!");
-      setTimeout(() => handleCloseModal(), 2000);
+      setSuccessMessage(`Ilmoittautuminen onnistui! 
+        Kurssi: ${result.enrollment.courseTitle}
+        Summa: ${result.enrollment.invoiceAmount} €
+        IBAN: ${result.enrollment.paymentIban}
+        Viitenumero: ${result.enrollment.paymentReference}
+        Eräpäivä: ${result.enrollment.invoiceDueDate}
+        `);
+      // setTimeout(() => handleCloseModal(), 2000);
     } catch (err) {
       console.error("error: ", err);
       setErrorMessage("Virhe ilmoittautumisessa. Yritä uudelleen.");
