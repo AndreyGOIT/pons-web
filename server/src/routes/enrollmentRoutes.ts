@@ -9,14 +9,17 @@ import {
   deleteEnrollment
 } from '../controllers/enrollmentController';
 import { catchAsync } from '../utils/catchAsync';
+import { authMiddleware } from '../middlewares/authMiddleware';
+import { adminOnly } from '../middlewares/adminOnly';
+
 
 const router = Router();
 
-router.post('/', catchAsync(enrollToCourse));
-router.get('/mine', getMyEnrollments);
-router.patch('/:id/mark-paid', catchAsync(markInvoiceAsPaid));
-router.patch('/:id/confirm', catchAsync(confirmPaymentByAdmin));
-router.get('/report', getEnrollmentReport);
-router.delete('/:id', catchAsync(deleteEnrollment));
+router.post('/', authMiddleware,  catchAsync(enrollToCourse));
+router.get('/mine', authMiddleware,  getMyEnrollments);
+router.patch('/:id/mark-paid', authMiddleware, catchAsync(markInvoiceAsPaid));
+router.patch('/:id/confirm', authMiddleware, adminOnly,  catchAsync(confirmPaymentByAdmin));
+router.get('/report', authMiddleware, adminOnly,  getEnrollmentReport);
+router.delete('/:id', authMiddleware,  catchAsync(deleteEnrollment));
 
 export default router;

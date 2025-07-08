@@ -76,8 +76,12 @@ const NavigationBar = () => {
       </nav>
 
       {/* Top Navbar */}
+
       <div className="w3-top">
-        <div className="w3-bar w3-theme-d2 w3-left-align">
+        <div
+          className="w3-bar w3-theme-d2 w3-left-align w3-content"
+          style={{ maxWidth: "1440px" }}
+        >
           <button
             className="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2"
             onClick={openNav}

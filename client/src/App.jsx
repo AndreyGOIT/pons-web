@@ -12,7 +12,7 @@ function App() {
   const showHeader = location.pathname === "/";
 
   return (
-    <div id="myPage" className="w3-light-grey min-h-screen flex flex-col">
+    <div id="myPage" className="w3-light-grey fullscreen">
       <NavigationBar />
       {showHeader && <Header />}
       <main className="flex-grow">

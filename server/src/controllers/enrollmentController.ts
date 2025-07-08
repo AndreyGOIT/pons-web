@@ -66,11 +66,11 @@ export const markInvoiceAsPaid = async (req: Request, res: Response): Promise<vo
       where: { id },
       relations: { user: true }, // подтягиваем пользователя
     });
-
     if (!enrollment) {
       res.status(404).json({ message: 'Enrollment not found' });
       return;
     }
+    console.log("✅ PATCH вызван, userId:", userId, " enrollment.user.id:", enrollment.user.id);
 
     if (enrollment.user.id !== userId) {
       res.status(403).json({ message: 'Forbidden: Cannot mark another user\'s enrollment' });
