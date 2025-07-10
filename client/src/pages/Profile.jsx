@@ -154,7 +154,7 @@ function Profile() {
 
   return (
     <div
-      className="w3-container w3-light-gray w3-padding-24"
+      className="w3-container w3-light-gray w3-padding-24 w3-margin-top"
       style={{ minHeight: "100vh" }}
     >
       <div
@@ -198,19 +198,23 @@ function Profile() {
           {enrollments.length > 0 ? (
             <ul className="w3-ul w3-card-2">
               {enrollments.map((e) => (
-                <li key={e.id} className="w3-padding">
-                  <strong>{e.course?.title || "Без названия"}</strong>
+                <li key={e.id} className="w3-padding-16">
+                  <header className="w3-container-fluid w3-padding w3-light-grey">
+                    <strong>{e.course?.title || "Без названия"}</strong>
+                  </header>
                   <div className="w3-small w3-margin-top">
                     <div className="w3-margin-bottom">
-                      <label className="w3-margin-right">
+                      <p>
                         <input
                           type="checkbox"
                           checked={!!e.invoiceSent}
-                          disabled
+                          // disabled
                         />{" "}
-                        Счёт выставлен
-                      </label>
-                      <label className="w3-margin-right">
+                        <label className="w3-margin-right">
+                          Счёт выставлен
+                        </label>
+                      </p>
+                      {/* <label className="w3-margin-right">
                         <input
                           type="checkbox"
                           checked={!!e.invoicePaid}
@@ -225,9 +229,89 @@ function Profile() {
                           disabled
                         />{" "}
                         Подтверждено админом
-                      </label>
+                      </label> */}
                     </div>
-                    {e.invoiceSentDate && (
+                    <table class="w3-table-all ">
+                      {e.invoiceSentDate && (
+                        <tr>
+                          <td>📅 Дата счёта:</td>
+                          <td>
+                            {new Date(e.invoiceSentDate).toLocaleDateString(
+                              "ru-RU"
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      {e.invoiceAmount > 0 && (
+                        <tr>
+                          <td>💰 Сумма:</td>
+                          <td>{e.invoiceAmount} €</td>
+                        </tr>
+                      )}
+                      {e.paymentIban && (
+                        <tr>
+                          <td>🏦 IBAN:</td>
+                          <td>{e.paymentIban}</td>
+                        </tr>
+                      )}
+                      {e.paymentReference && (
+                        <tr>
+                          <td>📌 Назначение: </td>
+                          <td>{e.paymentReference}</td>
+                        </tr>
+                      )}
+                      {e.invoiceDueDate && (
+                        <tr>
+                          <td>⏳ Крайний срок:</td>
+                          <td>
+                            {new Date(e.invoiceDueDate).toLocaleDateString(
+                              "ru-RU"
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      {e.userPaymentMarkedAt && (
+                        <tr>
+                          <td>🕒 Отмечено как оплачено:</td>
+                          <td>
+                            {new Date(e.userPaymentMarkedAt).toLocaleDateString(
+                              "ru-RU"
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      {e.adminConfirmedAt && (
+                        <tr>
+                          <td>✅ Подтверждено админом:</td>
+                          <td>
+                            {new Date(e.adminConfirmedAt).toLocaleDateString(
+                              "ru-RU"
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </table>
+                    <div className="w3-small w3-margin-top">
+                      <div className="w3-margin-bottom">
+                        <label className="w3-margin-right">
+                          <input
+                            type="checkbox"
+                            checked={!!e.invoicePaid}
+                            onChange={() => handleMarkAsPaid(e.id)}
+                          />{" "}
+                          Оплачено пользователем
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={!!e.paymentConfirmedByAdmin}
+                            disabled
+                          />{" "}
+                          Подтверждено админом
+                        </label>
+                      </div>
+                    </div>
+                    {/* {e.invoiceSentDate && (
                       <p className="w3-text-grey">
                         📅 Дата счёта:{" "}
                         {new Date(e.invoiceSentDate).toLocaleDateString(
@@ -269,9 +353,9 @@ function Profile() {
                           "ru-RU"
                         )}
                       </p>
-                    )}
+                    )} */}
                   </div>
-                  <div className="w3-margin-top">
+                  <footer className="w3-container-fluid w3-padding w3-dark-grey w3-margin-top">
                     <button
                       onClick={() => handleCancelEnrollment(e.id)}
                       className="w3-button w3-small w3-red w3-hover-pale-red"
@@ -279,7 +363,7 @@ function Profile() {
                     >
                       Отменить регистрацию
                     </button>
-                  </div>
+                  </footer>
                 </li>
               ))}
             </ul>
