@@ -1,27 +1,40 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-
-const courses = {
-  KN: { id: "1", title: "Kuntonyrkkeily" },
-  NUORISO: { id: "2", title: "Nuoriso ryhmä" },
-  KILPA: { id: "3", title: "Kilparyhmä" },
-};
+//----hardcoded data for testing
+// const courses = {
+//   KN: { id: "1", title: "Kuntonyrkkeily" },
+//   NUORISO: { id: "2", title: "Nuoriso ryhmä" },
+//   KILPA: { id: "3", title: "Kilparyhmä" },
+// };
 
 const NewHome = () => {
   const { user } = useContext(AuthContext); // Предполагается, что user = { id, name, email, ... }
   console.log("User from AuthContext:", user);
+  const [courses, setCourses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleOpenModal = (courseKey) => {
+  // Fetch courses from the server
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const res = await fetch("/api/courses");
+      const data = await res.json();
+      console.log("data - courses: ", data);
+      setCourses(data);
+    };
+    fetchCourses();
+  }, []);
+
+  const handleOpenModal = (course) => {
     if (!user) {
       alert("Kirjaudu ensin sisään ilmoittautuaksesi.");
       return;
     }
     console.log("user в сеансе выбора курса существует: ", user);
-    setSelectedCourse(courses[courseKey]);
+    setSelectedCourse(course);
+    // setSelectedCourse(courses[courseKey]);
     setIsModalOpen(true);
   };
 
@@ -154,7 +167,23 @@ const NewHome = () => {
         <p>Choose the best plan for your needs</p>
 
         <div className="w3-row-padding w3-margin-top">
-          <div className="w3-third w3-card w3-padding w3-margin-bottom">
+          {courses.map((course) => (
+            <div
+              key={course.id}
+              className="w3-third w3-card w3-padding w3-margin-bottom"
+            >
+              <h3>{course.title}</h3>
+              <p className="w3-large">€{course.price} / syyskausi</p>
+              <p>{course.description}</p>
+              <button
+                className="w3-button w3-teal w3-round"
+                onClick={() => handleOpenModal(course)}
+              >
+                Sign Up
+              </button>
+            </div>
+          ))}
+          {/* <div className="w3-third w3-card w3-padding w3-margin-bottom">
             <h3>{courses.KN.title} / KN</h3>
             <p className="w3-large">€175 / syyskausi</p>
             <p>
@@ -193,7 +222,7 @@ const NewHome = () => {
             >
               Sign Up
             </button>
-          </div>
+          </div> */}
         </div>
       </section>
 
