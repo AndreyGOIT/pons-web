@@ -88,34 +88,34 @@ const NavigationBar = () => {
           >
             <i className="fa fa-bars"></i>
           </button>
-          <a href="#" className="w3-bar-item w3-button w3-teal">
-            <i className="fa fa-home w3-margin-right"></i>Logo
-          </a>
           <a
-            href="#team"
-            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
+            href="#"
+            className="w3-bar-item w3-button w3-padding-0 w3-theme-d2"
           >
-            Team
-          </a>
-          <a
-            href="#work"
-            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
-          >
-            Work
-          </a>
-          <a
-            href="#pricing"
-            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
-          >
-            Price
-          </a>
-          <a
-            href="#contact"
-            className="w3-bar-item w3-button w3-hide-small w3-hover-white"
-          >
-            Contact
+            <img src="/images/pons_logo.jpg" alt="pons_logo" width={"50px"} />
           </a>
 
+          <div className="w3-bar-item" style={{ marginTop: "5px" }}>
+            <a href="#team" className=" w3-button w3-hide-small w3-hover-white">
+              Team
+            </a>
+            <a href="#work" className=" w3-button w3-hide-small w3-hover-white">
+              Work
+            </a>
+            <a
+              href="#pricing"
+              className=" w3-button w3-hide-small w3-hover-white"
+            >
+              Price
+            </a>
+            <a
+              href="#contact"
+              className=" w3-button w3-hide-small w3-hover-white"
+            >
+              Contact
+            </a>
+          </div>
+          {/* block of code for login and register */}
           <div className="w3-bar-item w3-right w3-hide-small">
             {!isAuthenticated ? (
               <>

@@ -8,8 +8,8 @@ const Header = () => {
       {/* Hero image */}
       <div className="w3-display-container w3-animate-opacity">
         <img
-          src="https://www.w3schools.com/w3images/sailboat.jpg"
-          alt="boat"
+          src="/images/pons_nyrkkeilysali_2025.jpg"
+          alt="nyrkkeilysali"
           style={{ width: "100%", minHeight: "350px", maxHeight: "600px" }}
         />
         <div className="w3-container w3-display-bottomleft w3-margin-bottom">

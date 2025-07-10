@@ -70,7 +70,7 @@ const NewHome = () => {
   };
 
   return (
-    <div>
+    <div className="w3-container w3-content" style={{ maxWidth: "1400px" }}>
       {/* Team Section */}
       <section className="w3-container w3-padding-64 w3-center" id="team">
         <h2 className="w3-text-teal">Our Team</h2>
