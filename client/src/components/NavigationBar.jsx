@@ -77,10 +77,15 @@ const NavigationBar = () => {
 
       {/* Top Navbar */}
 
-      <div className="w3-top">
+      <div className="w3-bar w3-theme-d2 w3-left-align">
         <div
-          className="w3-bar w3-theme-d2 w3-left-align w3-content"
-          style={{ maxWidth: "1440px" }}
+          style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+          }}
         >
           <button
             className="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2"
@@ -116,7 +121,10 @@ const NavigationBar = () => {
             </a>
           </div>
           {/* block of code for login and register */}
-          <div className="w3-bar-item w3-right w3-hide-small">
+          <div
+            className="w3-bar-item w3-hide-small"
+            style={{ marginLeft: "auto" }}
+          >
             {!isAuthenticated ? (
               <>
                 <button
