@@ -92,35 +92,35 @@ const NewHome = () => {
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-third">
             <img
-              src="https://www.w3schools.com/w3images/team1.jpg"
+              src="https://www.w3schools.com/w3images/avatar.jpg"
               alt="Member 1"
-              style={{ width: "100%" }}
+              style={{ width: "45%" }}
               className="w3-circle w3-hover-opacity"
             />
-            <h3>Anna Smith</h3>
-            <p>CEO &amp; Founder</p>
+            <h3>Mika Vuorinen</h3>
+            <p>Puheenjohtaja &amp; vetäjä</p>
           </div>
 
           <div className="w3-third">
             <img
-              src="https://www.w3schools.com/w3images/team2.jpg"
+              src="https://www.w3schools.com/w3images/avatar.jpg"
               alt="Member 2"
-              style={{ width: "100%" }}
+              style={{ width: "45%" }}
               className="w3-circle w3-hover-opacity"
             />
-            <h3>John Doe</h3>
-            <p>Lead Developer</p>
+            <h3>Andy Erokhin</h3>
+            <p>KN-ryhmän vetäjä</p>
           </div>
 
           <div className="w3-third">
             <img
-              src="https://www.w3schools.com/w3images/team3.jpg"
+              src="https://www.w3schools.com/w3images/avatar.jpg"
               alt="Member 3"
-              style={{ width: "100%" }}
+              style={{ width: "45%" }}
               className="w3-circle w3-hover-opacity"
             />
-            <h3>Mary Johnson</h3>
-            <p>Marketing Specialist</p>
+            <h3>Dimi Zuravel</h3>
+            <p>Nuorten ja kilpa ryhmienn vetäjä</p>
           </div>
         </div>
       </section>
@@ -132,7 +132,7 @@ const NewHome = () => {
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-third w3-margin-bottom">
             <img
-              src="https://www.w3schools.com/w3images/work1.jpg"
+              src="https://www.w3schools.com/w3images/snow.jpg"
               alt="Project 1"
               style={{ width: "100%" }}
             />
@@ -142,7 +142,7 @@ const NewHome = () => {
 
           <div className="w3-third w3-margin-bottom">
             <img
-              src="https://www.w3schools.com/w3images/work2.jpg"
+              src="https://www.w3schools.com/w3images/lights.jpg"
               alt="Project 2"
               style={{ width: "100%" }}
             />
@@ -152,7 +152,7 @@ const NewHome = () => {
 
           <div className="w3-third w3-margin-bottom">
             <img
-              src="https://www.w3schools.com/w3images/work3.jpg"
+              src="https://www.w3schools.com/w3images/mountains.jpg"
               alt="Project 3"
               style={{ width: "100%" }}
             />

@@ -50,6 +50,7 @@ function Profile() {
         if (!res.ok) throw new Error("Ошибка при получении регистраций");
 
         const data = await res.json();
+        console.log("Регистрации пользователя:", data);
         setEnrollments(data);
       } catch (err) {
         console.error("Ошибка при получении регистраций:", err);
@@ -106,6 +107,7 @@ function Profile() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
@@ -154,12 +156,17 @@ function Profile() {
 
   return (
     <div
-      className="w3-container w3-light-gray w3-padding-24 w3-margin-top"
-      style={{ minHeight: "100vh" }}
+      className="w3-container w3-light-gray w3-padding-24"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+      }}
     >
       <div
-        className="w3-card-4 w3-white w3-round-large w3-padding-large w3-margin-auto"
-        style={{ maxWidth: "480px" }}
+        className="w3-card-4 w3-white w3-round-large w3-padding-large"
+        style={{ maxWidth: "480px", width: "100%" }}
       >
         <div className="w3-center">
           <img
@@ -208,6 +215,7 @@ function Profile() {
                         <input
                           type="checkbox"
                           checked={!!e.invoiceSent}
+                          readOnly
                           // disabled
                         />{" "}
                         <label className="w3-margin-right">
@@ -231,66 +239,77 @@ function Profile() {
                         Подтверждено админом
                       </label> */}
                     </div>
-                    <table class="w3-table-all ">
-                      {e.invoiceSentDate && (
-                        <tr>
-                          <td>📅 Дата счёта:</td>
-                          <td>
-                            {new Date(e.invoiceSentDate).toLocaleDateString(
-                              "ru-RU"
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                      {e.invoiceAmount > 0 && (
-                        <tr>
-                          <td>💰 Сумма:</td>
-                          <td>{e.invoiceAmount} €</td>
-                        </tr>
-                      )}
-                      {e.paymentIban && (
-                        <tr>
-                          <td>🏦 IBAN:</td>
-                          <td>{e.paymentIban}</td>
-                        </tr>
-                      )}
-                      {e.paymentReference && (
-                        <tr>
-                          <td>📌 Назначение: </td>
-                          <td>{e.paymentReference}</td>
-                        </tr>
-                      )}
-                      {e.invoiceDueDate && (
-                        <tr>
-                          <td>⏳ Крайний срок:</td>
-                          <td>
-                            {new Date(e.invoiceDueDate).toLocaleDateString(
-                              "ru-RU"
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                      {e.userPaymentMarkedAt && (
-                        <tr>
-                          <td>🕒 Отмечено как оплачено:</td>
-                          <td>
-                            {new Date(e.userPaymentMarkedAt).toLocaleDateString(
-                              "ru-RU"
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                      {e.adminConfirmedAt && (
-                        <tr>
-                          <td>✅ Подтверждено админом:</td>
-                          <td>
-                            {new Date(e.adminConfirmedAt).toLocaleDateString(
-                              "ru-RU"
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                    </table>
+                    <div className="w3-card w3-white w3-round-large w3-padding-16 w3-margin-top">
+                      <h4 className="w3-center w3-text-dark-gray">
+                        🧾 Данные для оплаты регистрации
+                      </h4>
+                      <table className="w3-table w3-bordered w3-striped w3-hoverable w3-small w3-margin-top">
+                        <tbody>
+                          {e.invoiceSentDate && (
+                            <tr>
+                              <td>📅 Дата счёта</td>
+                              <td>
+                                {new Date(e.invoiceSentDate).toLocaleDateString(
+                                  "ru-RU"
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                          {e.invoiceAmount > 0 && (
+                            <tr>
+                              <td>💰 Сумма</td>
+                              <td className="w3-text-green w3-large">
+                                {e.invoiceAmount} €
+                              </td>
+                            </tr>
+                          )}
+                          {e.paymentIban && (
+                            <tr>
+                              <td>🏦 IBAN</td>
+                              <td>
+                                <strong>{e.paymentIban}</strong>
+                              </td>
+                            </tr>
+                          )}
+                          {e.paymentReference && (
+                            <tr>
+                              <td>📌 Назначение платежа</td>
+                              <td>{e.paymentReference}</td>
+                            </tr>
+                          )}
+                          {e.invoiceDueDate && (
+                            <tr>
+                              <td>⏳ Крайний срок</td>
+                              <td>
+                                {new Date(e.invoiceDueDate).toLocaleDateString(
+                                  "ru-RU"
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                          {e.userPaymentMarkedAt && (
+                            <tr className="w3-pale-yellow">
+                              <td>🕒 Отмечено как оплачено</td>
+                              <td>
+                                {new Date(
+                                  e.userPaymentMarkedAt
+                                ).toLocaleDateString("ru-RU")}
+                              </td>
+                            </tr>
+                          )}
+                          {e.adminConfirmedAt && (
+                            <tr className="w3-pale-green">
+                              <td>✅ Подтверждено админом</td>
+                              <td>
+                                {new Date(
+                                  e.adminConfirmedAt
+                                ).toLocaleDateString("ru-RU")}
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                     <div className="w3-small w3-margin-top">
                       <div className="w3-margin-bottom">
                         <label className="w3-margin-right">

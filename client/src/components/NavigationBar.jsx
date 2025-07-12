@@ -9,7 +9,7 @@ const NavigationBar = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, login, logout } = useAuth(); // <-- получаем из контекста
+  const { user, login, logout } = useAuth(); // <-- получаем из контекста
 
   const openNav = () => setSidebarOpen(true);
   const closeNav = () => setSidebarOpen(false);
@@ -19,7 +19,7 @@ const NavigationBar = () => {
     <>
       {/* Sidebar */}
       <nav
-        className="w3-sidebar w3-bar-block w3-white w3-card w3-animate-left w3-xxlarge"
+        className="w3-sidebar w3-bar-block w3-white w3-card w3-animate-left w3-xlarge"
         style={{ display: sidebarOpen ? "block" : "none", zIndex: 2 }}
         id="mySidebar"
       >
@@ -42,7 +42,7 @@ const NavigationBar = () => {
           Contact
         </a>
 
-        {!isAuthenticated ? (
+        {!user ? (
           <>
             <button
               className="w3-bar-item w3-button"
@@ -66,6 +66,7 @@ const NavigationBar = () => {
               className="w3-bar-item w3-button"
               onClick={() => {
                 logout();
+                closeNav();
                 navigate("/");
               }}
             >
@@ -125,7 +126,27 @@ const NavigationBar = () => {
             className="w3-bar-item w3-hide-small"
             style={{ marginLeft: "auto" }}
           >
-            {!isAuthenticated ? (
+            {user ? (
+              <div>
+                <span>Welcome, {user.name}!</span>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <button onClick={() => setShowLoginModal(true)}>Login</button>
+                <button onClick={() => setShowRegisterModal(true)}>
+                  Register
+                </button>
+              </>
+            )}
+            {/* {!isAuthenticated ? (
               <>
                 <button
                   className="w3-button w3-hover-white"
@@ -158,7 +179,7 @@ const NavigationBar = () => {
                   Logout
                 </button>
               </>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -166,8 +187,8 @@ const NavigationBar = () => {
       {showLoginModal && (
         <LoginModal
           onClose={() => setShowLoginModal(false)}
-          onSuccess={(token) => {
-            login(token); // <-- вызываем login из контекста
+          onSuccess={({ token, user }) => {
+            login(token, user); // <-- вызываем login из контекста
             setShowLoginModal(false);
             setTimeout(() => {
               navigate("/profile");
@@ -179,8 +200,8 @@ const NavigationBar = () => {
       {showRegisterModal && (
         <RegisterModal
           onClose={() => setShowRegisterModal(false)}
-          onSuccess={(token) => {
-            login(token); // <-- вызываем login из контекста
+          onSuccess={({ token, user }) => {
+            login(token, user);
             setShowRegisterModal(false);
             navigate("/profile");
           }}

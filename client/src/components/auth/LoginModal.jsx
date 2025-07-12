@@ -48,20 +48,20 @@ const LoginModal = ({ onClose, onSuccess }) => {
       });
 
       const data = await res.json();
-
+      const { token, user } = data;
       if (!res.ok) {
         setError(data.message || "Login failed");
         return;
       }
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", token);
       console.log(
         "Token as a result of login saved:",
         localStorage.getItem("token")
       );
       setEmail("");
       setPassword("");
-      onSuccess(data.token);
+      onSuccess({ token, user });
     } catch (err) {
       console.error(err);
       setError("Something went wrong");

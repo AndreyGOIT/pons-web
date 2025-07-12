@@ -59,24 +59,25 @@ const RegisterModal = ({ onClose, onSuccess }) => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          role: "client",
         }),
       });
 
       const data = await res.json();
-
+      const { token, user } = data;
       if (!res.ok) {
         setError(data.message || "Registration failed");
         return;
       }
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", token);
       setFormData({
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
       });
-      onSuccess();
+      onSuccess({ token, user });
     } catch (err) {
       console.error(err);
       setError("Something went wrong");
