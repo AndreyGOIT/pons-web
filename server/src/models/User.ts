@@ -29,6 +29,9 @@ export class User {
   @Column()
   password!: string;
 
+  @Column({ nullable: true })
+  phoneNumber?: string;
+
   @Column({
     type: 'text',
     default: UserRole.CLIENT,

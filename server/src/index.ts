@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 5050;
 
 app.use('/public', express.static('public'));
 app.use(express.json());
+app.use('/api/admin', adminRoutes);
 app.use('/api/admin/users', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);

@@ -1,13 +1,10 @@
 // src/types/express/index.d.ts
-// import { UserRole } from '../../models/User'; // Или путь к вашей сущности User
+import { User } from '../../models/User';
 
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       user?: {
-//         id: number;
-//         role: UserRole;
-//       };
-//     }
-//   }
-// }
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}

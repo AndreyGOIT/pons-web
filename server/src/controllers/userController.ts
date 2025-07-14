@@ -7,12 +7,12 @@ import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
 import jwt from 'jsonwebtoken';
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: number;
-    role: UserRole;
-  };
-}
+// interface AuthenticatedRequest extends Request {
+//   user?: {
+//     id: number;
+//     role: UserRole;
+//   };
+// }
 
 const userRepo = AppDataSource.getRepository(User);
 //user registration
@@ -92,7 +92,7 @@ console.log('проверка пароля, что он верный:', isValid)
   }
 };
 
-export const getCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
   console.log('✅ getCurrentUser called with req.user:', req.user);
 
   if (!req.user) {
@@ -169,7 +169,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   };
   
   // Обновить пользователя
-  export const updateCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
     const userId = Number((req.user as any)?.id);
     if (!userId) {
       res.status(401).json({ message: "Not authenticated" });
@@ -208,7 +208,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   };
   
   // Удалить пользователя
-  export const deleteCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  export const deleteCurrentUser = async (req: Request, res: Response): Promise<void> => {
     const userId = Number((req.user as any)?.id);
     if (!userId) {
       res.status(401).json({ message: "Not authenticated" });
