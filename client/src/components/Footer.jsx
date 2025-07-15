@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth"; // <-- импортируем хук из контекста
+import AdminLoginModal from "./auth/AdminLoginModal";
 
 const Footer = () => {
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth(); // <-- получаем из контекста
   return (
     <div>
       {/*<!-- Footer -->*/}
@@ -48,6 +54,13 @@ const Footer = () => {
           </a>
         </p>
 
+        <button
+          className="w3-bar-item w3-button"
+          onClick={() => setShowAdminLoginModal(true)}
+        >
+          AdminLogin
+        </button>
+
         <div
           style={{ position: "relative", bottom: "100px", zIndex: "1" }}
           className="w3-tooltip w3-right"
@@ -62,6 +75,19 @@ const Footer = () => {
           </a>
         </div>
       </footer>
+      {/* Login Modal */}
+      {showAdminLoginModal && (
+        <AdminLoginModal
+          onClose={() => setShowAdminLoginModal(false)}
+          onSuccess={({ token, user }) => {
+            login(token, user); // <-- вызываем login из контекста
+            setShowAdminLoginModal(false);
+            setTimeout(() => {
+              navigate("/adminpanel");
+            }, 0);
+          }}
+        />
+      )}
     </div>
   );
 };
