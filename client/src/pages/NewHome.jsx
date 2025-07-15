@@ -319,7 +319,7 @@ const NewHome = () => {
       </section>
       {/*<!-- Image of location/map -->*/}
       <img
-        src="/client/public/images/Porvoon_Urheiluhalli.png"
+        src="/images/Porvoon_Urheiluhalli.png"
         // src="https://www.w3schools.com/w3images/map.jpg"
         className="w3-image w3-greyscale-min"
         style={{ width: "100%" }}

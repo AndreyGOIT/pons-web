@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import LoginModal from "./auth/LoginModal";
 import RegisterModal from "./auth/RegisterModal";
 import { useNavigate } from "react-router-dom";
@@ -94,14 +95,16 @@ const NavigationBar = () => {
           >
             <i className="fa fa-bars"></i>
           </button>
-          <a
-            href="#"
-            className="w3-bar-item w3-button w3-padding-0 w3-theme-d2"
-          >
-            <img src="/images/pons_logo.jpg" alt="pons_logo" width={"50px"} />
-          </a>
 
-          <div className="w3-bar-item" style={{ marginTop: "5px" }}>
+          <Link
+            to="/"
+            className="w3-bar-item w3-button "
+            style={{ marginLeft: "10px", padding: "5px" }}
+          >
+            <img src="/images/pons_logo.jpg" alt="pons_logo" width="50px" />
+          </Link>
+
+          <div className="w3-bar-item" style={{ marginTop: "3px" }}>
             <a href="#team" className=" w3-button w3-hide-small w3-hover-white">
               Team
             </a>
@@ -141,7 +144,10 @@ const NavigationBar = () => {
             ) : (
               <>
                 <button onClick={() => setShowLoginModal(true)}>Login</button>
-                <button onClick={() => setShowRegisterModal(true)}>
+                <button
+                  onClick={() => setShowRegisterModal(true)}
+                  style={{ marginLeft: 3 }}
+                >
                   Register
                 </button>
               </>

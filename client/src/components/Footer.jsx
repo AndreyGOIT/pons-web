@@ -1,86 +1,65 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth"; // <-- импортируем хук из контекста
+import { useAuth } from "../context/useAuth";
 import AdminLoginModal from "./auth/AdminLoginModal";
 
 const Footer = () => {
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // <-- получаем из контекста
+  const { login } = useAuth();
+
   return (
     <div>
-      {/*<!-- Footer -->*/}
       <footer className="w3-container w3-padding-32 w3-theme-d1 w3-center">
-        <h4>Follow Us</h4>
-        <a
-          className="w3-button w3-large w3-teal"
-          href="javascript:void(0)"
-          title="Facebook"
-        >
-          <i className="fa fa-facebook"></i>
-        </a>
-        <a
-          className="w3-button w3-large w3-teal"
-          href="javascript:void(0)"
-          title="Twitter"
-        >
-          <i className="fa fa-twitter"></i>
-        </a>
-        <a
-          className="w3-button w3-large w3-teal"
-          href="javascript:void(0)"
-          title="Google +"
-        >
-          <i className="fa fa-google-plus"></i>
-        </a>
-        <a
-          className="w3-button w3-large w3-teal"
-          href="javascript:void(0)"
-          title="Google +"
-        >
-          <i className="fa fa-instagram"></i>
-        </a>
-        <a
-          className="w3-button w3-large w3-teal w3-hide-small"
-          href="javascript:void(0)"
-          title="Linkedin"
-        >
-          <i className="fa fa-linkedin"></i>
-        </a>
-        <p>
-          Powered by{" "}
-          <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">
-            w3.css
+        <h4>Seuraa meitä / Follow us</h4>
+
+        <div className="w3-margin-bottom">
+          <a
+            className="w3-button w3-large w3-theme-d3 w3-hover-opacity"
+            href="https://www.facebook.com/porvoonnyrkkeilyseura"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Facebook"
+          >
+            <i className="fab fa-facebook-f"></i>
           </a>
+          <a
+            className="w3-button w3-large w3-theme-d3 w3-hover-opacity"
+            href="#"
+            title="Instagram (soon)"
+          >
+            <i className="fab fa-instagram"></i>
+          </a>
+          {/* Добавь другие соцсети, если нужно */}
+        </div>
+
+        {/* <p className="w3-small">
+          &copy; {new Date().getFullYear()} Porvoon Nyrkkeilyseura ry
         </p>
+        <p className="w3-small">
+          Powered by{" "}
+          <a
+            href="https://www.w3schools.com/w3css/default.asp"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            W3.CSS
+          </a>
+        </p> */}
 
         <button
-          className="w3-bar-item w3-button"
+          className="w3-button w3-small w3-theme-l3 w3-hover-theme w3-margin-top w3-hide-small"
           onClick={() => setShowAdminLoginModal(true)}
         >
-          AdminLogin
+          Admin Login
         </button>
-
-        <div
-          style={{ position: "relative", bottom: "100px", zIndex: "1" }}
-          className="w3-tooltip w3-right"
-        >
-          <span className="w3-text w3-padding w3-teal w3-hide-small">
-            Go To Top
-          </span>
-          <a className="w3-button w3-theme" href="#myPage">
-            <span className="w3-xlarge">
-              <i className="fa fa-chevron-circle-up"></i>
-            </span>
-          </a>
-        </div>
       </footer>
-      {/* Login Modal */}
+
       {showAdminLoginModal && (
         <AdminLoginModal
           onClose={() => setShowAdminLoginModal(false)}
           onSuccess={({ token, user }) => {
-            login(token, user); // <-- вызываем login из контекста
+            login(token, user);
             setShowAdminLoginModal(false);
             setTimeout(() => {
               navigate("/adminpanel");

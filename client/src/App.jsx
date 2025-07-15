@@ -4,6 +4,7 @@ import AppRoutes from "./routes/AppRoutes";
 import NavigationBar from "./components/NavigationBar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 function App() {
   const location = useLocation();
@@ -19,6 +20,7 @@ function App() {
         <AppRoutes />
       </main>
       <Footer />
+      <ScrollToTopButton />
     </div>
   );
 }
