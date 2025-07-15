@@ -49,8 +49,8 @@ export const initializeDatabase = async () => {
 
     const courseCount = await AppDataSource.getRepository(Course).count();
     if (courseCount === 0) {
-      const autumnStart = '2025-08-25';
-      const autumnEnd = '2025-12-12';
+      const autumnStart = new Date(2025, 7, 25).toISOString(); // Месяц — с нуля
+      const autumnEnd = new Date(2025, 11, 12).toISOString();
 
       const courses = [
         {

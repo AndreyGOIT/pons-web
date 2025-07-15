@@ -161,68 +161,44 @@ const NewHome = () => {
           </div>
         </div>
       </section>
-      {/* Pricing */}
+      {/* Harjoituskurssit / Hinnasto */}
       <section className="w3-container w3-padding-64 w3-center" id="pricing">
-        <h2 className="w3-text-teal">Pricing</h2>
-        <p>Choose the best plan for your needs</p>
+        <h2 className="w3-text-teal">Kurssit ja hinnasto</h2>
+        <p className="w3-large">Valitse sinulle sopiva harjoitusryhmä</p>
 
-        <div className="w3-row-padding w3-margin-top">
+        <div className="w3-row-padding w3-margin-top w3-center">
           {courses.map((course) => (
-            <div
-              key={course.id}
-              className="w3-third w3-card w3-padding w3-margin-bottom"
-            >
-              <h3>{course.title}</h3>
-              <p className="w3-large">€{course.price} / syyskausi</p>
-              <p>{course.description}</p>
-              <button
-                className="w3-button w3-teal w3-round"
-                onClick={() => handleOpenModal(course)}
-              >
-                Sign Up
-              </button>
+            <div key={course.id} className="w3-third w3-margin-bottom">
+              <ul className="w3-ul w3-border w3-hover-shadow w3-white w3-card-4">
+                <li className="w3-theme w3-padding-16">
+                  <p className="w3-xlarge w3-margin-0">{course.title}</p>
+                </li>
+                <li className="w3-padding-16">
+                  <p>{course.description}</p>
+                </li>
+                <li className="w3-padding-16">
+                  <h2 className="w3-wide">
+                    <i className="fa fa-eur"></i> {course.price}
+                  </h2>
+                  <span className="w3-opacity">/ syyskausi</span>
+                </li>
+                <li className="w3-padding-16">
+                  <p className="w3-small">
+                    {new Date(course.startDate).toLocaleDateString("fi-FI")} –{" "}
+                    {new Date(course.endDate).toLocaleDateString("fi-FI")}
+                  </p>
+                </li>
+                <li className="w3-theme-l5 w3-padding-24">
+                  <button
+                    className="w3-button w3-teal w3-round-large"
+                    onClick={() => handleOpenModal(course)}
+                  >
+                    <i className="fa fa-check"></i> Ilmoittaudu
+                  </button>
+                </li>
+              </ul>
             </div>
           ))}
-          {/* <div className="w3-third w3-card w3-padding w3-margin-bottom">
-            <h3>{courses.KN.title} / KN</h3>
-            <p className="w3-large">€175 / syyskausi</p>
-            <p>
-              Monipuolinen ja aktiivinen treeni, joten tulet hyvään kuntoon.
-            </p>
-            <p>Ikä: 15 vuotta alkaen</p>
-            <button
-              className="w3-button w3-teal w3-round"
-              onClick={() => handleOpenModal("KN")}
-            >
-              Sign Up
-            </button>
-          </div>
-
-          <div className="w3-third w3-card w3-padding w3-margin-bottom w3-teal w3-text-white">
-            <h3>{courses.NUORISO.title}</h3>
-            <p className="w3-large">€150 / syyskausi</p>
-            <p>Nyrkkeilytreeni ja aktiviteetti nuorisolle</p>
-            <p>Ikä: 10–14 vuotta</p>
-            <button
-              className="w3-button w3-white w3-round"
-              onClick={() => handleOpenModal("NUORISO")}
-            >
-              Sign Up
-            </button>
-          </div>
-
-          <div className="w3-third w3-card w3-padding w3-margin-bottom">
-            <h3>{courses.KILPA.title}</h3>
-            <p className="w3-large">€200 / syyskausi</p>
-            <p>Nyrkkeilytreenit kilpaavalle treenaajalle</p>
-            <p>Ikä: 15 vuotta alkaen</p>
-            <button
-              className="w3-button w3-teal w3-round"
-              onClick={() => handleOpenModal("KILPA")}
-            >
-              Sign Up
-            </button>
-          </div> */}
         </div>
       </section>
 
@@ -308,20 +284,50 @@ const NewHome = () => {
             </form>
           </div>
 
-          <div className="w3-half w3-container">
-            <h3>Our Office</h3>
-            <p>1234 Street Name</p>
-            <p>City, State, ZIP</p>
-            <p>Phone: +1 234 567 890</p>
-            <p>Email: info@example.com</p>
+          <div className="w3-row-padding w3-margin-top w3-light-grey w3-padding-32 w3-half">
+            {/* Harjoituspaikka */}
+            <div className=" w3-container">
+              <h3 className="w3-text-theme">
+                <i className="fa fa-map-marker w3-margin-right"></i>
+                Harjoituspaikka
+              </h3>
+              <p>
+                <strong>Porvoon Urheiluhallin nyrkkeilysali</strong>
+              </p>
+              <p>Sparrenkatu 2, 06100 Porvoo</p>
+              <p className="w3-small w3-text-grey">
+                Sisäänkäynti löytyy Laivurinkadun päädystä.
+              </p>
+            </div>
+
+            {/* Yhteystiedot */}
+            <div className=" w3-container">
+              <h3 className="w3-text-theme">
+                <i className="fa fa-envelope w3-margin-right"></i>Yhteystiedot
+              </h3>
+              <p>
+                <i className="fa fa-user w3-margin-right"></i>Mika Vuorinen,
+                puheenjohtaja
+              </p>
+              <p>
+                <i className="fa fa-envelope w3-margin-right"></i>
+                <a
+                  href="mailto:mika.vuorinen@pons.fi"
+                  className="w3-text-dark-grey"
+                >
+                  mika.vuorinen@pons.fi
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
       {/*<!-- Image of location/map -->*/}
       <img
         src="/images/Porvoon_Urheiluhalli.png"
         // src="https://www.w3schools.com/w3images/map.jpg"
-        className="w3-image w3-greyscale-min"
+        className="w3-image w3-greyscale-min w3-margin-bottom"
         style={{ width: "100%" }}
       />
     </div>
