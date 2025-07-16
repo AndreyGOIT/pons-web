@@ -1,11 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-//----hardcoded data for testing
-// const courses = {
-//   KN: { id: "1", title: "Kuntonyrkkeily" },
-//   NUORISO: { id: "2", title: "Nuoriso ryhmä" },
-//   KILPA: { id: "3", title: "Kilparyhmä" },
-// };
 
 const NewHome = () => {
   const { user } = useContext(AuthContext); // Предполагается, что user = { id, name, email, ... }
@@ -124,43 +118,115 @@ const NewHome = () => {
           </div>
         </div>
       </section>
-      {/* Work Section */}
-      <section className="w3-container w3-padding-64 w3-light-grey" id="work">
-        <h2 className="w3-text-teal w3-center">Our Work</h2>
-        <p className="w3-center">Some examples of our projects</p>
 
-        <div className="w3-row-padding w3-margin-top">
-          <div className="w3-third w3-margin-bottom">
-            <img
-              src="https://www.w3schools.com/w3images/snow.jpg"
-              alt="Project 1"
-              style={{ width: "100%" }}
-            />
-            <h3>Project One</h3>
-            <p>Description of project one.</p>
+      {/*  Koulutuskurssit */}
+      <section
+        className="w3-container w3-padding-64 w3-center"
+        id="koulutuskurssit"
+      >
+        <div className="w3-row-padding w3-padding-64 w3-theme-l1">
+          <div className="w3-quarter">
+            <h2>Harjoitusryhmämme</h2>
+            <p>
+              Etsitkö tavoitteellista treenaamista tai sopivaa ryhmää nuorelle
+              harrastajalle? Tarjoamme laadukkaita harjoitusohjelmia
+              kilpanyrkkeilystä aina nuorisoryhmään ja kilparyhmään. Meillä
+              jokainen löytää paikkansa — oli tavoitteenasi kilpailla, kehittyä
+              tai löytää yhteisö, joka tukee matkaasi. Tule mukaan ja löydä oma
+              polkusi nyrkkeilyn maailmassa!
+            </p>
           </div>
 
-          <div className="w3-third w3-margin-bottom">
-            <img
-              src="https://www.w3schools.com/w3images/lights.jpg"
-              alt="Project 2"
-              style={{ width: "100%" }}
-            />
-            <h3>Project Two</h3>
-            <p>Description of project two.</p>
+          <div className="w3-quarter w3-margin-bottom">
+            <div className="w3-card w3-white">
+              <img
+                src="/images/kn_pons.jpg"
+                alt="kuntonyrkkeily"
+                style={{
+                  width: "100%",
+                  height: "200px", // можно изменить по необходимости
+                  objectFit: "cover",
+                }}
+              />
+              <div className="w3-container">
+                <h3>Kuntonyrkkeily</h3>
+                <h4>Löydä vahvuutesi – hikoile, kehity ja nauti!</h4>
+                <p>
+                  Kuntonyrkkeily on energinen ja mukaansatempaava treenimuoto,
+                  joka kohottaa kuntoa, parantaa kehonhallintaa ja vapauttaa
+                  arjen paineista. Tunnit ovat monipuolisia, innostavia ja
+                  sopivat kaikille – olitpa vasta-alkaja tai kokenut liikkuja.
+                  Tule mukaan ja koe, miten hauskaa treenaaminen voi olla!
+                </p>
+                <p>ikä: 15 vuotta alkaen</p>
+                <p>treenin pituus: 1 tunti 30 min</p>
+                <p>koulutettu vetäjä: Andy Erokhin & Mika Vuorinen</p>
+              </div>
+            </div>
           </div>
 
-          <div className="w3-third w3-margin-bottom">
-            <img
-              src="https://www.w3schools.com/w3images/mountains.jpg"
-              alt="Project 3"
-              style={{ width: "100%" }}
-            />
-            <h3>Project Three</h3>
-            <p>Description of project three.</p>
+          <div className="w3-quarter w3-margin-bottom">
+            <div className="w3-card w3-white">
+              <img
+                src="/images/nuoriso_pons.jpg"
+                alt="nuorten ryhmä"
+                style={{
+                  width: "100%",
+                  height: "200px", // можно изменить по необходимости
+                  objectFit: "cover",
+                }}
+              />
+              <div className="w3-container">
+                <h3>Nuorten ryhmä</h3>
+                <h4>Itsevarmuutta, liikettä ja yhteishenkeä!</h4>
+                <p>
+                  Nuorten ryhmä on suunnattu 12–15-vuotiaille, jotka haluavat
+                  kehittää fyysistä kuntoaan, oppia uusia taitoja ja vahvistaa
+                  itseluottamustaan turvallisessa ja kannustavassa ilmapiirissä.
+                  Harjoituksissa yhdistyvät liikunnan ilo, itsekurin opettelu ja
+                  ryhmähengen voima. Tule mukaan – täällä kasvetaan vahvoiksi
+                  sekä keholta että mieleltä!
+                </p>
+                {/* <p>ikä: 12 - 15 vuotta</p> */}
+                <p>treeni: 1 tunti kahdesti viikossa</p>
+                <p>
+                  koulutettu vetäjä: Dimi Zuravel, Andy Erokhin, Mika Vuorinen
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="w3-quarter w3-margin-bottom">
+            <div className="w3-card w3-white">
+              <img
+                src="/images/kilpa_pons.jpg"
+                alt="kilparyhmä"
+                style={{
+                  width: "100%",
+                  height: "200px", // можно изменить по необходимости
+                  objectFit: "cover",
+                }}
+              />
+              <div className="w3-container">
+                <h3>Kilpa ryhmä</h3>
+                <h4>Tavoitteellista harjoittelua ja vahvaa asennetta!</h4>
+                <p>
+                  Kilparyhmä on tarkoitettu niille, joilla on intohimo kehittyä
+                  nyrkkeilijänä ja kilpailla tavoitteellisesti. Harjoituksissa
+                  keskitytään tekniseen osaamiseen, fyysiseen kuntoon ja
+                  henkiseen vahvuuteen. Valmennus on ammattimaista ja
+                  yksilöllisesti ohjattua. Jos olet valmis haastamaan itsesi ja
+                  tähtäät kehään – tämä ryhmä on sinua varten!
+                </p>
+                <p>ikä: 15 vuotta alkaen</p>
+                {/* <p>treeni: 1,5 tuntia kahdesti viikossa</p> */}
+                <p>koulutettu vetäjä: Dimi Zuravel</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
       {/* Harjoituskurssit / Hinnasto */}
       <section className="w3-container w3-padding-64 w3-center" id="pricing">
         <h2 className="w3-text-teal">Kurssit ja hinnasto</h2>

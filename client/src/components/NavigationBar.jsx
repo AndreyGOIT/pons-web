@@ -33,8 +33,8 @@ const NavigationBar = () => {
         <a href="#team" className="w3-bar-item w3-button">
           Team
         </a>
-        <a href="#work" className="w3-bar-item w3-button">
-          Work
+        <a href="#koulutuskurssit" className="w3-bar-item w3-button">
+          Koulutuskurssit
         </a>
         <a href="#pricing" className="w3-bar-item w3-button">
           Price
@@ -108,8 +108,11 @@ const NavigationBar = () => {
             <a href="#team" className=" w3-button w3-hide-small w3-hover-white">
               Team
             </a>
-            <a href="#work" className=" w3-button w3-hide-small w3-hover-white">
-              Work
+            <a
+              href="#koulutuskurssit"
+              className=" w3-button w3-hide-small w3-hover-white"
+            >
+              Koulutuskurssit
             </a>
             <a
               href="#pricing"
