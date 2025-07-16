@@ -5,19 +5,19 @@ import {
   ManyToOne,
   Column,
   CreateDateColumn,
-} from 'typeorm';
-import { User } from './User';
-import { Course } from './Course';
+} from "typeorm";
+import { User } from "./User";
+import { Course } from "./Course";
 
 @Entity()
 export class Enrollment {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true, nullable: false })
   user!: User;
 
-  @ManyToOne(() => Course, { eager: true })
+  @ManyToOne(() => Course, { eager: true, nullable: false })
   course!: Course;
 
   @Column({ default: true })
@@ -26,27 +26,27 @@ export class Enrollment {
   @CreateDateColumn()
   invoiceSentDate!: Date;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-invoiceAmount!: number;
+  @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
+  invoiceAmount!: number;
 
-@Column({ type: 'varchar', length: 34, nullable: true })
-paymentIban!: string;
+  @Column({ type: "varchar", length: 34, nullable: true })
+  paymentIban!: string;
 
-@Column({ type: 'varchar', length: 255, nullable: true })
-paymentReference!: string;
+  @Column({ type: "varchar", length: 255, nullable: true })
+  paymentReference!: string;
 
-@Column({ type: 'datetime', nullable: true })
-invoiceDueDate!: Date;
+  @Column({ type: "datetime", nullable: true })
+  invoiceDueDate!: Date;
 
   @Column({ default: false })
   invoicePaid!: boolean;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: "datetime", nullable: true })
   userPaymentMarkedAt!: Date;
 
   @Column({ default: false })
   paymentConfirmedByAdmin!: boolean;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: "datetime", nullable: true })
   adminConfirmedAt!: Date;
 }

@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
   const [users, setUsers] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
+  // const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -33,7 +34,8 @@ function AdminDashboard() {
 
         setAdmin(data);
         fetchUsers(token);
-        fetchCourses(token);
+        fetchEnrollments(token);
+        // fetchCourses(token);
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
@@ -54,19 +56,37 @@ function AdminDashboard() {
       }
     };
 
-    const fetchCourses = async (token) => {
+    const fetchEnrollments = async (token) => {
       try {
-        const res = await fetch("/api/courses", {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch("/api/enrollments", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
+          },
         });
-        if (!res.ok) throw new Error("Ошибка получения курсов");
+        if (!res.ok) throw new Error("Ошибка получения регистраций");
 
         const data = await res.json();
-        setCourses(data);
+        setEnrollments(data);
       } catch (err) {
         console.error(err);
       }
     };
+
+    // const fetchCourses = async (token) => {
+    //   try {
+    //     const res = await fetch("/api/courses", {
+    //       headers: { Authorization: `Bearer ${token}` },
+    //     });
+    //     if (!res.ok) throw new Error("Ошибка получения курсов");
+
+    //     const data = await res.json();
+    //     setCourses(data);
+    //   } catch (err) {
+    //     console.error(err);
+    //   }
+    // };
 
     fetchAdminData();
   }, [navigate]);
@@ -86,6 +106,40 @@ function AdminDashboard() {
       setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const getUserEnrollments = (userId) =>
+    enrollments.filter((e) => e.user.id === userId);
+
+  const handleToggleConfirm = async (enrollmentId) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`/api/enrollments/${enrollmentId}/confirm`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Ошибка подтверждения");
+
+      // Перезагрузка списка
+      await res.json();
+      // const updated = await res.json();
+      setEnrollments((prev) =>
+        prev.map((e) =>
+          e.id === enrollmentId
+            ? {
+                ...e,
+                paymentConfirmedByAdmin: true,
+                adminConfirmedAt: new Date().toISOString(),
+              }
+            : e
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Не удалось подтвердить оплату.");
     }
   };
 
@@ -122,10 +176,11 @@ function AdminDashboard() {
         <table className="w3-table w3-bordered w3-striped w3-small">
           <thead className="w3-light-grey">
             <tr>
-              <th>Имя</th>
+              <th>Nimi</th>
               <th>Email</th>
-              <th>Роль</th>
-              <th>Действия</th>
+              <th>Roli</th>
+              <th>Kurssi</th>
+              <th>Toiminnot</th>
             </tr>
           </thead>
           <tbody>
@@ -147,12 +202,41 @@ function AdminDashboard() {
                   </span>
                 </td>
                 <td>
+                  {getUserEnrollments(u.id).length === 0 ? (
+                    <em>Нет регистраций</em>
+                  ) : (
+                    getUserEnrollments(u.id).map((enr) => (
+                      <div
+                        key={enr.id}
+                        className="w3-padding-small w3-border w3-round-small w3-margin-bottom"
+                      >
+                        <div>
+                          <strong>Курс:</strong> {enr.course.title}
+                        </div>
+                        <div>
+                          <strong>Сумма:</strong> €{enr.invoiceAmount}
+                        </div>
+                        <div>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={enr.paymentConfirmedByAdmin}
+                              onChange={() => handleToggleConfirm(enr.id)}
+                            />{" "}
+                            Подтверждено
+                          </label>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </td>
+                <td>
                   <button
                     className="w3-button w3-small w3-red w3-round"
                     onClick={() => handleDeleteUser(u.id)}
                     disabled={u.role === "admin"}
                   >
-                    Удалить
+                    X Poista
                   </button>
                 </td>
               </tr>
@@ -162,7 +246,7 @@ function AdminDashboard() {
       </div>
 
       {/* Курсы */}
-      <div className="w3-card w3-white w3-padding w3-round-large">
+      {/* <div className="w3-card w3-white w3-padding w3-round-large">
         <h3>Курсы</h3>
         <table className="w3-table w3-bordered w3-striped w3-small">
           <thead className="w3-light-grey">
@@ -191,7 +275,7 @@ function AdminDashboard() {
         >
           Скачать отчёт по курсам
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

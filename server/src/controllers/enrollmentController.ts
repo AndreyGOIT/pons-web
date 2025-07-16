@@ -1,9 +1,9 @@
 // src/controllers/enrollmentController.ts
-import { Request, Response } from 'express';
-import { AppDataSource } from '../data-source';
-import { Enrollment } from '../models/Enrollment';
-import { User } from '../models/User';
-import { Course } from '../models/Course';
+import { Request, Response } from "express";
+import { AppDataSource } from "../data-source";
+import { Enrollment } from "../models/Enrollment";
+import { User } from "../models/User";
+import { Course } from "../models/Course";
 
 // Получение всех записей
 const enrollmentRepo = AppDataSource.getRepository(Enrollment);
@@ -11,12 +11,15 @@ const userRepo = AppDataSource.getRepository(User);
 const courseRepo = AppDataSource.getRepository(Course);
 
 // POST /enrollments
-export const enrollToCourse = async (req: Request, res: Response): Promise<void> => {
+export const enrollToCourse = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { userId, courseId } = req.body;
   console.log("Запись на курс - userId: ", userId, "courseId: ", courseId);
-  
+
   if (!userId || !courseId) {
-    res.status(400).json({ message: 'userId and courseId are required' });
+    res.status(400).json({ message: "userId and courseId are required" });
     return;
   }
   try {
@@ -24,50 +27,98 @@ export const enrollToCourse = async (req: Request, res: Response): Promise<void>
     const course = await courseRepo.findOneBy({ id: courseId });
 
     if (!user || !course) {
-      res.status(404).json({ message: 'User or course not found' });
+      res.status(404).json({ message: "User or course not found" });
       return;
     }
 
     const existing = await enrollmentRepo.findOne({ where: { user, course } });
     if (existing) {
-      res.status(400).json({ message: 'Already enrolled to this course' });
+      res.status(400).json({ message: "Already enrolled to this course" });
       return;
     }
 
     // Генерация базовых реквизитов
-  const invoiceAmount = 199.00; // 💰 Стоимость курса
-  const paymentIban = 'FI21 1234 5600 0007 85'; // ← пример IBAN
-  const paymentReference = `COURSE-${course.id}-${Date.now()}`;
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + 7); // 7 дней на оплату
+    const invoiceAmount = 199.0; // 💰 Стоимость курса
+    const paymentIban = "FI21 1234 5600 0007 85"; // ← пример IBAN
+    const paymentReference = `COURSE-${course.id}-${Date.now()}`;
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 7); // 7 дней на оплату
 
-  const enrollment = enrollmentRepo.create({
-    user,
-    course,
-    invoiceSent: true,
-    invoiceSentDate: new Date(),
-    invoiceAmount,
-    paymentIban,
-    paymentReference,
-    invoiceDueDate: dueDate,
-  });
-
-  await enrollmentRepo.save(enrollment);
-
-   res.status(201).json({
-    message: 'Enrollment created',
-    enrollment: {
-      id: enrollment.id,
-      courseTitle: course.title,
+    const enrollment = enrollmentRepo.create({
+      user,
+      course,
+      invoiceSent: true,
+      invoiceSentDate: new Date(),
       invoiceAmount,
       paymentIban,
       paymentReference,
-      invoiceDueDate: dueDate.toISOString().split('T')[0],
-    },
-  });
-  
+      invoiceDueDate: dueDate,
+    });
+
+    await enrollmentRepo.save(enrollment);
+
+    res.status(201).json({
+      message: "Enrollment created",
+      enrollment: {
+        id: enrollment.id,
+        courseTitle: course.title,
+        invoiceAmount,
+        paymentIban,
+        paymentReference,
+        invoiceDueDate: dueDate.toISOString().split("T")[0],
+      },
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error enrolling', error: err });
+    res.status(500).json({ message: "Error enrolling", error: err });
+  }
+};
+
+// GET /enrollments
+export const getAllEnrollments = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    console.log("Запрашиваю все регистрации...");
+    const enrollments = await enrollmentRepo.find({
+      relations: {
+        user: true,
+        course: true,
+      },
+    });
+    console.log("Нашел регистрации:", enrollments.length);
+
+    const result = enrollments
+      .filter((e) => e.user && e.course) // ✅ пропускаем "битые" записи
+      .map((e) => ({
+        id: e.id,
+        user: {
+          id: e.user.id,
+          name: e.user.name,
+          email: e.user.email,
+        },
+        course: {
+          id: e.course.id,
+          title: e.course.title,
+        },
+        invoiceSent: e.invoiceSent,
+        invoicePaid: e.invoicePaid,
+        paymentConfirmedByAdmin: e.paymentConfirmedByAdmin,
+        invoiceSentDate: e.invoiceSentDate,
+        invoiceAmount: e.invoiceAmount,
+        paymentIban: e.paymentIban,
+        paymentReference: e.paymentReference,
+        invoiceDueDate: e.invoiceDueDate,
+        userPaymentMarkedAt: e.userPaymentMarkedAt,
+        adminConfirmedAt: e.adminConfirmedAt,
+      }));
+
+    res.json(result);
+  } catch (err) {
+    console.error("Ошибка при получении регистраций:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching all enrollments", error: err });
   }
 };
 
@@ -81,29 +132,39 @@ export const getMyEnrollments = async (req: Request, res: Response) => {
     });
     res.json(enrollments);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching enrollments', error: err });
+    res.status(500).json({ message: "Error fetching enrollments", error: err });
   }
 };
 
 // PATCH /enrollments/:id/mark-paid
-export const markInvoiceAsPaid = async (req: Request, res: Response): Promise<void> => {
+export const markInvoiceAsPaid = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const id = Number(req.params.id);
   const userId = req.user?.id; // предполагаем, что user уже добавлен в req через middleware
 
   try {
-    console.log('PATCH /enrollments/:id/mark-paid', req.params.id);
+    console.log("PATCH /enrollments/:id/mark-paid", req.params.id);
     const enrollment = await enrollmentRepo.findOne({
       where: { id },
       relations: { user: true }, // подтягиваем пользователя
     });
     if (!enrollment) {
-      res.status(404).json({ message: 'Enrollment not found' });
+      res.status(404).json({ message: "Enrollment not found" });
       return;
     }
-    console.log("✅ PATCH вызван, userId:", userId, " enrollment.user.id:", enrollment.user.id);
+    console.log(
+      "✅ PATCH вызван, userId:",
+      userId,
+      " enrollment.user.id:",
+      enrollment.user.id
+    );
 
     if (enrollment.user.id !== userId) {
-      res.status(403).json({ message: 'Forbidden: Cannot mark another user\'s enrollment' });
+      res
+        .status(403)
+        .json({ message: "Forbidden: Cannot mark another user's enrollment" });
       return;
     }
 
@@ -111,22 +172,25 @@ export const markInvoiceAsPaid = async (req: Request, res: Response): Promise<vo
     enrollment.userPaymentMarkedAt = new Date();
 
     await enrollmentRepo.save(enrollment);
-    res.json({ message: 'Invoice marked as paid' });
+    res.json({ message: "Invoice marked as paid" });
   } catch (err) {
     console.error("Error marking invoice as paid:", err);
-    res.status(500).json({ message: 'Error marking payment', error: err });
+    res.status(500).json({ message: "Error marking payment", error: err });
   }
 };
 
 // PATCH /enrollments/:id/confirm
-export const confirmPaymentByAdmin = async (req: Request, res: Response): Promise<void> => {
+export const confirmPaymentByAdmin = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const id = Number(req.params.id);
 
   try {
     const enrollment = await enrollmentRepo.findOneBy({ id });
 
     if (!enrollment) {
-      res.status(404).json({ message: 'Enrollment not found' });
+      res.status(404).json({ message: "Enrollment not found" });
       return;
     }
 
@@ -134,9 +198,9 @@ export const confirmPaymentByAdmin = async (req: Request, res: Response): Promis
     enrollment.adminConfirmedAt = new Date();
 
     await enrollmentRepo.save(enrollment);
-    res.json({ message: 'Payment confirmed by admin' });
+    res.json({ message: "Payment confirmed by admin" });
   } catch (err) {
-    res.status(500).json({ message: 'Error confirming payment', error: err });
+    res.status(500).json({ message: "Error confirming payment", error: err });
   }
 };
 
@@ -149,7 +213,7 @@ export const getEnrollmentReport = async (req: Request, res: Response) => {
       where: { course: { id: courseId } },
     });
 
-    const report = enrollments.map(e => ({
+    const report = enrollments.map((e) => ({
       // user: `${e.user.firstName} ${e.user.lastName}`,
       user: e.user.name,
       email: e.user.email,
@@ -164,25 +228,28 @@ export const getEnrollmentReport = async (req: Request, res: Response) => {
 
     res.json(report);
   } catch (err) {
-    res.status(500).json({ message: 'Error generating report', error: err });
+    res.status(500).json({ message: "Error generating report", error: err });
   }
 };
 // DELETE /enrollments/:id
-export const deleteEnrollment = async (req: Request, res: Response): Promise<void> => {
+export const deleteEnrollment = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const id = Number(req.params.id);
 
   try {
     const enrollment = await enrollmentRepo.findOneBy({ id });
 
     if (!enrollment) {
-      res.status(404).json({ message: 'Enrollment not found' });
+      res.status(404).json({ message: "Enrollment not found" });
       return;
     }
 
     await enrollmentRepo.remove(enrollment);
-    res.json({ message: 'Enrollment deleted successfully' });
+    res.json({ message: "Enrollment deleted successfully" });
   } catch (err) {
     console.error("Error deleting enrollment:", err);
-    res.status(500).json({ message: 'Error deleting enrollment', error: err });
+    res.status(500).json({ message: "Error deleting enrollment", error: err });
   }
 };

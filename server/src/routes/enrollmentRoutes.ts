@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import {
   enrollToCourse,
+  getAllEnrollments,
   getMyEnrollments,
   markInvoiceAsPaid,
   confirmPaymentByAdmin,
@@ -15,7 +16,8 @@ import { adminOnly } from '../middlewares/adminOnly';
 
 const router = Router();
 
-router.post('/', authMiddleware,  catchAsync(enrollToCourse));
+router.post('/', authMiddleware, catchAsync(enrollToCourse));
+router.get('/', authMiddleware, adminOnly,  catchAsync(getAllEnrollments));
 router.get('/mine', authMiddleware,  getMyEnrollments);
 router.patch('/:id/mark-paid', authMiddleware, catchAsync(markInvoiceAsPaid));
 router.patch('/:id/confirm', authMiddleware, adminOnly,  catchAsync(confirmPaymentByAdmin));
