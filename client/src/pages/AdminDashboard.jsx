@@ -217,16 +217,72 @@ function AdminDashboard() {
                           <strong>Сумма:</strong> €{enr.invoiceAmount}
                         </div>
                         <div>
+                          <strong>Счет:</strong>{" "}
+                          <span
+                            className={`w3-tag w3-round ${
+                              enr.invoiceSent ? "w3-blue" : "w3-red"
+                            }`}
+                          >
+                            {enr.invoiceSent ? "Выслан" : "Не выслан"}
+                          </span>
+                        </div>
+                        <div>
+                          <strong>Оплата:</strong>{" "}
+                          <span
+                            className={`w3-tag w3-round ${
+                              enr.invoicePaid ? "w3-green" : "w3-yellow"
+                            }`}
+                          >
+                            {enr.invoicePaid ? "Оплачено" : "Ожидает оплаты"}
+                          </span>
+                        </div>
+                        <div>
+                          <strong>Подтверждение админом:</strong>{" "}
+                          <span
+                            className={`w3-tag w3-round ${
+                              enr.paymentConfirmedByAdmin
+                                ? "w3-purple"
+                                : "w3-orange"
+                            }`}
+                          >
+                            {enr.paymentConfirmedByAdmin
+                              ? "Подтверждено"
+                              : "Не подтверждено"}
+                          </span>
+                        </div>
+                        <div className="w3-margin-top">
                           <label>
                             <input
+                              className="w3-check"
                               type="checkbox"
                               checked={enr.paymentConfirmedByAdmin}
                               onChange={() => handleToggleConfirm(enr.id)}
                             />{" "}
-                            Подтверждено
+                            Подтвердить оплату
                           </label>
                         </div>
                       </div>
+                      // <div
+                      //   key={enr.id}
+                      //   className="w3-padding-small w3-border w3-round-small w3-margin-bottom"
+                      // >
+                      //   <div>
+                      //     <strong>Курс:</strong> {enr.course.title}
+                      //   </div>
+                      //   <div>
+                      //     <strong>Сумма:</strong> €{enr.invoiceAmount}
+                      //   </div>
+                      //   <div>
+                      //     <label>
+                      //       <input
+                      //         type="checkbox"
+                      //         checked={enr.paymentConfirmedByAdmin}
+                      //         onChange={() => handleToggleConfirm(enr.id)}
+                      //       />{" "}
+                      //       Подтверждено
+                      //     </label>
+                      //   </div>
+                      // </div>
                     ))
                   )}
                 </td>

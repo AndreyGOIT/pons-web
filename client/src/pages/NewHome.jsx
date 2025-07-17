@@ -86,7 +86,7 @@ const NewHome = () => {
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-third">
             <img
-              src="https://www.w3schools.com/w3images/avatar.jpg"
+              src="/images/MikaVuorinen_pons.png"
               alt="Member 1"
               style={{ width: "45%" }}
               className="w3-circle w3-hover-opacity"
@@ -97,7 +97,7 @@ const NewHome = () => {
 
           <div className="w3-third">
             <img
-              src="https://www.w3schools.com/w3images/avatar.jpg"
+              src="/images/AndyErokhin_pons.png"
               alt="Member 2"
               style={{ width: "45%" }}
               className="w3-circle w3-hover-opacity"
@@ -108,12 +108,12 @@ const NewHome = () => {
 
           <div className="w3-third">
             <img
-              src="https://www.w3schools.com/w3images/avatar.jpg"
+              src="/images/DimiZhuravel_pons.png"
               alt="Member 3"
               style={{ width: "45%" }}
               className="w3-circle w3-hover-opacity"
             />
-            <h3>Dimi Zuravel</h3>
+            <h3>Dimi Zhuravel</h3>
             <p>Nuorten ja kilpa ryhmienn vetäjä</p>
           </div>
         </div>

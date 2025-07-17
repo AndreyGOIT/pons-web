@@ -37,7 +37,7 @@ const NavigationBar = () => {
           Koulutuskurssit
         </a>
         <a href="#pricing" className="w3-bar-item w3-button">
-          Price
+          Hinnasto
         </a>
         <a href="#contact" className="w3-bar-item w3-button">
           Contact
@@ -118,7 +118,7 @@ const NavigationBar = () => {
               href="#pricing"
               className=" w3-button w3-hide-small w3-hover-white"
             >
-              Price
+              Hinnasto
             </a>
             <a
               href="#contact"
@@ -135,6 +135,13 @@ const NavigationBar = () => {
             {user ? (
               <div>
                 <span>Welcome, {user.name}!</span>
+                <button
+                  onClick={() => {
+                    navigate("/profile");
+                  }}
+                >
+                  Profile
+                </button>
                 <button
                   onClick={() => {
                     logout();
