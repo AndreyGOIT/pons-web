@@ -5,6 +5,7 @@ function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
   const [users, setUsers] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+  const [trialBookings, setTrialBookings] = useState([]);
   // const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function AdminDashboard() {
         setAdmin(data);
         fetchUsers(token);
         fetchEnrollments(token);
+        fetchTrialBookings(token);
         // fetchCourses(token);
       } catch (err) {
         console.error(err);
@@ -69,6 +71,23 @@ function AdminDashboard() {
 
         const data = await res.json();
         setEnrollments(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const fetchTrialBookings = async (token) => {
+      try {
+        const res = await fetch("/api/trial-bookings", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
+          },
+        });
+        if (!res.ok) throw new Error("Ошибка получения пробных бронирований");
+        const data = await res.json();
+        setTrialBookings(data);
       } catch (err) {
         console.error(err);
       }
@@ -203,7 +222,7 @@ function AdminDashboard() {
                 </td>
                 <td>
                   {getUserEnrollments(u.id).length === 0 ? (
-                    <em>Нет регистраций</em>
+                    <em>Ei ole rekisteröintia</em>
                   ) : (
                     getUserEnrollments(u.id).map((enr) => (
                       <div
@@ -211,33 +230,37 @@ function AdminDashboard() {
                         className="w3-padding-small w3-border w3-round-small w3-margin-bottom"
                       >
                         <div>
-                          <strong>Курс:</strong> {enr.course.title}
+                          <strong>Kurssi:</strong> {enr.course.title}
                         </div>
                         <div>
-                          <strong>Сумма:</strong> €{enr.invoiceAmount}
+                          <strong>Summa:</strong> €{enr.invoiceAmount}
                         </div>
                         <div>
-                          <strong>Счет:</strong>{" "}
+                          <strong>Lasku:</strong>{" "}
                           <span
                             className={`w3-tag w3-round ${
                               enr.invoiceSent ? "w3-blue" : "w3-red"
                             }`}
                           >
-                            {enr.invoiceSent ? "Выслан" : "Не выслан"}
+                            {enr.invoiceSent
+                              ? "✅ on lähetetty"
+                              : "Ei lähetetty"}
                           </span>
                         </div>
                         <div>
-                          <strong>Оплата:</strong>{" "}
+                          <strong>Maksun tilanne:</strong>{" "}
                           <span
                             className={`w3-tag w3-round ${
                               enr.invoicePaid ? "w3-green" : "w3-yellow"
                             }`}
                           >
-                            {enr.invoicePaid ? "Оплачено" : "Ожидает оплаты"}
+                            {enr.invoicePaid
+                              ? "✅ ilmoitettu maksusta"
+                              : "Kääsitellään"}
                           </span>
                         </div>
                         <div>
-                          <strong>Подтверждение админом:</strong>{" "}
+                          <strong>Maksun vahvistus:</strong>{" "}
                           <span
                             className={`w3-tag w3-round ${
                               enr.paymentConfirmedByAdmin
@@ -246,8 +269,8 @@ function AdminDashboard() {
                             }`}
                           >
                             {enr.paymentConfirmedByAdmin
-                              ? "Подтверждено"
-                              : "Не подтверждено"}
+                              ? "✅ maksu hyvitetty tilille"
+                              : "Tarvitse tarkistusta"}
                           </span>
                         </div>
                         <div className="w3-margin-top">
@@ -258,7 +281,7 @@ function AdminDashboard() {
                               checked={enr.paymentConfirmedByAdmin}
                               onChange={() => handleToggleConfirm(enr.id)}
                             />{" "}
-                            Подтвердить оплату
+                            Vahvista maksun vastaanottaminen
                           </label>
                         </div>
                       </div>
@@ -294,6 +317,37 @@ function AdminDashboard() {
                   >
                     X Poista
                   </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* trials */}
+      <div className="w3-card w3-white w3-padding w3-round-large">
+        <h3>KN kokeilijat</h3>
+        <table className="w3-table w3-bordered w3-striped w3-small">
+          <thead className="w3-light-grey">
+            <tr>
+              <th>Etunimi</th>
+              <th>Sukunimi</th>
+              <th>Email</th>
+              <th>Puhelin</th>
+              <th>Rekisteröity pvm</th>
+              <th>Toiminnot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {trialBookings.map((t) => (
+              <tr key={t.id}>
+                <td>{t.firstName}</td>
+                <td>{t.lastName}</td>
+                <td>{t.email}</td>
+                <td>{t.phone}</td>
+                <td>{t.createdAt}</td>
+                <td>
+                  <button>x</button>
                 </td>
               </tr>
             ))}

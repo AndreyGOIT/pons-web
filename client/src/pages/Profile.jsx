@@ -146,7 +146,7 @@ function Profile() {
   if (!user)
     return (
       <div className="w3-container w3-center w3-padding-24">
-        <p>Загрузка...</p>
+        <p>Loading...</p>
       </div>
     );
 
@@ -194,15 +194,15 @@ function Profile() {
           </span>
           {user.createdAt && (
             <p className="w3-text-grey w3-small w3-margin-top">
-              Зарегистрирован:{" "}
+              Rekisteröity:{" "}
               {new Date(user.createdAt).toLocaleDateString("ru-RU")}
             </p>
           )}
         </div>
 
-        {/* Курсы */}
+        {/* Kurssit */}
         <div className="w3-section">
-          <h3>Мои курсы</h3>
+          <h3>Minun kurssit</h3>
           {enrollments.length > 0 ? (
             <ul className="w3-ul w3-card-2">
               {enrollments.map((e) => (
@@ -220,29 +220,29 @@ function Profile() {
                           // disabled
                         />{" "}
                         <label className="w3-margin-right">
-                          Счёт выставлен
+                          Lasku on lähetetty
                         </label>
                       </p>
                     </div>
                     <div className="w3-card w3-white w3-round-large w3-padding-16 w3-margin-top">
                       <h4 className="w3-center w3-text-dark-gray">
-                        🧾 Данные для оплаты регистрации
+                        🧾 Maksutiedot rekisteröintiä varten
                       </h4>
                       <table className="w3-table w3-bordered w3-striped w3-hoverable w3-small w3-margin-top">
                         <tbody>
                           {e.invoiceSentDate && (
                             <tr>
-                              <td>📅 Дата счёта</td>
+                              <td>📅 Laskun pvm</td>
                               <td>
                                 {new Date(e.invoiceSentDate).toLocaleDateString(
-                                  "ru-RU"
+                                  "fi-FI"
                                 )}
                               </td>
                             </tr>
                           )}
                           {e.invoiceAmount > 0 && (
                             <tr>
-                              <td>💰 Сумма</td>
+                              <td>💰 Summa</td>
                               <td className="w3-text-green w3-large">
                                 {e.invoiceAmount} €
                               </td>
@@ -258,37 +258,37 @@ function Profile() {
                           )}
                           {e.paymentReference && (
                             <tr>
-                              <td>📌 Назначение платежа</td>
+                              <td>📌 Maksun tarkoitus</td>
                               <td>{e.paymentReference}</td>
                             </tr>
                           )}
                           {e.invoiceDueDate && (
                             <tr>
-                              <td>⏳ Крайний срок</td>
+                              <td>⏳ Eräpäivä</td>
                               <td>
                                 {new Date(e.invoiceDueDate).toLocaleDateString(
-                                  "ru-RU"
+                                  "fi-FI"
                                 )}
                               </td>
                             </tr>
                           )}
                           {e.userPaymentMarkedAt && (
                             <tr className="w3-pale-yellow">
-                              <td>🕒 Отмечено как оплачено</td>
+                              <td>🕒 Merkitty maksetuksi</td>
                               <td>
                                 {new Date(
                                   e.userPaymentMarkedAt
-                                ).toLocaleDateString("ru-RU")}
+                                ).toLocaleDateString("fi-FI")}
                               </td>
                             </tr>
                           )}
                           {e.adminConfirmedAt && (
                             <tr className="w3-pale-green">
-                              <td>✅ Подтверждено админом</td>
+                              <td>✅ Maksu hyvitetty tilille</td>
                               <td>
                                 {new Date(
                                   e.adminConfirmedAt
-                                ).toLocaleDateString("ru-RU")}
+                                ).toLocaleDateString("fi-FI")}
                               </td>
                             </tr>
                           )}
@@ -303,7 +303,7 @@ function Profile() {
                             checked={!!e.invoicePaid}
                             onChange={() => handleMarkAsPaid(e.id)}
                           />{" "}
-                          Оплачено пользователем
+                          Maksu suoritettu
                         </label>
                         <label>
                           <input
@@ -311,7 +311,7 @@ function Profile() {
                             checked={!!e.paymentConfirmedByAdmin}
                             disabled
                           />{" "}
-                          Подтверждено админом
+                          Maksu hyvitetty tilille
                         </label>
                       </div>
                     </div>
@@ -322,7 +322,7 @@ function Profile() {
                       className="w3-button w3-small w3-red w3-hover-pale-red"
                       style={{ padding: "4px 12px" }}
                     >
-                      Отменить регистрацию
+                      Peruuta rekisteröinti
                     </button>
                   </footer>
                 </li>
@@ -330,24 +330,24 @@ function Profile() {
             </ul>
           ) : (
             <p className="w3-text-grey">
-              Вы ещё не зарегистрированы ни на один курс.
+              Et ole vielä ilmoittautunut millekään kurssille.
             </p>
           )}
         </div>
 
-        {/* Кнопки */}
+        {/* Buttonit */}
         <div className="w3-margin-top">
           <button
             onClick={handleLogout}
             className="w3-button w3-block w3-dark-gray w3-hover-black w3-round-large"
           >
-            Выйти
+            Kirjaudu ulos
           </button>
           <button
             onClick={handleDelete}
             className="w3-button w3-block w3-white w3-border w3-border-red w3-text-red w3-hover-pale-red w3-round-large w3-margin-top"
           >
-            Удалить аккаунт
+            Poista tili
           </button>
         </div>
       </div>

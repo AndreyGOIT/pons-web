@@ -24,6 +24,7 @@ export const createTrialBooking = async (req: Request, res: Response): Promise<v
         trialBooking.lastName = lastName;
         trialBooking.email = email;
         trialBooking.phone = phone;
+        trialBooking.createdAt = new Date();
 
         await trialBookingRepo.save(trialBooking);
         console.log('Trial booking created:', trialBooking);

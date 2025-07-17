@@ -38,9 +38,10 @@ export const enrollToCourse = async (
     }
 
     // Генерация базовых реквизитов
-    const invoiceAmount = 199.0; // 💰 Стоимость курса
-    const paymentIban = "FI21 1234 5600 0007 85"; // ← пример IBAN
-    const paymentReference = `COURSE-${course.id}-${Date.now()}`;
+    const invoiceAmount = course.price; // 💰 Стоимость курса
+    const paymentIban = "FI78 4055 0012 3222 24"; // ← PONS IBAN
+    const dateStr = new Date().toLocaleDateString("fi-FI"); // формат: "4.7.2025"
+    const paymentReference = `KURSSI-${course.title}-${user.name}-${dateStr}`;
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7); // 7 дней на оплату
 

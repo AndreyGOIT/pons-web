@@ -7,13 +7,6 @@ import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
 import jwt from 'jsonwebtoken';
 
-// interface AuthenticatedRequest extends Request {
-//   user?: {
-//     id: number;
-//     role: UserRole;
-//   };
-// }
-
 const userRepo = AppDataSource.getRepository(User);
 //user registration
 export const registerUser = async (req: Request, res: Response): Promise<void> => {

@@ -1,6 +1,6 @@
 // src/enums/CourseType.ts
 export enum CourseType {
-    KN = 'KN',
-    NUORISO = 'nuoriso',
-    KILPA = 'kilpa',
+    KN = 'KN - kuntonyrkkeily',
+    NUORISO = 'Nuoriso ryhmä',
+    KILPA = 'Kilparyhmä',
   }

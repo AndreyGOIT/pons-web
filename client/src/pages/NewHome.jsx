@@ -317,9 +317,11 @@ const NewHome = () => {
               <p>Käyttäjä: {user?.name}</p>
               <p>Sähköposti: {user?.email}</p>
 
-              <button className="w3-button w3-teal w3-round" type="submit">
-                Vahvista ilmoittautuminen
-              </button>
+              {!successMessage && (
+                <button className="w3-button w3-teal w3-round" type="submit">
+                  Vahvista ilmoittautuminen
+                </button>
+              )}
             </form>
 
             {successMessage && (
