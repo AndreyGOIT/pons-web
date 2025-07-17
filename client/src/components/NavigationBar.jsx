@@ -162,40 +162,7 @@ const NavigationBar = () => {
                 </button>
               </>
             )}
-            {/* {!isAuthenticated ? (
-              <>
-                <button
-                  className="w3-button w3-hover-white"
-                  onClick={() => setShowLoginModal(true)}
-                >
-                  Login
-                </button>
-                <button
-                  className="w3-button w3-hover-white"
-                  onClick={() => setShowRegisterModal(true)}
-                >
-                  Register
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  className="w3-button w3-hover-white"
-                  onClick={goToProfile}
-                >
-                  Profile
-                </button>
-                <button
-                  className="w3-button w3-hover-white"
-                  onClick={() => {
-                    logout();
-                    navigate("/");
-                  }}
-                >
-                  Logout
-                </button>
-              </>
-            )} */}
+            {/* end of block of code for login and register */}
           </div>
         </div>
       </div>

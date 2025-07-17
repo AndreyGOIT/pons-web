@@ -168,6 +168,7 @@ function Profile() {
         className="w3-card-4 w3-white w3-round-large w3-padding-large"
         style={{ maxWidth: "480px", width: "100%" }}
       >
+        {/* Header with Avatar and Name */}
         <div className="w3-center">
           <img
             src={avatarUrl}

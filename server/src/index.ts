@@ -6,6 +6,7 @@ import adminRoutes from './routes/adminRoutes';
 import userRoutes from './routes/userRoutes';
 import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
+import trialRoutes from './routes/trialRoutes';
 import { initializeDatabase } from './initializeData';
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use('/api/admin/users', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/trial-bookings', trialRoutes);
 
 // ИНИЦИАЛИЗАЦИЯ БАЗЫ + СТАРТ СЕРВЕРА
 AppDataSource.initialize()

@@ -1,3 +1,4 @@
+// src/routes/adminRoutes.ts
 import { Router } from 'express';
 import { getUsers, getUserById, updateCurrentUser, deleteCurrentUser } from '../controllers/userController';
 import { authMiddleware } from '../middlewares/authMiddleware';
