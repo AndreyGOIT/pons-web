@@ -114,7 +114,7 @@ const NewHome = () => {
               className="w3-circle w3-hover-opacity"
             />
             <h3>Dimi Zhuravel</h3>
-            <p>Nuorten ja kilpa ryhmienn vetäjä</p>
+            <p>Nuorten ja kilpa ryhmien vetäjä</p>
           </div>
         </div>
       </section>
@@ -124,21 +124,31 @@ const NewHome = () => {
         className="w3-container w3-padding-64 w3-center"
         id="koulutuskurssit"
       >
-        <div className="w3-row-padding w3-padding-64 w3-theme-l1">
-          <div className="w3-quarter">
+        <div
+          className="w3-row-padding w3-padding-64 w3-theme-l1"
+          style={{ display: "flex", gap: "16px" }}
+        >
+          <div className="w3-quarter" style={{ flex: 1 }}>
             <h2>Harjoitusryhmämme</h2>
             <p>
               Etsitkö tavoitteellista treenaamista tai sopivaa ryhmää nuorelle
               harrastajalle? Tarjoamme laadukkaita harjoitusohjelmia
               kilpanyrkkeilystä aina nuorisoryhmään ja kilparyhmään. Meillä
               jokainen löytää paikkansa — oli tavoitteenasi kilpailla, kehittyä
-              tai löytää yhteisö, joka tukee matkaasi. Tule mukaan ja löydä oma
-              polkusi nyrkkeilyn maailmassa!
+              tai löytää yhteisö, joka tukee matkaasi.
             </p>
+            <p>
+              Harjoitukset ohjataan koulutettujen ja tutkinnon suorittaneiden
+              ammattilaisten toimesta — jokainen omalla erityisalallaan. Ryhmien
+              aikataulut ja harjoitusohjelmat suunnitellaan yksilöllisesti,
+              ottaen huomioon osallistujien iän, lähtötason ja optimaalisen
+              kuormituksen kehittymisen tueksi.
+            </p>
+            <p>Tule mukaan ja löydä oma polkusi nyrkkeilyn maailmassa!</p>
           </div>
 
-          <div className="w3-quarter w3-margin-bottom">
-            <div className="w3-card w3-white">
+          <div className="w3-quarter w3-margin-bottom" style={{ flex: 1 }}>
+            <div className="w3-card w3-white full-height">
               <img
                 src="/images/kn_pons.jpg"
                 alt="kuntonyrkkeily"
@@ -148,10 +158,13 @@ const NewHome = () => {
                   objectFit: "cover",
                 }}
               />
-              <div className="w3-container">
+              <div
+                className="w3-container"
+                style={{ flex: 1, display: "flex", flexDirection: "column" }}
+              >
                 <h3>Kuntonyrkkeily</h3>
                 <h4>Löydä vahvuutesi – hikoile, kehity ja nauti!</h4>
-                <p>
+                <p style={{ flexGrow: 1 }}>
                   Kuntonyrkkeily on energinen ja mukaansatempaava treenimuoto,
                   joka kohottaa kuntoa, parantaa kehonhallintaa ja vapauttaa
                   arjen paineista. Tunnit ovat monipuolisia, innostavia ja
@@ -159,14 +172,14 @@ const NewHome = () => {
                   Tule mukaan ja koe, miten hauskaa treenaaminen voi olla!
                 </p>
                 <p>ikä: 15 vuotta alkaen</p>
-                <p>treenin pituus: 1 tunti 30 min</p>
-                <p>koulutettu vetäjä: Andy Erokhin & Mika Vuorinen</p>
+                {/* <p>treenin pituus: 1 tunti 30 min</p>
+                <p>koulutettu vetäjä: Andy Erokhin & Mika Vuorinen</p> */}
               </div>
             </div>
           </div>
 
-          <div className="w3-quarter w3-margin-bottom">
-            <div className="w3-card w3-white">
+          <div className="w3-quarter w3-margin-bottom" style={{ flex: 1 }}>
+            <div className="w3-card w3-white full-height">
               <img
                 src="/images/nuoriso_pons.jpg"
                 alt="nuorten ryhmä"
@@ -176,10 +189,13 @@ const NewHome = () => {
                   objectFit: "cover",
                 }}
               />
-              <div className="w3-container">
+              <div
+                className="w3-container"
+                style={{ flex: 1, display: "flex", flexDirection: "column" }}
+              >
                 <h3>Nuorten ryhmä</h3>
                 <h4>Itsevarmuutta, liikettä ja yhteishenkeä!</h4>
-                <p>
+                <p style={{ flexGrow: 1 }}>
                   Nuorten ryhmä on suunnattu 12–15-vuotiaille, jotka haluavat
                   kehittää fyysistä kuntoaan, oppia uusia taitoja ja vahvistaa
                   itseluottamustaan turvallisessa ja kannustavassa ilmapiirissä.
@@ -187,17 +203,17 @@ const NewHome = () => {
                   ryhmähengen voima. Tule mukaan – täällä kasvetaan vahvoiksi
                   sekä keholta että mieleltä!
                 </p>
-                {/* <p>ikä: 12 - 15 vuotta</p> */}
-                <p>treeni: 1 tunti kahdesti viikossa</p>
+                <p>ikä: 12 - 15 vuotta</p>
+                {/* <p>treeni: 1 tunti kahdesti viikossa</p>
                 <p>
                   koulutettu vetäjä: Dimi Zuravel, Andy Erokhin, Mika Vuorinen
-                </p>
+                </p> */}
               </div>
             </div>
           </div>
 
-          <div className="w3-quarter w3-margin-bottom">
-            <div className="w3-card w3-white">
+          <div className="w3-quarter w3-margin-bottom" style={{ flex: 1 }}>
+            <div className="w3-card w3-white full-height">
               <img
                 src="/images/kilpa_pons.jpg"
                 alt="kilparyhmä"
@@ -207,10 +223,13 @@ const NewHome = () => {
                   objectFit: "cover",
                 }}
               />
-              <div className="w3-container">
+              <div
+                className="w3-container"
+                style={{ flex: 1, display: "flex", flexDirection: "column" }}
+              >
                 <h3>Kilpa ryhmä</h3>
                 <h4>Tavoitteellista harjoittelua ja vahvaa asennetta!</h4>
-                <p>
+                <p style={{ flexGrow: 1 }}>
                   Kilparyhmä on tarkoitettu niille, joilla on intohimo kehittyä
                   nyrkkeilijänä ja kilpailla tavoitteellisesti. Harjoituksissa
                   keskitytään tekniseen osaamiseen, fyysiseen kuntoon ja
@@ -220,7 +239,7 @@ const NewHome = () => {
                 </p>
                 <p>ikä: 15 vuotta alkaen</p>
                 {/* <p>treeni: 1,5 tuntia kahdesti viikossa</p> */}
-                <p>koulutettu vetäjä: Dimi Zuravel</p>
+                {/* <p>koulutettu vetäjä: Dimi Zuravel</p> */}
               </div>
             </div>
           </div>
@@ -243,16 +262,30 @@ const NewHome = () => {
                   <p>{course.description}</p>
                 </li>
                 <li className="w3-padding-16">
-                  <h2 className="w3-wide">
-                    <i className="fa fa-eur"></i> {course.price}
-                  </h2>
-                  <span className="w3-opacity">/ syyskausi</span>
+                  <p>
+                    {course.title === "nuoriso"
+                      ? "2 krt/viikossa"
+                      : "3 krt/viikossa"}
+                  </p>
+                </li>
+                <li className="w3-padding-16">
+                  <p>
+                    {course.title === "nuoriso"
+                      ? "60 min/treeni"
+                      : "90 min/treeni"}
+                  </p>
                 </li>
                 <li className="w3-padding-16">
                   <p className="w3-small">
                     {new Date(course.startDate).toLocaleDateString("fi-FI")} –{" "}
                     {new Date(course.endDate).toLocaleDateString("fi-FI")}
                   </p>
+                </li>
+                <li className="w3-padding-16">
+                  <h2 className="w3-wide">
+                    <i className="fa fa-eur"></i> {course.price}
+                  </h2>
+                  <span className="w3-opacity">/ syyskausi</span>
                 </li>
                 <li className="w3-theme-l5 w3-padding-24">
                   <button
@@ -357,7 +390,7 @@ const NewHome = () => {
                 <i className="fa fa-map-marker w3-margin-right"></i>
                 Harjoituspaikka
               </h3>
-              <p>
+              <p className="w3-text-red">
                 <strong>Porvoon Urheiluhallin nyrkkeilysali</strong>
               </p>
               <p>Sparrenkatu 2, 06100 Porvoo</p>

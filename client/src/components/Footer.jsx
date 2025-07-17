@@ -25,27 +25,14 @@ const Footer = () => {
           </a>
           <a
             className="w3-button w3-large w3-theme-d3 w3-hover-opacity"
-            href="#"
-            title="Instagram (soon)"
+            href="https://www.instagram.com/pons_nyrkkeily/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Instagram"
           >
             <i className="fab fa-instagram"></i>
           </a>
-          {/* Добавь другие соцсети, если нужно */}
         </div>
-
-        {/* <p className="w3-small">
-          &copy; {new Date().getFullYear()} Porvoon Nyrkkeilyseura ry
-        </p>
-        <p className="w3-small">
-          Powered by{" "}
-          <a
-            href="https://www.w3schools.com/w3css/default.asp"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            W3.CSS
-          </a>
-        </p> */}
 
         <button
           className="w3-button w3-small w3-theme-l3 w3-hover-theme w3-margin-top w3-hide-small"
@@ -53,6 +40,7 @@ const Footer = () => {
         >
           Admin Login
         </button>
+        <p>(c) Porvoon Nyrkkelyseura PONS, 2025</p>
       </footer>
 
       {showAdminLoginModal && (
