@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import LoginModal from "./auth/LoginModal";
 import RegisterModal from "./auth/RegisterModal";
@@ -15,6 +15,17 @@ const NavigationBar = () => {
   const openNav = () => setSidebarOpen(true);
   const closeNav = () => setSidebarOpen(false);
   const goToProfile = () => navigate("/profile");
+
+  useEffect(() => {
+    window.openLoginModal = () => setShowLoginModal(true);
+    window.openRegisterModal = () => setShowRegisterModal(true);
+
+    const pendingCourseId = sessionStorage.getItem("pendingCourseId");
+    if (pendingCourseId) {
+      sessionStorage.removeItem("pendingCourseId");
+      navigate("/profile");
+    }
+  }, [navigate]);
 
   return (
     <>
@@ -171,11 +182,15 @@ const NavigationBar = () => {
         <LoginModal
           onClose={() => setShowLoginModal(false)}
           onSuccess={({ token, user }) => {
-            login(token, user); // <-- вызываем login из контекста
+            login(token, user);
             setShowLoginModal(false);
-            setTimeout(() => {
+            const pendingCourseId = sessionStorage.getItem("pendingCourseId");
+            if (pendingCourseId) {
+              sessionStorage.removeItem("pendingCourseId");
               navigate("/profile");
-            }, 0);
+            } else {
+              navigate("/profile");
+            }
           }}
         />
       )}
@@ -186,7 +201,13 @@ const NavigationBar = () => {
           onSuccess={({ token, user }) => {
             login(token, user);
             setShowRegisterModal(false);
-            navigate("/profile");
+            const pendingCourseId = sessionStorage.getItem("pendingCourseId");
+            if (pendingCourseId) {
+              sessionStorage.removeItem("pendingCourseId");
+              navigate("/profile");
+            } else {
+              navigate("/profile");
+            }
           }}
         />
       )}

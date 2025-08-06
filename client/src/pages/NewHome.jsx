@@ -9,6 +9,7 @@ const NewHome = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fetch courses from the server
   useEffect(() => {
@@ -22,16 +23,17 @@ const NewHome = () => {
   }, []);
 
   const handleOpenModal = (course) => {
+    console.log("handleOpenModal - user: ", user);
+    console.log("handleOpenModal - course: ", course);
     if (!user) {
-      alert("Kirjaudu ensin sisään ilmoittautuaksesi.");
+      sessionStorage.setItem("pendingCourseId: ", course.id);
+      setShowAuthModal(true);
       return;
     }
     console.log("user в сеансе выбора курса существует: ", user);
     setSelectedCourse(course);
-    // setSelectedCourse(courses[courseKey]);
     setIsModalOpen(true);
   };
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCourse(null);
@@ -62,13 +64,12 @@ const NewHome = () => {
 
       const result = await response.json();
       console.log("результат при регистрации: ", result);
-      setSuccessMessage(`Ilmoittautuminen onnistui! 
-        Kurssi: ${result.enrollment.courseTitle}
-        Summa: ${result.enrollment.invoiceAmount} €
-        IBAN: ${result.enrollment.paymentIban}
-        Viitenumero: ${result.enrollment.paymentReference}
-        Eräpäivä: ${result.enrollment.invoiceDueDate}
-        `);
+      setSuccessMessage(`Ilmoittautuminen onnistui!\n
+      Kurssi: ${result.enrollment.courseTitle}\n
+      Summa: ${result.enrollment.invoiceAmount} €\n
+      IBAN: ${result.enrollment.paymentIban}\n
+      Viitenumero: ${result.enrollment.paymentReference}\n
+      Eräpäivä: ${result.enrollment.invoiceDueDate}`);
       // setTimeout(() => handleCloseModal(), 2000);
     } catch (err) {
       console.error("error: ", err);
@@ -325,7 +326,10 @@ const NewHome = () => {
             </form>
 
             {successMessage && (
-              <div className="w3-panel w3-green w3-margin-top">
+              <div
+                className="w3-panel w3-green w3-margin-top"
+                style={{ whiteSpace: "pre-line" }}
+              >
                 {successMessage}
               </div>
             )}
@@ -431,6 +435,47 @@ const NewHome = () => {
         className="w3-image w3-greyscale-min w3-margin-bottom"
         style={{ width: "100%" }}
       />
+      {/*---auth modalwindow---*/}
+      {showAuthModal && (
+        <div className="w3-modal" style={{ display: "block" }}>
+          <div className="w3-modal-content w3-card-4 w3-animate-top">
+            <header className="w3-container w3-red w3-display-container">
+              <span
+                onClick={() => setShowAuthModal(false)}
+                className="w3-button w3-red w3-display-topright"
+              >
+                <i className="fa fa-remove"></i>
+              </span>
+              <h4>Kirjautuminen vaaditaan</h4>
+            </header>
+            <div className="w3-container w3-padding">
+              <p>
+                Kirjaudu sisään tai rekisteröidy ilmoittautuaksesi kurssille.
+              </p>
+              <div className="w3-bar w3-margin-top">
+                <button
+                  onClick={() => {
+                    setShowAuthModal(false);
+                    window?.openLoginModal?.();
+                  }}
+                  className="w3-bar-item w3-button w3-teal w3-round w3-margin-right"
+                >
+                  Kirjaudu
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAuthModal(false);
+                    window?.openRegisterModal?.();
+                  }}
+                  className="w3-bar-item w3-button w3-light-grey w3-round"
+                >
+                  Rekisteröidy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

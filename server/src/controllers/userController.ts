@@ -38,9 +38,20 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     }
 
     const savedUser = await userRepo.save(user);
+
+    // ✅ Генерация токена
+    const token = jwt.sign({ id: savedUser.id }, process.env.JWT_SECRET!, {
+      expiresIn: '1h',
+    });
+    console.log('✅ Токен при регистрации успешно сгенерирован:', token);
     const { password: _, ...userWithoutPassword } = savedUser;
 
-    res.status(201).json(userWithoutPassword);
+    // ✅ Ответ с токеном и пользователем
+    res.status(201).json({
+      message: 'Registration successful',
+      user: userWithoutPassword,
+      token,
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }

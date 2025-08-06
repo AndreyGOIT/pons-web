@@ -14,7 +14,26 @@ function Profile() {
       return;
     }
 
-    const fetchProfile = async () => {
+    // 🔹 1. Вспомогательная функция для получения регистраций
+    const fetchEnrollments = async (userId) => {
+      try {
+        const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Ошибка при получении регистраций");
+
+        const data = await res.json();
+        console.log("Регистрации пользователя:", data);
+        setEnrollments(data);
+      } catch (err) {
+        console.error("Ошибка при получении регистраций:", err);
+        setError("Не удалось загрузить регистрации.");
+      }
+    };
+
+    // 🔹 2. Основная логика: получить профиль и если нужно — зарегистрировать на курс
+    const fetchProfileAndRegister = async () => {
       try {
         const res = await fetch("/api/users/me", {
           headers: {
@@ -34,6 +53,43 @@ function Profile() {
 
         const data = await res.json();
         setUser(data);
+
+        const pendingCourseId = sessionStorage.getItem("pendingCourseId");
+        console.log(
+          "pendingCourseId перед отправкой запроса в Profile:",
+          pendingCourseId
+        );
+        if (pendingCourseId) {
+          try {
+            const enrollRes = await fetch("/api/enrollments", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                userId: data.id,
+                courseId: Number(pendingCourseId),
+              }),
+            });
+
+            if (enrollRes.ok) {
+              console.log(
+                "✅ Автоматическая регистрация на курс прошла успешно"
+              );
+            } else {
+              console.warn(
+                "⚠️ Не удалось зарегистрировать пользователя на курс"
+              );
+            }
+          } catch (err) {
+            console.error("❌ Ошибка автоматической регистрации:", err);
+          } finally {
+            sessionStorage.removeItem("pendingCourseId");
+          }
+        }
+
+        // ✅ Получить регистрации только после возможной записи
         fetchEnrollments(data.id);
       } catch (err) {
         console.error("Ошибка загрузки профиля:", err);
@@ -41,25 +97,93 @@ function Profile() {
       }
     };
 
-    const fetchEnrollments = async (userId) => {
-      try {
-        const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) throw new Error("Ошибка при получении регистраций");
-
-        const data = await res.json();
-        console.log("Регистрации пользователя:", data);
-        setEnrollments(data);
-      } catch (err) {
-        console.error("Ошибка при получении регистраций:", err);
-        setError("Не удалось загрузить регистрации.");
-      }
-    };
-
-    fetchProfile();
+    fetchProfileAndRegister();
   }, [navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     navigate("/login");
+  //     return;
+  //   }
+
+  //   const fetchProfile = async () => {
+  //     try {
+  //       const res = await fetch("/api/users/me", {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       if (res.status === 401) {
+  //         localStorage.removeItem("token");
+  //         navigate("/login");
+  //         return;
+  //       }
+
+  //       if (!res.ok)
+  //         throw new Error("Ошибка при получении данных пользователя");
+
+  //       const data = await res.json();
+  //       setUser(data);
+
+  //       const pendingCourseId = sessionStorage.getItem("pendingCourseId");
+  //       if (pendingCourseId) {
+  //         try {
+  //           const res = await fetch("/api/enrollments", {
+  //             method: "POST",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //             body: JSON.stringify({
+  //               userId: data.id,
+  //               courseId: Number(pendingCourseId),
+  //             }),
+  //           });
+
+  //           if (res.ok) {
+  //             console.log(
+  //               "✅ Автоматическая регистрация на курс прошла успешно"
+  //             );
+  //           } else {
+  //             console.warn(
+  //               "⚠️ Не удалось зарегистрировать пользователя на курс"
+  //             );
+  //           }
+  //         } catch (err) {
+  //           console.error("❌ Ошибка автоматической регистрации:", err);
+  //         } finally {
+  //           sessionStorage.removeItem("pendingCourseId");
+  //         }
+  //       }
+
+  //       fetchEnrollments(data.id);
+  //     } catch (err) {
+  //       console.error("Ошибка загрузки профиля:", err);
+  //       setError("Не удалось загрузить профиль. Авторизуйтесь снова.");
+  //     }
+  //   };
+
+  //   const fetchEnrollments = async (userId) => {
+  //     try {
+  //       const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+
+  //       if (!res.ok) throw new Error("Ошибка при получении регистраций");
+
+  //       const data = await res.json();
+  //       console.log("Регистрации пользователя:", data);
+  //       setEnrollments(data);
+  //     } catch (err) {
+  //       console.error("Ошибка при получении регистраций:", err);
+  //       setError("Не удалось загрузить регистрации.");
+  //     }
+  //   };
+
+  //   fetchProfile();
+  // }, [navigate]);
 
   const handleMarkAsPaid = async (enrollmentId) => {
     const token = localStorage.getItem("token");
@@ -85,7 +209,10 @@ function Profile() {
   };
 
   const handleCancelEnrollment = async (id) => {
-    if (!window.confirm("Вы уверены, что хотите отменить регистрацию?")) return;
+    if (
+      !window.confirm("Haluatko varmasti peruuttaa kurssi-ilmoittautumisesi?")
+    )
+      return;
 
     try {
       const token = localStorage.getItem("token"); // или sessionStorage, если ты его туда сохраняешь
@@ -105,14 +232,15 @@ function Profile() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("user");
+  //   navigate("/");
+  // };
 
   const handleDelete = async () => {
-    if (!window.confirm("Удалить аккаунт?")) return;
+    if (!window.confirm("Poistetaanko tili? Tätä toimintoa ei voi perua."))
+      return;
 
     try {
       const res = await fetch("/api/users/delete", {
@@ -337,12 +465,12 @@ function Profile() {
 
         {/* Buttonit */}
         <div className="w3-margin-top">
-          <button
+          {/* <button
             onClick={handleLogout}
             className="w3-button w3-block w3-dark-gray w3-hover-black w3-round-large"
           >
             Kirjaudu ulos
-          </button>
+          </button> */}
           <button
             onClick={handleDelete}
             className="w3-button w3-block w3-white w3-border w3-border-red w3-text-red w3-hover-pale-red w3-round-large w3-margin-top"
