@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth"; // <-- импортируем хук из контекста
 
 function Profile() {
   const [user, setUser] = useState(null);
   const [enrollments, setEnrollments] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -232,11 +234,10 @@ function Profile() {
     }
   };
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("user");
-  //   navigate("/");
-  // };
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const handleDelete = async () => {
     if (!window.confirm("Poistetaanko tili? Tätä toimintoa ei voi perua."))
@@ -465,12 +466,12 @@ function Profile() {
 
         {/* Buttonit */}
         <div className="w3-margin-top">
-          {/* <button
+          <button
             onClick={handleLogout}
             className="w3-button w3-block w3-dark-gray w3-hover-black w3-round-large"
           >
             Kirjaudu ulos
-          </button> */}
+          </button>
           <button
             onClick={handleDelete}
             className="w3-button w3-block w3-white w3-border w3-border-red w3-text-red w3-hover-pale-red w3-round-large w3-margin-top"
