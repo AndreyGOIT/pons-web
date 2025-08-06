@@ -34,6 +34,7 @@ const NewHome = () => {
     setSelectedCourse(course);
     setIsModalOpen(true);
   };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCourse(null);
@@ -81,8 +82,8 @@ const NewHome = () => {
     <div className="w3-container w3-content" style={{ maxWidth: "1400px" }}>
       {/* Team Section */}
       <section className="w3-container w3-padding-64 w3-center" id="team">
-        <h2 className="w3-text-teal">Our Team</h2>
-        <p>Meet the amazing people behind our success</p>
+        <h2 className="w3-text-teal">Tiimimme</h2>
+        <p>Tapaa menestyksemme takana olevat upeat ihmiset</p>
 
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-third">
@@ -249,57 +250,184 @@ const NewHome = () => {
 
       {/* Harjoituskurssit / Hinnasto */}
       <section className="w3-container w3-padding-64 w3-center" id="pricing">
-        <h2 className="w3-text-teal">Kurssit ja hinnasto</h2>
-        <p className="w3-large">Valitse sinulle sopiva harjoitusryhmä</p>
+        <h2 className="w3-text-teal">
+          Ammattilaisten valmentama nyrkkeilykoulutus
+        </h2>
+        <p className="w3-large">
+          Paranna kuntoasi, oppia uusia taitoja ja liity yhteisöömme!
+        </p>
 
         <div className="w3-row-padding w3-margin-top w3-center">
           {courses.map((course) => (
             <div key={course.id} className="w3-third w3-margin-bottom">
               <ul className="w3-ul w3-border w3-hover-shadow w3-white w3-card-4">
                 <li className="w3-theme w3-padding-16">
-                  <p className="w3-xlarge w3-margin-0">{course.title}</p>
+                  <p className="w3-xlarge w3-margin-0">
+                    {course.title === "KN" &&
+                      "KuntoNyrkkeily - Tehokas ja turvallinen treeni"}
+                    {course.title === "nuoriso" &&
+                      "Nuorten Nyrkkeily - Hauska liikunta 13-17-vuotiaille"}
+                    {course.title === "kilpa" &&
+                      "KilpaNyrkkeily - Harrasta lajia ammattimaisesti"}
+                  </p>
                 </li>
-                <li className="w3-padding-16">
-                  <p>{course.description}</p>
+                <li
+                  className="w3-padding-16"
+                  style={{
+                    height: "150px",
+                    overflowY: "auto",
+                    minHeight: "150px",
+                  }}
+                >
+                  <p>
+                    {course.title === "KN" &&
+                      "Polta kalorit ja paranna kuntoasi hauskassa ryhmätreenissä. Sopii aloittelijoille ja edistyneille!"}
+                    {course.title === "nuoriso" &&
+                      "Nuorten turvallinen ja motivoiva nyrkkeilyohjelma. Kehitä itsevarmuutta, kuntoa ja tiimityötaitoja!"}
+                    {course.title === "kilpa" &&
+                      "Valmistaudu kilpailuihin ammattivalmentajien johdolla. Tekninen harjoittelu ja ottelukokemus."}
+                    <br />
+                    <br />
+                    <span className="w3-text-teal">✓ {course.description}</span>
+                  </p>
                 </li>
                 <li className="w3-padding-16">
                   <p>
+                    <i className="fa fa-calendar w3-text-teal"></i>{" "}
+                    <b>Harjoitusajat:</b>{" "}
+                    {course.title === "nuoriso"
+                      ? "Ti & To 16-17"
+                      : "Ma, Ke & Pe 18-19.30"}
+                  </p>
+                </li>
+                <li className="w3-padding-16">
+                  <p>
+                    <i className="fa fa-clock-o w3-text-teal"></i> <b>Kesto:</b>{" "}
+                    {course.title === "nuoriso" ? "30 treeniä" : "45 treeniä"} (
                     {course.title === "nuoriso"
                       ? "2 krt/viikossa"
                       : "3 krt/viikossa"}
+                    )
                   </p>
                 </li>
                 <li className="w3-padding-16">
                   <p>
+                    <i className="fa fa-trophy w3-text-teal"></i>{" "}
+                    <b>Sisältö:</b>{" "}
                     {course.title === "nuoriso"
-                      ? "60 min/treeni"
-                      : "90 min/treeni"}
+                      ? "Perustekniikat ja liikunta"
+                      : "Tekniikka, kunto ja strategia"}
+                  </p>
+                </li>
+                <li className="w3-padding-16 w3-light-grey">
+                  <p className="w3-large">
+                    <i className="fa fa-eur w3-text-teal"></i>{" "}
+                    <b>{course.price}</b>
+                    <span className="w3-small"> / kausi</span>
+                    <br />
+                    <span className="w3-small">
+                      (
+                      {course.title === "nuoriso"
+                        ? "4,67 €/treeni"
+                        : "3,89 €/treeni"}
+                      )
+                    </span>
                   </p>
                 </li>
                 <li className="w3-padding-16">
-                  <p className="w3-small">
-                    {new Date(course.startDate).toLocaleDateString("fi-FI")} –{" "}
-                    {new Date(course.endDate).toLocaleDateString("fi-FI")}
+                  <p>
+                    <i className="fa fa-star w3-text-teal"></i> <b>Alkaa:</b>{" "}
+                    {new Date(course.startDate).toLocaleDateString("fi-FI")}
                   </p>
-                </li>
-                <li className="w3-padding-16">
-                  <h2 className="w3-wide">
-                    <i className="fa fa-eur"></i> {course.price}
-                  </h2>
-                  <span className="w3-opacity">/ syyskausi</span>
                 </li>
                 <li className="w3-theme-l5 w3-padding-24">
                   <button
-                    className="w3-button w3-teal w3-round-large"
+                    className="w3-button w3-teal w3-round-large w3-padding-large"
                     onClick={() => handleOpenModal(course)}
                   >
-                    <i className="fa fa-check"></i> Ilmoittaudu
+                    <i className="fa fa-check"></i> <b>ILMOITTAUDU NYT</b>
                   </button>
+                  <p className="w3-small w3-margin-top">
+                    Vain {course.title === "nuoriso" ? "15" : "10"} paikkaa
+                    jäljellä!
+                  </p>
                 </li>
               </ul>
             </div>
           ))}
         </div>
+        {/*---alkuversio
+          <div className="w3-row-padding w3-margin-top w3-center">
+            {courses.map((course) => (
+              <div key={course.id} className="w3-third w3-margin-bottom">
+                <ul className="w3-ul w3-border w3-hover-shadow w3-white w3-card-4">
+                  <li className="w3-theme w3-padding-16">
+                    <p className="w3-xlarge w3-margin-0">{course.title}</p>
+                  </li>
+                  <li
+                    className="w3-padding-16"
+                    style={{
+                      height: "150px",
+                      overflowY:
+                        "auto",
+                      minHeight:
+                        "150px",
+                    }}>
+                    <p>{course.description}</p>
+                  </li>
+                  <li className="w3-padding-16">
+                    <p>
+                      {course.title === "nuoriso"
+                        ? "2 krt/viikossa"
+                        : "3 krt/viikossa"}
+                    </p>
+                  </li>
+                  <li className="w3-padding-16">
+                    <p>
+                      {course.title === "nuoriso" ? "30 kertaa" : "45 kertaa"}
+                    </p>
+                  </li>
+                  <li className="w3-padding-16">
+                    <p>
+                      {course.title === "nuoriso"
+                        ? "60 min/treeni"
+                        : "90 min/treeni"}
+                    </p>
+                  </li>
+                  <li className="w3-padding-16">
+                    <p>
+                      <b>
+                        {course.title === "nuoriso"
+                          ? "4,67 €/1 treeni"
+                          : "3,89 €/1 treeni"}
+                      </b>
+                    </p>
+                  </li>
+                  <li className="w3-padding-16">
+                    <p>
+                      {new Date(course.startDate).toLocaleDateString("fi-FI")} –{" "}
+                      {new Date(course.endDate).toLocaleDateString("fi-FI")}
+                    </p>
+                  </li>
+                  <li className="w3-padding-16">
+                    <h2 className="w3-wide">
+                      <i className="fa fa-eur"></i> {course.price}
+                    </h2>
+                    <span className="w3-opacity">/ syyskausi</span>
+                  </li>
+                  <li className="w3-theme-l5 w3-padding-24">
+                    <button
+                      className="w3-button w3-teal w3-round-large"
+                      onClick={() => handleOpenModal(course)}
+                    >
+                      <i className="fa fa-check"></i> Ilmoittaudu
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            ))}
+          </div>
+        */}
       </section>
 
       {/* Modal */}
