@@ -5,6 +5,7 @@ const LoginModal = ({ onClose, onSuccess }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [shake, setShake] = useState(false);
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -47,12 +48,18 @@ const LoginModal = ({ onClose, onSuccess }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-      const { token, user } = data;
       if (!res.ok) {
+        const data = await res.json();
         setError(data.message || "Login failed");
+        // setEmail("");
+        setPassword("");
+        setShake(true); // запуск анимации
+        setTimeout(() => setShake(false), 500); // сброс класса
         return;
       }
+
+      const data = await res.json();
+      const { token, user } = data;
 
       localStorage.setItem("token", token);
       console.log(
@@ -78,7 +85,9 @@ const LoginModal = ({ onClose, onSuccess }) => {
     >
       <div
         ref={modalRef}
-        className="w3-modal-content w3-animate-top w3-card-4"
+        className={`w3-modal-content w3-animate-top w3-card-4 ${
+          shake ? "shake" : ""
+        }`}
         style={{ maxWidth: 400 }}
       >
         <header className="w3-container w3-teal">

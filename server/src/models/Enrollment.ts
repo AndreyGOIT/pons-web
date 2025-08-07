@@ -14,10 +14,10 @@ export class Enrollment {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, { eager: true, nullable: false })
+  @ManyToOne(() => User, { eager: true, nullable: false, onDelete: "CASCADE" })
   user!: User;
 
-  @ManyToOne(() => Course, { eager: true, nullable: false })
+  @ManyToOne(() => Course, { eager: true, nullable: false, onDelete: "CASCADE" })
   course!: Course;
 
   @Column({ default: true })

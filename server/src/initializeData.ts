@@ -27,7 +27,7 @@ export const initializeDatabase = async () => {
     if (adminCount === 0) {
       const admin = new User();
       admin.name = 'Admin';
-      admin.email = 'admin@fitnessapp.fi';
+      admin.email = 'admin@pons.fi';
       admin.password = await bcrypt.hash('admin123', 10);
       admin.role = UserRole.ADMIN;
 

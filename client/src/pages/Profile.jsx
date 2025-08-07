@@ -434,14 +434,14 @@ function Profile() {
                           />{" "}
                           Maksu suoritettu
                         </label>
-                        <label>
+                        {/* <label>
                           <input
                             type="checkbox"
                             checked={!!e.paymentConfirmedByAdmin}
                             disabled
                           />{" "}
                           Maksu hyvitetty tilille
-                        </label>
+                        </label> */}
                       </div>
                     </div>
                   </div>
