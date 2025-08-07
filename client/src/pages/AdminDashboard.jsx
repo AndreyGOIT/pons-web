@@ -128,6 +128,29 @@ function AdminDashboard() {
     }
   };
 
+  const handleDeleteTrial = async (id) => {
+    if (!window.confirm("Poistetaanko käyttäjä kokeilusta?")) return;
+
+    const token = localStorage.getItem("token");
+    console.log("🪪 Token for trial delete:", token);
+    try {
+      const res = await fetch(`/api/admin/trial-bookings/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Poistovirhe");
+
+      // Обновить состояние:
+      setTrialBookings((prev) => prev.filter((t) => t.id !== id));
+    } catch (err) {
+      console.error("Error deleting trial:", err);
+      alert("Virhe kokeilijan poistossa");
+    }
+  };
+
   const getUserEnrollments = (userId) =>
     enrollments.filter((e) => e.user.id === userId);
 
@@ -328,7 +351,12 @@ function AdminDashboard() {
                   {new Date(t.createdAt).toLocaleDateString("fi-FI")}
                 </td>
                 <td data-label="Toiminnot">
-                  <button>x</button>
+                  <button
+                    onClick={() => handleDeleteTrial(t.id)}
+                    className="w3-button w3-small w3-red w3-round"
+                  >
+                    Poista
+                  </button>
                 </td>
               </tr>
             ))}

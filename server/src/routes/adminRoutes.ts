@@ -6,7 +6,7 @@ import { adminOnly } from '../middlewares/adminOnly';
 import { catchAsync } from '../utils/catchAsync';
 import {  getAdminProfile, updateAdminProfile } from '../controllers/adminController';
 import { adminLogin, downloadCoursesPdf } from '../controllers/adminController';
-import { getTrialBookings } from '../controllers/trialBookingController';
+import { getTrialBookings, deleteTrialBookings } from '../controllers/trialBookingController';
 
 
 const router = Router();
@@ -26,5 +26,6 @@ router.put('/:id', catchAsync(updateCurrentUser));          // PUT /api/admin/us
 router.delete('/users/:id', catchAsync(deleteUserByAdmin));       // DELETE /api/admin/users/:id
 
 router.get('/', catchAsync(getTrialBookings));       // GET /api/trial-bookings
+router.delete('/trial-bookings/:id', catchAsync(deleteTrialBookings)) // DELETE /api/trial-bookings/:id
 
 export default router;

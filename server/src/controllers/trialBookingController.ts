@@ -44,3 +44,21 @@ export const getTrialBookings = async (req: Request, res: Response): Promise<voi
         res.status(500).json({ message: 'Server error', error: err });
     }
 };
+
+// deleteTrialBookings
+export const deleteTrialBookings = async (req: Request, res: Response): Promise<void> => {
+    const id = Number(req.params.id);
+    try {
+        const trial = await trialBookingRepo.findOneBy({ id })
+        
+        if (!trial) {
+        res.status(404).json({ message: "Trial not found" });
+         return;
+        }
+        await trialBookingRepo.remove(trial);
+        res.json({message: "Trial deleted successfully"})
+    } catch (err) {
+        console.error("Error deleting trial:", err);
+        res.status(500).json({ message: "Error deleting trial", error: err });
+    }
+}
