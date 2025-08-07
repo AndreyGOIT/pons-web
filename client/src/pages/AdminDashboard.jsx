@@ -111,16 +111,16 @@ function AdminDashboard() {
   }, [navigate]);
 
   const handleDeleteUser = async (id) => {
-    if (!window.confirm("Удалить пользователя?")) return;
+    if (!window.confirm("Poistetaanko käyttäjä?")) return;
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`/api/users/${id}`, {
+      const res = await fetch(`/api/admin/users/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error("Ошибка удаления");
+      if (!res.ok) throw new Error("Poistovirhe");
 
       setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
@@ -182,22 +182,22 @@ function AdminDashboard() {
       style={{ minHeight: "100vh" }}
     >
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
-        <h2 className="w3-center">Панель администратора</h2>
+        <h2 className="w3-center">Hallintapaneeli</h2>
         <p className="w3-center w3-text-grey">
-          {admin.name} ({admin.email}) | Роль:{" "}
+          {admin.name} ({admin.email}) | Rooli:{" "}
           <span className="w3-tag w3-red w3-round">Admin</span>
         </p>
       </div>
 
       {/* Пользователи */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
-        <h3>Пользователи</h3>
+        <h3>Käyttäjät</h3>
         <table className="w3-table w3-bordered w3-striped w3-small">
           <thead className="w3-light-grey">
             <tr>
               <th>Nimi</th>
               <th>Email</th>
-              <th>Roli</th>
+              <th>Rooli</th>
               <th>Kurssi</th>
               <th>Toiminnot</th>
             </tr>

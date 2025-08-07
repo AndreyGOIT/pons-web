@@ -76,6 +76,7 @@ export const updateAdminProfile = async (req: Request, res: Response) => {
 
   res.json({ message: 'Данные обновлены', admin });
 };
+
 // скачать PDF с курсами
 export const downloadCoursesPdf = async (req: Request, res: Response) => {
   const courseRepo = AppDataSource.getRepository(Course);

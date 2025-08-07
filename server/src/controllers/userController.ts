@@ -232,3 +232,25 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ message: "Server error", error: err });
     }
   };
+
+  // Админ удаляет пользователя
+  export const deleteUserByAdmin = async (req: Request, res: Response): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!id) {
+    res.status(400).json({ message: "Missing user ID" });
+    return;
+  }
+
+  try {
+    const user = await userRepo.findOne({ where: { id } });
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    await userRepo.remove(user);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err });
+  }
+};
