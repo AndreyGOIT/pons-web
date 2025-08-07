@@ -123,125 +123,147 @@ const NewHome = () => {
 
       {/*  Koulutuskurssit */}
       <section
-        className="w3-container w3-padding-64 w3-center"
+        className="w3-container w3-padding-32 w3-center w3-asphalt"
         id="koulutuskurssit"
       >
-        <div
-          className="w3-row-padding w3-padding-64 w3-theme-l1"
-          style={{ display: "flex", gap: "16px" }}
-        >
-          <div className="w3-quarter" style={{ flex: 1 }}>
-            <h2>Harjoitusryhmämme</h2>
-            <p>
+        {/* Заголовок и описание */}
+        <div className="w3-row">
+          <div className="w3-col m12 l3 w3-padding">
+            <h2 className="w3-text-teal">Harjoitusryhmämme</h2>
+            <p className="w3-left-align">
               Etsitkö tavoitteellista treenaamista tai sopivaa ryhmää nuorelle
               harrastajalle? Tarjoamme laadukkaita harjoitusohjelmia
-              kilpanyrkkeilystä aina nuorisoryhmään ja kilparyhmään. Meillä
-              jokainen löytää paikkansa — oli tavoitteenasi kilpailla, kehittyä
-              tai löytää yhteisö, joka tukee matkaasi.
+              kilpanyrkkeilystä aina nuorisoryhmään ja kilparyhmään.
             </p>
-            <p>
+            <p className="w3-left-align">
               Harjoitukset ohjataan koulutettujen ja tutkinnon suorittaneiden
-              ammattilaisten toimesta — jokainen omalla erityisalallaan. Ryhmien
-              aikataulut ja harjoitusohjelmat suunnitellaan yksilöllisesti,
-              ottaen huomioon osallistujien iän, lähtötason ja optimaalisen
-              kuormituksen kehittymisen tueksi.
+              ammattilaisten toimesta — jokainen omalla erityisalallaan.
             </p>
-            <p>Tule mukaan ja löydä oma polkusi nyrkkeilyn maailmassa!</p>
           </div>
 
-          <div className="w3-quarter w3-margin-bottom" style={{ flex: 1 }}>
-            <div className="w3-card w3-white full-height">
-              <img
-                src="/images/kn_pons.jpg"
-                alt="kuntonyrkkeily"
-                style={{
-                  width: "100%",
-                  height: "200px", // можно изменить по необходимости
-                  objectFit: "cover",
-                }}
-              />
-              <div
-                className="w3-container"
-                style={{ flex: 1, display: "flex", flexDirection: "column" }}
-              >
-                <h3>Kuntonyrkkeily</h3>
-                <h4>Löydä vahvuutesi – hikoile, kehity ja nauti!</h4>
-                <p style={{ flexGrow: 1 }}>
-                  Kuntonyrkkeily on energinen ja mukaansatempaava treenimuoto,
-                  joka kohottaa kuntoa, parantaa kehonhallintaa ja vapauttaa
-                  arjen paineista. Tunnit ovat monipuolisia, innostavia ja
-                  sopivat kaikille – olitpa vasta-alkaja tai kokenut liikkuja.
-                  Tule mukaan ja koe, miten hauskaa treenaaminen voi olla!
-                </p>
-                <p>ikä: 15 vuotta alkaen</p>
-                {/* <p>treenin pituus: 1 tunti 30 min</p>
-                <p>koulutettu vetäjä: Andy Erokhin & Mika Vuorinen</p> */}
+          {/* Карточки курсов */}
+          <div className="w3-col m12 l9">
+            <div className="w3-row-padding">
+              {/* Карточка 1 */}
+              <div className="w3-col s12 m6 l4 w3-margin-bottom">
+                <div
+                  className="w3-card w3-white w3-hover-shadow"
+                  style={{ height: "100%" }}
+                >
+                  <img
+                    src="/images/kn_pons.jpg"
+                    alt="kuntonyrkkeily"
+                    className="w3-image"
+                    style={{
+                      height: "200px",
+                      width: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    className="w3-container w3-padding-16"
+                    style={{
+                      height: "calc(100% - 200px)",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <h3>
+                      <b>Kuntonyrkkeily</b>
+                    </h3>
+                    <h4 className="w3-text-teal">Löydä vahvuutesi</h4>
+                    <p style={{ flexGrow: 1, marginBottom: 0, marginTop: 0 }}>
+                      Energinen treenimuoto joka kohottaa kuntoa ja parantaa
+                      kehonhallintaa. Sopii kaikille tasoille.
+                    </p>
+                    <p className="w3-text-grey">
+                      <i className="fa fa-user w3-margin-right"></i>15+ vuotta
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="w3-quarter w3-margin-bottom" style={{ flex: 1 }}>
-            <div className="w3-card w3-white full-height">
-              <img
-                src="/images/nuoriso_pons.jpg"
-                alt="nuorten ryhmä"
-                style={{
-                  width: "100%",
-                  height: "200px", // можно изменить по необходимости
-                  objectFit: "cover",
-                }}
-              />
-              <div
-                className="w3-container"
-                style={{ flex: 1, display: "flex", flexDirection: "column" }}
-              >
-                <h3>Nuorten ryhmä</h3>
-                <h4>Itsevarmuutta, liikettä ja yhteishenkeä!</h4>
-                <p style={{ flexGrow: 1 }}>
-                  Nuorten ryhmä on suunnattu 12–15-vuotiaille, jotka haluavat
-                  kehittää fyysistä kuntoaan, oppia uusia taitoja ja vahvistaa
-                  itseluottamustaan turvallisessa ja kannustavassa ilmapiirissä.
-                  Harjoituksissa yhdistyvät liikunnan ilo, itsekurin opettelu ja
-                  ryhmähengen voima. Tule mukaan – täällä kasvetaan vahvoiksi
-                  sekä keholta että mieleltä!
-                </p>
-                <p>ikä: 12 - 15 vuotta</p>
-                {/* <p>treeni: 1 tunti kahdesti viikossa</p>
-                <p>
-                  koulutettu vetäjä: Dimi Zuravel, Andy Erokhin, Mika Vuorinen
-                </p> */}
+              {/* Карточка 2 */}
+              <div className="w3-col s12 m6 l4 w3-margin-bottom">
+                <div
+                  className="w3-card w3-white w3-hover-shadow"
+                  style={{ height: "100%" }}
+                >
+                  <img
+                    src="/images/nuoriso_pons.jpg"
+                    alt="nuorten ryhmä"
+                    className="w3-image"
+                    style={{
+                      height: "200px",
+                      width: "100%",
+                      objectFit: "cover",
+                    }}
+                    // style={{ height: "200px", objectFit: "cover" }}
+                  />
+                  <div
+                    className="w3-container w3-padding-16"
+                    style={{
+                      height: "calc(100% - 200px)",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <h3>
+                      <b>Nuorten ryhmä</b>
+                    </h3>
+                    <h4 className="w3-text-teal" style={{ fontSize: "18px" }}>
+                      Itsevarmuutta ja yhteishenkeä
+                    </h4>
+                    <p style={{ flexGrow: 1 }}>
+                      Turvallinen ympäristö 12-15-vuotiaille kehittyä fyysisesti
+                      ja vahvistaa itseluottamusta.
+                    </p>
+                    <p className="w3-text-grey">
+                      <i className="fa fa-user w3-margin-right"></i>12-15 vuotta
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="w3-quarter w3-margin-bottom" style={{ flex: 1 }}>
-            <div className="w3-card w3-white full-height">
-              <img
-                src="/images/kilpa_pons.jpg"
-                alt="kilparyhmä"
-                style={{
-                  width: "100%",
-                  height: "200px", // можно изменить по необходимости
-                  objectFit: "cover",
-                }}
-              />
-              <div
-                className="w3-container"
-                style={{ flex: 1, display: "flex", flexDirection: "column" }}
-              >
-                <h3>Kilpa ryhmä</h3>
-                <h4>Tavoitteellista harjoittelua ja vahvaa asennetta!</h4>
-                <p style={{ flexGrow: 1 }}>
-                  Kilparyhmä on tarkoitettu niille, joilla on intohimo kehittyä
-                  nyrkkeilijänä ja kilpailla tavoitteellisesti. Harjoituksissa
-                  keskitytään tekniseen osaamiseen, fyysiseen kuntoon ja
-                  henkiseen vahvuuteen. Valmennus on ammattimaista ja
-                  yksilöllisesti ohjattua. Jos olet valmis haastamaan itsesi ja
-                  tähtäät kehään – tämä ryhmä on sinua varten!
-                </p>
-                <p>ikä: 15 vuotta alkaen</p>
-                {/* <p>treeni: 1,5 tuntia kahdesti viikossa</p> */}
-                {/* <p>koulutettu vetäjä: Dimi Zuravel</p> */}
+              {/* Карточка 3 */}
+              <div className="w3-col s12 m6 l4 w3-margin-bottom">
+                <div
+                  className="w3-card w3-white w3-hover-shadow"
+                  style={{ height: "100%" }}
+                >
+                  <img
+                    src="/images/kilpa_pons.jpg"
+                    alt="kilparyhmä"
+                    className="w3-image"
+                    style={{
+                      height: "200px",
+                      width: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    className="w3-container w3-padding-16"
+                    style={{
+                      height: "calc(100% - 200px)",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <h3>
+                      <b>Kilpa ryhmä</b>
+                    </h3>
+                    <h4 className="w3-text-teal">
+                      Tavoitteellista harjoittelua
+                    </h4>
+                    <p style={{ flexGrow: 1 }}>
+                      Ammattivalmennus kilpailijoiden teknisen osaamisen ja
+                      henkisen vahvuuden kehittämiseen.
+                    </p>
+                    <p className="w3-text-grey">
+                      <i className="fa fa-user w3-margin-right"></i>15+ vuotta
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -266,7 +288,7 @@ const NewHome = () => {
                     {course.title === "KN" &&
                       "KuntoNyrkkeily - Tehokas ja turvallinen treeni"}
                     {course.title === "nuoriso" &&
-                      "Nuorten Nyrkkeily - Hauska liikunta 13-17-vuotiaille"}
+                      "Nuorten Nyrkkeily - Hauska liikunta 12-15-vuotiaille"}
                     {course.title === "kilpa" &&
                       "KilpaNyrkkeily - Harrasta lajia ammattimaisesti"}
                   </p>
@@ -471,9 +493,9 @@ const NewHome = () => {
       )}
 
       {/* Contact Us section */}
-      <section className="w3-container w3-padding-64" id="contact">
-        <h2 className="w3-text-teal w3-center">Contact Us</h2>
-        <p className="w3-center">We&apos;d love to hear from you</p>
+      <section className="w3-container w3-padding-64 w3-asphalt" id="contact">
+        <h2 className="w3-text-teal w3-center">Ota yhteyttä</h2>
+        <p className="w3-center">Haluaisimme kuulla sinusta</p>
 
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-half">
@@ -483,7 +505,7 @@ const NewHome = () => {
               className="w3-container w3-card w3-padding"
             >
               <p>
-                <label>Name</label>
+                <label>Nimi</label>
                 <input
                   className="w3-input w3-border"
                   type="text"
@@ -501,7 +523,7 @@ const NewHome = () => {
                 />
               </p>
               <p>
-                <label>Message</label>
+                <label>Viesti</label>
                 <textarea
                   className="w3-input w3-border"
                   name="message"
@@ -511,7 +533,7 @@ const NewHome = () => {
               </p>
               <p>
                 <button className="w3-button w3-teal" type="submit">
-                  Send
+                  Lähetä
                 </button>
               </p>
             </form>
