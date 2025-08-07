@@ -192,7 +192,7 @@ function AdminDashboard() {
       {/* Пользователи */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Käyttäjät</h3>
-        <table className="w3-table w3-bordered w3-striped w3-small">
+        <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
           <thead className="w3-light-grey">
             <tr>
               <th>Nimi</th>
@@ -205,9 +205,9 @@ function AdminDashboard() {
           <tbody>
             {users.map((u) => (
               <tr key={u.id}>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
-                <td>
+                <td data-label="Nimi">{u.name}</td>
+                <td data-label="Email">{u.email}</td>
+                <td data-label="Rooli">
                   <span
                     className={`w3-tag w3-round ${
                       u.role === "admin"
@@ -220,7 +220,7 @@ function AdminDashboard() {
                     {u.role}
                   </span>
                 </td>
-                <td>
+                <td data-label="Kurssi">
                   {getUserEnrollments(u.id).length === 0 ? (
                     <em>Ei ole rekisteröintia</em>
                   ) : (
@@ -285,31 +285,10 @@ function AdminDashboard() {
                           </label>
                         </div>
                       </div>
-                      // <div
-                      //   key={enr.id}
-                      //   className="w3-padding-small w3-border w3-round-small w3-margin-bottom"
-                      // >
-                      //   <div>
-                      //     <strong>Курс:</strong> {enr.course.title}
-                      //   </div>
-                      //   <div>
-                      //     <strong>Сумма:</strong> €{enr.invoiceAmount}
-                      //   </div>
-                      //   <div>
-                      //     <label>
-                      //       <input
-                      //         type="checkbox"
-                      //         checked={enr.paymentConfirmedByAdmin}
-                      //         onChange={() => handleToggleConfirm(enr.id)}
-                      //       />{" "}
-                      //       Подтверждено
-                      //     </label>
-                      //   </div>
-                      // </div>
                     ))
                   )}
                 </td>
-                <td>
+                <td data-label="Toiminnot">
                   <button
                     className="w3-button w3-small w3-red w3-round"
                     onClick={() => handleDeleteUser(u.id)}
@@ -327,7 +306,7 @@ function AdminDashboard() {
       {/* trials */}
       <div className="w3-card w3-white w3-padding w3-round-large">
         <h3>KN kokeilijat</h3>
-        <table className="w3-table w3-bordered w3-striped w3-small">
+        <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
           <thead className="w3-light-grey">
             <tr>
               <th>Etunimi</th>
@@ -341,12 +320,14 @@ function AdminDashboard() {
           <tbody>
             {trialBookings.map((t) => (
               <tr key={t.id}>
-                <td>{t.firstName}</td>
-                <td>{t.lastName}</td>
-                <td>{t.email}</td>
-                <td>{t.phone}</td>
-                <td>{t.createdAt}</td>
-                <td>
+                <td data-label="Etunimi">{t.firstName}</td>
+                <td data-label="Sukunimi">{t.lastName}</td>
+                <td data-label="Email">{t.email}</td>
+                <td data-label="Puhelin">{t.phone}</td>
+                <td data-label="Rekisteröity pvm">
+                  {new Date(t.createdAt).toLocaleDateString("fi-FI")}
+                </td>
+                <td data-label="Toiminnot">
                   <button>x</button>
                 </td>
               </tr>
