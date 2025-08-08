@@ -8,7 +8,91 @@ function AdminDashboard() {
   const [trialBookings, setTrialBookings] = useState([]);
   // const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
+  const [messages, setMessages] = useState([]);
   const navigate = useNavigate();
+
+  const fetchUsers = async (token) => {
+    try {
+      const res = await fetch("/api/admin/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Ошибка получения списка пользователей");
+
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchEnrollments = async (token) => {
+    try {
+      const res = await fetch("/api/enrollments", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
+        },
+      });
+      if (!res.ok) throw new Error("Ошибка получения регистраций");
+
+      const data = await res.json();
+      setEnrollments(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchTrialBookings = async (token) => {
+    try {
+      const res = await fetch("/api/admin/trial-bookings", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
+        },
+      });
+      if (!res.ok) throw new Error("Ошибка получения пробных бронирований");
+      const data = await res.json();
+      setTrialBookings(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchMessages = async (token) => {
+    console.log(`🪪 Token for messages fetch: ${token}`);
+    try {
+      const res = await fetch("/api/admin/contact", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
+        },
+      });
+      if (!res.ok) throw new Error("Ошибка получения сообщений");
+
+      const data = await res.json();
+      setMessages(data);
+    } catch (err) {
+      console.error(err);
+      setError("Virhe viestien latauksessa.");
+    }
+  };
+
+  // const fetchCourses = async (token) => {
+  //   try {
+  //     const res = await fetch("/api/courses", {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     if (!res.ok) throw new Error("Ошибка получения курсов");
+
+  //     const data = await res.json();
+  //     setCourses(data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -19,7 +103,7 @@ function AdminDashboard() {
 
     const fetchAdminData = async () => {
       try {
-        const res = await fetch("/api/users/me", {
+        const res = await fetch("/api/admin/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -37,75 +121,13 @@ function AdminDashboard() {
         fetchUsers(token);
         fetchEnrollments(token);
         fetchTrialBookings(token);
+        fetchMessages(token);
         // fetchCourses(token);
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
       }
     };
-
-    const fetchUsers = async (token) => {
-      try {
-        const res = await fetch("/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Ошибка получения списка пользователей");
-
-        const data = await res.json();
-        setUsers(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    const fetchEnrollments = async (token) => {
-      try {
-        const res = await fetch("/api/enrollments", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
-          },
-        });
-        if (!res.ok) throw new Error("Ошибка получения регистраций");
-
-        const data = await res.json();
-        setEnrollments(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    const fetchTrialBookings = async (token) => {
-      try {
-        const res = await fetch("/api/trial-bookings", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
-          },
-        });
-        if (!res.ok) throw new Error("Ошибка получения пробных бронирований");
-        const data = await res.json();
-        setTrialBookings(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    // const fetchCourses = async (token) => {
-    //   try {
-    //     const res = await fetch("/api/courses", {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     });
-    //     if (!res.ok) throw new Error("Ошибка получения курсов");
-
-    //     const data = await res.json();
-    //     setCourses(data);
-    //   } catch (err) {
-    //     console.error(err);
-    //   }
-    // };
 
     fetchAdminData();
   }, [navigate]);
@@ -245,7 +267,7 @@ function AdminDashboard() {
         </p>
       </div>
 
-      {/* Пользователи */}
+      {/* users */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Käyttäjät</h3>
         <button
@@ -289,7 +311,7 @@ function AdminDashboard() {
                     getUserEnrollments(u.id).map((enr) => (
                       <div
                         key={enr.id}
-                        className="w3-padding-small w3-border w3-round-small w3-margin-bottom"
+                        className="w3-padding-small w3-border w3-round-small "
                       >
                         <div>
                           <strong>Kurssi:</strong> {enr.course.title}
@@ -299,11 +321,7 @@ function AdminDashboard() {
                         </div>
                         <div>
                           <strong>Lasku:</strong>{" "}
-                          <span
-                            className={`w3-tag w3-round ${
-                              enr.invoiceSent ? "w3-blue" : "w3-red"
-                            }`}
-                          >
+                          <span>
                             {enr.invoiceSent
                               ? "✅ on lähetetty"
                               : "Ei lähetetty"}
@@ -326,7 +344,7 @@ function AdminDashboard() {
                           <span
                             className={`w3-tag w3-round ${
                               enr.paymentConfirmedByAdmin
-                                ? "w3-purple"
+                                ? "w3-green"
                                 : "w3-orange"
                             }`}
                           >
@@ -336,14 +354,27 @@ function AdminDashboard() {
                           </span>
                         </div>
                         <div className="w3-margin-top">
-                          <label>
+                          <label
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            Vahvista maksun vastaanottaminen ={">"}
                             <input
-                              className="w3-check"
                               type="checkbox"
                               checked={enr.paymentConfirmedByAdmin}
                               onChange={() => handleToggleConfirm(enr.id)}
-                            />{" "}
-                            Vahvista maksun vastaanottaminen
+                              style={{
+                                width: "16px",
+                                height: "16px",
+                                accentColor: enr.paymentConfirmedByAdmin
+                                  ? "#4CAF50"
+                                  : "#ccc",
+                                opacity: enr.paymentConfirmedByAdmin ? 1 : 0.6,
+                              }}
+                            />
                           </label>
                         </div>
                       </div>
@@ -403,37 +434,63 @@ function AdminDashboard() {
         </table>
       </div>
 
-      {/* Курсы */}
-      {/* <div className="w3-card w3-white w3-padding w3-round-large">
-        <h3>Курсы</h3>
-        <table className="w3-table w3-bordered w3-striped w3-small">
-          <thead className="w3-light-grey">
+      {/* Saapuneet viestit */}
+      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
+        <h3>Saapuneet viestit</h3>
+        <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
+          <thead>
             <tr>
-              <th>Название</th>
-              <th>Описание</th>
-              <th>Дата начала</th>
-              <th>Цена</th>
+              <th>Nimi</th>
+              <th>Email</th>
+              <th>Viesti</th>
+              <th>Päivä</th>
+              <th>Vastaus</th>
             </tr>
           </thead>
           <tbody>
-            {courses.map((c) => (
-              <tr key={c.id}>
-                <td>{c.title}</td>
-                <td>{c.description}</td>
-                <td>{new Date(c.startDate).toLocaleDateString("ru-RU")}</td>
-                <td>{c.price} €</td>
+            {messages.map((m) => (
+              <tr key={m.id}>
+                <td>{m.name}</td>
+                <td>{m.email}</td>
+                <td>{m.message}</td>
+                <td>{new Date(m.createdAt).toLocaleDateString("fi-FI")}</td>
+                <td>
+                  {m.adminReply || (
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        const reply = e.target.reply.value;
+                        const token = localStorage.getItem("token");
+                        await fetch(`/api/admin/contact/${m.id}/reply`, {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify({ reply }),
+                        });
+                        fetchMessages(token);
+                      }}
+                    >
+                      <input
+                        name="reply"
+                        placeholder="Kirjoita vastaus"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="w3-button w3-teal w3-small"
+                      >
+                        Lähetä
+                      </button>
+                    </form>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button
-          onClick={() =>
-            window.open("/api/admin/summary/courses/pdf", "_blank")
-          }
-        >
-          Скачать отчёт по курсам
-        </button>
-      </div> */}
+      </div>
     </div>
   );
 }

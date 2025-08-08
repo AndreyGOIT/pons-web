@@ -65,7 +65,7 @@ const NewHome = () => {
 
       const result = await response.json();
       console.log("результат при регистрации: ", result);
-      setSuccessMessage(`Ilmoittautuminen onnistui!\n
+      setSuccessMessage(`
       Kurssi: ${result.enrollment.courseTitle}\n
       Summa: ${result.enrollment.invoiceAmount} €\n
       IBAN: ${result.enrollment.paymentIban}\n
@@ -90,7 +90,11 @@ const NewHome = () => {
             <img
               src="/images/MikaVuorinen_pons.png"
               alt="Member 1"
-              style={{ width: "45%" }}
+              style={{
+                width: "200px",
+                height: "200px",
+                objectFit: "cover",
+              }}
               className="w3-circle w3-hover-opacity"
             />
             <h3>Mika Vuorinen</h3>
@@ -101,7 +105,11 @@ const NewHome = () => {
             <img
               src="/images/AndyErokhin_pons.png"
               alt="Member 2"
-              style={{ width: "45%" }}
+              style={{
+                width: "200px",
+                height: "200px",
+                objectFit: "cover",
+              }}
               className="w3-circle w3-hover-opacity"
             />
             <h3>Andy Erokhin</h3>
@@ -112,7 +120,11 @@ const NewHome = () => {
             <img
               src="/images/DimiZhuravel_pons.png"
               alt="Member 3"
-              style={{ width: "45%" }}
+              style={{
+                width: "200px",
+                height: "200px",
+                objectFit: "cover",
+              }}
               className="w3-circle w3-hover-opacity"
             />
             <h3>Dimi Zhuravel</h3>
@@ -283,7 +295,14 @@ const NewHome = () => {
           {courses.map((course) => (
             <div key={course.id} className="w3-third w3-margin-bottom">
               <ul className="w3-ul w3-border w3-hover-shadow w3-white w3-card-4">
-                <li className="w3-theme w3-padding-16">
+                {/* <li className="w3-theme w3-padding-16"> */}
+                <li
+                  className={
+                    course.title === "nuoriso"
+                      ? "w3-gray w3-padding-16"
+                      : "w3-theme w3-padding-16"
+                  }
+                >
                   <p className="w3-xlarge w3-margin-0">
                     {course.title === "KN" &&
                       "KuntoNyrkkeily - Tehokas ja turvallinen treeni"}
@@ -477,10 +496,23 @@ const NewHome = () => {
 
             {successMessage && (
               <div
+                className="w3-panel w3-text-red w3-margin-top"
+                style={{ whiteSpace: "pre-line" }}
+              >
+                <h3>Ilmoittautuminen onnistui!</h3>
+              </div>
+            )}
+            {successMessage && (
+              <div
                 className="w3-panel w3-green w3-margin-top"
                 style={{ whiteSpace: "pre-line" }}
               >
                 {successMessage}
+              </div>
+            )}
+            {successMessage && (
+              <div className="w3-panel w3-margin-top">
+                <p>Kaikki maksutiedot on myös oma profiilisivullasi.</p>
               </div>
             )}
             {errorMessage && (
@@ -500,8 +532,26 @@ const NewHome = () => {
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-half">
             <form
-              action="/submit_contact"
-              method="post"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const name = formData.get("name");
+                const email = formData.get("email");
+                const message = formData.get("message");
+
+                const res = await fetch("/api/contact", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name, email, message }),
+                });
+
+                if (res.ok) {
+                  alert("Viesti lähetetty!");
+                  e.target.reset();
+                } else {
+                  alert("Virhe lähetyksessä");
+                }
+              }}
               className="w3-container w3-card w3-padding"
             >
               <p>

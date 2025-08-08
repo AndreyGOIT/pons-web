@@ -45,7 +45,7 @@ export const initializeDatabase = async () => {
     // await AppDataSource.getRepository(Course).clear();
 
     // await AppDataSource.query('PRAGMA foreign_keys = ON');
-    //---конец кода очистка данных из базы------
+    //---конец кода очистки данных из базы------
 
     const courseCount = await AppDataSource.getRepository(Course).count();
     if (courseCount === 0) {

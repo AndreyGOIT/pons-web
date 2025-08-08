@@ -19,6 +19,7 @@ function Profile() {
     // 🔹 1. Вспомогательная функция для получения регистраций
     const fetchEnrollments = async (userId) => {
       try {
+        // Correct user endpoint for fetching user's enrollments
         const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -37,6 +38,7 @@ function Profile() {
     // 🔹 2. Основная логика: получить профиль и если нужно — зарегистрировать на курс
     const fetchProfileAndRegister = async () => {
       try {
+        // Correct user profile endpoint
         const res = await fetch("/api/users/me", {
           headers: {
             "Content-Type": "application/json",
@@ -63,6 +65,7 @@ function Profile() {
         );
         if (pendingCourseId) {
           try {
+            // Correct endpoint for creating enrollment
             const enrollRes = await fetch("/api/enrollments", {
               method: "POST",
               headers: {
@@ -190,6 +193,7 @@ function Profile() {
   const handleMarkAsPaid = async (enrollmentId) => {
     const token = localStorage.getItem("token");
     try {
+      // Correct endpoint for marking enrollment as paid
       const res = await fetch(`/api/enrollments/${enrollmentId}/mark-paid`, {
         method: "PATCH",
         headers: {
@@ -217,7 +221,8 @@ function Profile() {
       return;
 
     try {
-      const token = localStorage.getItem("token"); // или sessionStorage, если ты его туда сохраняешь
+      const token = localStorage.getItem("token");
+      // Correct endpoint for deleting user's enrollment
       const res = await fetch(`/api/enrollments/${id}`, {
         method: "DELETE",
         headers: {
@@ -244,6 +249,7 @@ function Profile() {
       return;
 
     try {
+      // Correct endpoint for deleting own account
       const res = await fetch("/api/users/delete", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -424,26 +430,28 @@ function Profile() {
                         </tbody>
                       </table>
                     </div>
-                    <div className="w3-small w3-margin-top">
-                      <div className="w3-margin-bottom">
-                        <label className="w3-margin-right">
-                          <input
-                            type="checkbox"
-                            checked={!!e.invoicePaid}
-                            onChange={() => handleMarkAsPaid(e.id)}
-                          />{" "}
-                          Maksu suoritettu
-                        </label>
-                        {/* <label>
-                          <input
-                            type="checkbox"
-                            checked={!!e.paymentConfirmedByAdmin}
-                            disabled
-                          />{" "}
-                          Maksu hyvitetty tilille
-                        </label> */}
+                    {!e.adminConfirmedAt && (
+                      <div className="w3-small w3-margin-top">
+                        <div className="w3-margin-bottom">
+                          <label
+                            className="w3-margin-right"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            Kun maksu on suoritettu, ilmoita siitä klikkaamalla
+                            tähän {"> "}
+                            <input
+                              type="checkbox"
+                              checked={!!e.invoicePaid}
+                              onChange={() => handleMarkAsPaid(e.id)}
+                            />{" "}
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <footer className="w3-container-fluid w3-padding w3-dark-grey w3-margin-top">
                     <button
