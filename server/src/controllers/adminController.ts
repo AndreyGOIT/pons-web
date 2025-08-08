@@ -1,10 +1,12 @@
+// server/src/controllers/adminController.ts
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User, UserRole } from '../models/User';
-import { Course } from '../models/Course';
-import { generateCoursesPdf } from '../utils/pdf/generateCoursesReport';
+// import { Course } from '../models/Course';
+// import { generateCoursesPdf } from '../utils/pdf/generateCoursesReport';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { generateUsersPdf } from "../utils/pdf/generateUsersPdf";
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -77,14 +79,23 @@ export const updateAdminProfile = async (req: Request, res: Response) => {
   res.json({ message: 'Данные обновлены', admin });
 };
 
-// скачать PDF с курсами
-export const downloadCoursesPdf = async (req: Request, res: Response) => {
-  const courseRepo = AppDataSource.getRepository(Course);
-  const courses = await courseRepo.find();
+// download Users in PDF
+export const getUsersPdf = async (req: Request, res: Response) => {
+  const users = await AppDataSource.getRepository(User).find({
+    order: { name: "ASC" },
+  });
 
-  if (!courses.length) {
-    return res.status(404).json({ message: 'Нет курсов для отчёта' });
-  }
-
-  generateCoursesPdf(courses, res); // PDF будет отправлен напрямую в res
+  generateUsersPdf(users, res);
 };
+
+// скачать PDF с курсами
+// export const downloadCoursesPdf = async (req: Request, res: Response) => {
+//   const courseRepo = AppDataSource.getRepository(Course);
+//   const courses = await courseRepo.find();
+
+//   if (!courses.length) {
+//     return res.status(404).json({ message: 'Нет курсов для отчёта' });
+//   }
+
+//   generateCoursesPdf(courses, res); // PDF будет отправлен напрямую в res
+// };

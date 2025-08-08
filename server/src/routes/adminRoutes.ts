@@ -5,7 +5,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { adminOnly } from '../middlewares/adminOnly';
 import { catchAsync } from '../utils/catchAsync';
 import {  getAdminProfile, updateAdminProfile } from '../controllers/adminController';
-import { adminLogin, downloadCoursesPdf } from '../controllers/adminController';
+import { adminLogin, getUsersPdf } from '../controllers/adminController';
 import { getTrialBookings, deleteTrialBookings } from '../controllers/trialBookingController';
 
 
@@ -18,7 +18,7 @@ router.use(adminOnly);          // и должны быть admin
 
 router.get('/profile', catchAsync(getAdminProfile));   // GET /api/admin/profile
 router.put('/profile', catchAsync(updateAdminProfile)); // PUT /api/admin/profile
-router.get('/summary/courses/pdf', catchAsync(downloadCoursesPdf));
+router.get('/users/pdf', catchAsync(getUsersPdf)); // GET /api/admin/users/pdf
 
 router.get('/', catchAsync(getUsers));               // GET /api/admin/users
 router.get('/:id', catchAsync(getUserById));         // GET /api/admin/users/:id

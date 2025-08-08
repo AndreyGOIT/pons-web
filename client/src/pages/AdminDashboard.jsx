@@ -199,6 +199,39 @@ function AdminDashboard() {
       </div>
     );
 
+  // Function to download users PDF with authentication and trigger download
+  const downloadUsersPdf = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Kirjaudu sisään ladataksesi PDF:n.");
+      return;
+    }
+    try {
+      const response = await fetch("/api/admin/users/pdf", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("PDF lataus epäonnistui");
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "users.pdf";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 0);
+    } catch (err) {
+      alert("PDF lataus epäonnistui");
+      console.error(err);
+    }
+  };
+
   return (
     <div
       className="w3-container w3-light-grey w3-padding-32"
@@ -215,6 +248,12 @@ function AdminDashboard() {
       {/* Пользователи */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Käyttäjät</h3>
+        <button
+          className="w3-button w3-teal  w3-margin-bottom"
+          onClick={downloadUsersPdf}
+        >
+          Lataa PDF käyttäjistä
+        </button>
         <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
           <thead className="w3-light-grey">
             <tr>
