@@ -58,3 +58,12 @@ export const replyToMessage = async (req: Request, res: Response) => {
 
   res.json({ message: "Reply sent and email delivered" });
 };
+
+export const deleteMessage = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const msg = await repo.findOneBy({ id: Number(id) });
+  if (!msg) return res.status(404).json({ message: "Message not found" });
+
+  await repo.remove(msg);
+  res.json({ message: "Message deleted successfully" });
+};

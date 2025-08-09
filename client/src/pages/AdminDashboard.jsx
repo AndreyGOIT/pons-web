@@ -249,6 +249,23 @@ function AdminDashboard() {
     }
   };
 
+  // Handler for deleting a message
+  const handleDeleteMessage = async (id) => {
+    if (!window.confirm("Poistetaanko viesti?")) return;
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`/api/admin/contact/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Poistovirhe");
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+    } catch (err) {
+      console.error("Error deleting message:", err);
+      alert("Virhe viestin poistossa");
+    }
+  };
+
   return (
     <div
       className="w3-container w3-light-grey w3-padding-32"
@@ -440,6 +457,7 @@ function AdminDashboard() {
               <th>Viesti</th>
               <th>Päivä</th>
               <th>Vastaus</th>
+              <th>Toiminnot</th>
             </tr>
           </thead>
           <tbody>
@@ -480,6 +498,14 @@ function AdminDashboard() {
                       </button>
                     </form>
                   )}
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleDeleteMessage(m.id)}
+                    className="w3-button w3-small w3-red w3-round"
+                  >
+                    Poista
+                  </button>
                 </td>
               </tr>
             ))}
