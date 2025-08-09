@@ -25,7 +25,30 @@ const NavigationBar = () => {
       sessionStorage.removeItem("pendingCourseId");
       navigate("/profile");
     }
+    // Scroll to section if redirected to "/" with a sectionId in sessionStorage
+    if (window.location.pathname === "/") {
+      const pendingSectionId = sessionStorage.getItem("pendingSectionId");
+      if (pendingSectionId) {
+        sessionStorage.removeItem("pendingSectionId");
+        setTimeout(() => {
+          document
+            .getElementById(pendingSectionId)
+            ?.scrollIntoView({ behavior: "smooth" });
+        }, 100); // wait for DOM to render
+      }
+    }
   }, [navigate]);
+
+  const goToSection = (sectionId) => {
+    if (window.location.pathname !== "/") {
+      sessionStorage.setItem("pendingSectionId", sectionId);
+      navigate("/");
+    } else {
+      document
+        .getElementById(sectionId)
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <>
@@ -41,18 +64,42 @@ const NavigationBar = () => {
         >
           Close <i className="fa fa-remove"></i>
         </button>
-        <a href="#team" className="w3-bar-item w3-button">
+        <button
+          className="w3-bar-item w3-button"
+          onClick={() => {
+            goToSection("team");
+            closeNav();
+          }}
+        >
           Tiimi
-        </a>
-        <a href="#koulutuskurssit" className="w3-bar-item w3-button">
+        </button>
+        <button
+          className="w3-bar-item w3-button"
+          onClick={() => {
+            goToSection("koulutuskurssit");
+            closeNav();
+          }}
+        >
           Koulutuskurssit
-        </a>
-        <a href="#pricing" className="w3-bar-item w3-button">
+        </button>
+        <button
+          className="w3-bar-item w3-button"
+          onClick={() => {
+            goToSection("pricing");
+            closeNav();
+          }}
+        >
           Hinnasto
-        </a>
-        <a href="#contact" className="w3-bar-item w3-button">
+        </button>
+        <button
+          className="w3-bar-item w3-button"
+          onClick={() => {
+            goToSection("contact");
+            closeNav();
+          }}
+        >
           Yhteystiedot
-        </a>
+        </button>
 
         {!user ? (
           <>
@@ -114,7 +161,31 @@ const NavigationBar = () => {
             <img src="/images/pons_logo.jpg" alt="pons_logo" width="50px" />
           </Link>
 
-          <div className="w3-bar-item" style={{ marginTop: "3px" }}>
+          <button
+            className="w3-bar-item w3-button"
+            onClick={() => goToSection("team")}
+          >
+            Tiimi
+          </button>
+          <button
+            className="w3-bar-item w3-button"
+            onClick={() => goToSection("koulutuskurssit")}
+          >
+            Koulutuskurssit
+          </button>
+          <button
+            className="w3-bar-item w3-button"
+            onClick={() => goToSection("pricing")}
+          >
+            Hinnasto
+          </button>
+          <button
+            className="w3-bar-item w3-button"
+            onClick={() => goToSection("contact")}
+          >
+            Yhteystiedot
+          </button>
+          {/* <div className="w3-bar-item" style={{ marginTop: "3px" }}>
             <a href="#team" className=" w3-button w3-hide-small w3-hover-white">
               Tiimi
             </a>
@@ -136,7 +207,7 @@ const NavigationBar = () => {
             >
               Yhteystiedot
             </a>
-          </div>
+          </div> */}
           {/* block of code for login and register */}
           <div
             className="w3-bar-item w3-hide-small"

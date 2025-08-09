@@ -508,8 +508,8 @@ const NewHome = () => {
             )}
             {successMessage && (
               <div
-                className="w3-panel w3-green w3-margin-top"
-                style={{ whiteSpace: "pre-line" }}
+                className="w3-panel w3-green w3-margin-top "
+                style={{ whiteSpace: "pre-line", paddingBottom: "16px" }}
               >
                 {successMessage}
               </div>

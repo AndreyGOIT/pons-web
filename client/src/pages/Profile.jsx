@@ -161,20 +161,31 @@ function Profile() {
     if (!window.confirm("Poistetaanko tili? Tätä toimintoa ei voi perua."))
       return;
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Kirjaudu uudelleen.");
+      navigate("/login");
+      return;
+    }
+
     try {
       // Correct endpoint for deleting own account
-      const res = await fetch("/api/users/delete", {
+      const res = await fetch("/api/users/me", {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      if (!res.ok) throw new Error("Ошибка при удалении аккаунта");
+      if (!res.ok) throw new Error("Error while deleting");
 
-      localStorage.removeItem("token");
-      navigate("/register");
+      logout();
+      alert("Tili on poistettu onnistuneesti.");
+      navigate("/");
     } catch (err) {
-      console.error("Ошибка при удалении:", err);
-      alert("Не удалось удалить аккаунт.");
+      console.error("Error while deleting:", err);
+      alert("Failed to delete account.");
     }
   };
 
