@@ -53,8 +53,8 @@ const LoginModal = ({ onClose, onSuccess }) => {
         setError(data.message || "Login failed");
         // setEmail("");
         setPassword("");
-        setShake(true); // запуск анимации
-        setTimeout(() => setShake(false), 500); // сброс класса
+        setShake(true); // start animation
+        setTimeout(() => setShake(false), 500); // class reset
         return;
       }
 
@@ -62,10 +62,7 @@ const LoginModal = ({ onClose, onSuccess }) => {
       const { token, user } = data;
 
       localStorage.setItem("token", token);
-      console.log(
-        "Token as a result of login saved:",
-        localStorage.getItem("token")
-      );
+
       setEmail("");
       setPassword("");
       onSuccess({ token, user });
@@ -114,7 +111,7 @@ const LoginModal = ({ onClose, onSuccess }) => {
               />
             </p>
             <p>
-              <label>Password</label>
+              <label>Salasana</label>
               <input
                 className="w3-input w3-border"
                 type="password"
@@ -129,7 +126,7 @@ const LoginModal = ({ onClose, onSuccess }) => {
                 disabled={loading}
                 className="w3-button w3-teal w3-block"
               >
-                {loading ? "Please wait..." : "Login"}
+                {loading ? "Odota hetki..." : "Kirjaudu sisään"}
               </button>
             </p>
           </form>

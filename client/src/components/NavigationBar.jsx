@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import LoginModal from "./auth/LoginModal";
 import RegisterModal from "./auth/RegisterModal";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth"; // <-- импортируем хук из контекста
+import { useAuth } from "../context/useAuth"; // <-- import hook from context
 
 const NavigationBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const navigate = useNavigate();
-  const { user, login, logout } = useAuth(); // <-- получаем из контекста
+  const { user, login, logout } = useAuth(); // <-- we get it from the context
 
   const openNav = () => setSidebarOpen(true);
   const closeNav = () => setSidebarOpen(false);
@@ -42,7 +42,7 @@ const NavigationBar = () => {
           Close <i className="fa fa-remove"></i>
         </button>
         <a href="#team" className="w3-bar-item w3-button">
-          Team
+          Tiimi
         </a>
         <a href="#koulutuskurssit" className="w3-bar-item w3-button">
           Koulutuskurssit
@@ -51,7 +51,7 @@ const NavigationBar = () => {
           Hinnasto
         </a>
         <a href="#contact" className="w3-bar-item w3-button">
-          Contact
+          Yhteystiedot
         </a>
 
         {!user ? (
@@ -72,7 +72,7 @@ const NavigationBar = () => {
         ) : (
           <>
             <button className="w3-bar-item w3-button" onClick={goToProfile}>
-              Profile
+              Profiili
             </button>
             <button
               className="w3-bar-item w3-button"
@@ -89,7 +89,6 @@ const NavigationBar = () => {
       </nav>
 
       {/* Top Navbar */}
-
       <div className="w3-bar w3-theme-d2 w3-left-align">
         <div
           style={{
@@ -117,7 +116,7 @@ const NavigationBar = () => {
 
           <div className="w3-bar-item" style={{ marginTop: "3px" }}>
             <a href="#team" className=" w3-button w3-hide-small w3-hover-white">
-              Team
+              Tiimi
             </a>
             <a
               href="#koulutuskurssit"
@@ -135,7 +134,7 @@ const NavigationBar = () => {
               href="#contact"
               className=" w3-button w3-hide-small w3-hover-white"
             >
-              Contact
+              Yhteystiedot
             </a>
           </div>
           {/* block of code for login and register */}
@@ -145,7 +144,7 @@ const NavigationBar = () => {
           >
             {user ? (
               <div>
-                <span>Welcome, {user.name}!</span>
+                <span>Tervetuloa, {user.name}!</span>
                 <button
                   onClick={() => {
                     navigate("/profile");

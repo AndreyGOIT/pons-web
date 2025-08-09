@@ -6,11 +6,11 @@ function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
   const [trialBookings, setTrialBookings] = useState([]);
-  // const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
   const navigate = useNavigate();
 
+  // Fetch users
   const fetchUsers = async (token) => {
     try {
       const res = await fetch("/api/admin/users", {
@@ -25,6 +25,7 @@ function AdminDashboard() {
     }
   };
 
+  // Fetch enrollments
   const fetchEnrollments = async (token) => {
     try {
       const res = await fetch("/api/enrollments", {
@@ -43,6 +44,7 @@ function AdminDashboard() {
     }
   };
 
+  // Fetch trial bookings
   const fetchTrialBookings = async (token) => {
     try {
       const res = await fetch("/api/admin/trial-bookings", {
@@ -60,6 +62,7 @@ function AdminDashboard() {
     }
   };
 
+  // Fetch messages
   const fetchMessages = async (token) => {
     console.log(`🪪 Token for messages fetch: ${token}`);
     try {
@@ -80,20 +83,6 @@ function AdminDashboard() {
     }
   };
 
-  // const fetchCourses = async (token) => {
-  //   try {
-  //     const res = await fetch("/api/courses", {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     if (!res.ok) throw new Error("Ошибка получения курсов");
-
-  //     const data = await res.json();
-  //     setCourses(data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -101,6 +90,7 @@ function AdminDashboard() {
       return;
     }
 
+    // Fetch admin data
     const fetchAdminData = async () => {
       try {
         const res = await fetch("/api/admin/profile", {
@@ -122,7 +112,6 @@ function AdminDashboard() {
         fetchEnrollments(token);
         fetchTrialBookings(token);
         fetchMessages(token);
-        // fetchCourses(token);
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
@@ -132,6 +121,7 @@ function AdminDashboard() {
     fetchAdminData();
   }, [navigate]);
 
+  // 🔹 4. Handle user deletion
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Poistetaanko käyttäjä?")) return;
     const token = localStorage.getItem("token");
@@ -150,6 +140,7 @@ function AdminDashboard() {
     }
   };
 
+  // 🔹 5. Handle trial deletion
   const handleDeleteTrial = async (id) => {
     if (!window.confirm("Poistetaanko käyttäjä kokeilusta?")) return;
 
@@ -173,9 +164,11 @@ function AdminDashboard() {
     }
   };
 
+  // 🔹 6. Get user enrollments
   const getUserEnrollments = (userId) =>
     enrollments.filter((e) => e.user.id === userId);
 
+  // 🔹 7. Handle enrollment deletion
   const handleToggleConfirm = async (enrollmentId) => {
     const token = localStorage.getItem("token");
 
@@ -185,11 +178,11 @@ function AdminDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error("Ошибка подтверждения");
+      if (!res.ok) throw new Error("Confirmation error");
 
-      // Перезагрузка списка
+      // Reloading the list
       await res.json();
-      // const updated = await res.json();
+
       setEnrollments((prev) =>
         prev.map((e) =>
           e.id === enrollmentId
@@ -203,10 +196,11 @@ function AdminDashboard() {
       );
     } catch (err) {
       console.error(err);
-      alert("Не удалось подтвердить оплату.");
+      alert("Maksun vahvistaminen epäonnistui. Yritä uudelleen.");
     }
   };
 
+  // 🔹 8. Handle message reply
   if (error)
     return (
       <div className="w3-panel w3-red w3-padding">
@@ -214,10 +208,11 @@ function AdminDashboard() {
       </div>
     );
 
+  // 🔹 9. Render admin dashboard
   if (!admin)
     return (
       <div className="w3-container w3-center w3-padding-32">
-        <p>Загрузка...</p>
+        <p>Ladataan...</p>
       </div>
     );
 

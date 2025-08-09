@@ -22,9 +22,9 @@ const Header = () => {
     e.preventDefault();
     setError("");
 
-    // Простая проверка полей
+    // Simple Field Check
     if (!formData.firstName || !formData.lastName || !formData.email) {
-      setError("Пожалуйста, заполните обязательные поля.");
+      setError("Täytä pakolliset kentät.");
       return;
     }
 
@@ -44,11 +44,11 @@ const Header = () => {
           phone: "",
         });
       } else {
-        setError("Ошибка отправки. Попробуйте ещё раз.");
+        setError("Lähetysvirhe. Yritä uudelleen.");
       }
     } catch (err) {
       console.error(err);
-      setError("Ошибка соединения с сервером.");
+      setError("Virhe yhdistettäessä palvelimeen. Yritä myöhemmin uudelleen.");
     }
   };
 
@@ -65,7 +65,7 @@ const Header = () => {
           <button
             onClick={() => {
               setModalOpen(true);
-              setSubmitted(false); // сброс при повторном открытии
+              setSubmitted(false); // nollaa uudelleenavaamisen yhteydessä
             }}
             className="w3-button w3-xlarge w3-theme w3-hover-teal pulse-button"
             title="KOKEILE ILMAISEKSI"

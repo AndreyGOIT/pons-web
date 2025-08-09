@@ -85,7 +85,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
           <span onClick={onClose} className="w3-button w3-display-topright">
             &times;
           </span>
-          <h3>Login as admin</h3>
+          <h3>Kirjaudu sisään ylläpitäjänä</h3>
         </header>
 
         <div className="w3-container">
@@ -105,7 +105,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
               />
             </p>
             <p>
-              <label>Password</label>
+              <label>Salasana</label>
               <input
                 className="w3-input w3-border"
                 type="password"
@@ -120,7 +120,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
                 disabled={loading}
                 className="w3-button w3-teal w3-block"
               >
-                {loading ? "Please wait..." : "Login"}
+                {loading ? "Odota hetki..." : "Kirjaudu sisään"}
               </button>
             </p>
           </form>

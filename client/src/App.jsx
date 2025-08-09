@@ -9,7 +9,7 @@ import ScrollToTopButton from "./components/ScrollToTopButton";
 function App() {
   const location = useLocation();
 
-  // Показываем Header только на главной странице
+  // Show Header only on the main page
   const showHeader = location.pathname === "/";
 
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth"; // <-- импортируем хук из контекста
+import { useAuth } from "../context/useAuth"; // <-- import hook from context
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -16,7 +16,7 @@ function Profile() {
       return;
     }
 
-    // 🔹 1. Вспомогательная функция для получения регистраций
+    // 🔹 1. Helper function for getting registrations
     const fetchEnrollments = async (userId) => {
       try {
         // Correct user endpoint for fetching user's enrollments
@@ -35,7 +35,7 @@ function Profile() {
       }
     };
 
-    // 🔹 2. Основная логика: получить профиль и если нужно — зарегистрировать на курс
+    // 🔹 2. The basic logic: get a profile and, if necessary, register for a course
     const fetchProfileAndRegister = async () => {
       try {
         // Correct user profile endpoint
@@ -52,17 +52,13 @@ function Profile() {
           return;
         }
 
-        if (!res.ok)
-          throw new Error("Ошибка при получении данных пользователя");
+        if (!res.ok) throw new Error("Error retrieving user data");
 
         const data = await res.json();
         setUser(data);
 
         const pendingCourseId = sessionStorage.getItem("pendingCourseId");
-        console.log(
-          "pendingCourseId перед отправкой запроса в Profile:",
-          pendingCourseId
-        );
+        // If there is a pending course ID, register the user for it
         if (pendingCourseId) {
           try {
             // Correct endpoint for creating enrollment
@@ -80,116 +76,30 @@ function Profile() {
 
             if (enrollRes.ok) {
               console.log(
-                "✅ Автоматическая регистрация на курс прошла успешно"
+                "✅ Automatic registration for the course was successful"
               );
             } else {
-              console.warn(
-                "⚠️ Не удалось зарегистрировать пользователя на курс"
-              );
+              console.warn("⚠️ Failed to register user for course");
             }
           } catch (err) {
-            console.error("❌ Ошибка автоматической регистрации:", err);
+            console.error("❌ Automatic registration error:", err);
           } finally {
             sessionStorage.removeItem("pendingCourseId");
           }
         }
 
-        // ✅ Получить регистрации только после возможной записи
+        // ✅ Receive registration only after possible registration
         fetchEnrollments(data.id);
       } catch (err) {
-        console.error("Ошибка загрузки профиля:", err);
-        setError("Не удалось загрузить профиль. Авторизуйтесь снова.");
+        console.error("Error loading profile:", err);
+        setError("Failed to load profile. Please log in again.");
       }
     };
 
     fetchProfileAndRegister();
   }, [navigate]);
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     navigate("/login");
-  //     return;
-  //   }
 
-  //   const fetchProfile = async () => {
-  //     try {
-  //       const res = await fetch("/api/users/me", {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (res.status === 401) {
-  //         localStorage.removeItem("token");
-  //         navigate("/login");
-  //         return;
-  //       }
-
-  //       if (!res.ok)
-  //         throw new Error("Ошибка при получении данных пользователя");
-
-  //       const data = await res.json();
-  //       setUser(data);
-
-  //       const pendingCourseId = sessionStorage.getItem("pendingCourseId");
-  //       if (pendingCourseId) {
-  //         try {
-  //           const res = await fetch("/api/enrollments", {
-  //             method: "POST",
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //               Authorization: `Bearer ${token}`,
-  //             },
-  //             body: JSON.stringify({
-  //               userId: data.id,
-  //               courseId: Number(pendingCourseId),
-  //             }),
-  //           });
-
-  //           if (res.ok) {
-  //             console.log(
-  //               "✅ Автоматическая регистрация на курс прошла успешно"
-  //             );
-  //           } else {
-  //             console.warn(
-  //               "⚠️ Не удалось зарегистрировать пользователя на курс"
-  //             );
-  //           }
-  //         } catch (err) {
-  //           console.error("❌ Ошибка автоматической регистрации:", err);
-  //         } finally {
-  //           sessionStorage.removeItem("pendingCourseId");
-  //         }
-  //       }
-
-  //       fetchEnrollments(data.id);
-  //     } catch (err) {
-  //       console.error("Ошибка загрузки профиля:", err);
-  //       setError("Не удалось загрузить профиль. Авторизуйтесь снова.");
-  //     }
-  //   };
-
-  //   const fetchEnrollments = async (userId) => {
-  //     try {
-  //       const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-
-  //       if (!res.ok) throw new Error("Ошибка при получении регистраций");
-
-  //       const data = await res.json();
-  //       console.log("Регистрации пользователя:", data);
-  //       setEnrollments(data);
-  //     } catch (err) {
-  //       console.error("Ошибка при получении регистраций:", err);
-  //       setError("Не удалось загрузить регистрации.");
-  //     }
-  //   };
-
-  //   fetchProfile();
-  // }, [navigate]);
-
+  // 🔹 3. Handle marking enrollment as paid
   const handleMarkAsPaid = async (enrollmentId) => {
     const token = localStorage.getItem("token");
     try {
@@ -214,6 +124,7 @@ function Profile() {
     }
   };
 
+  // 🔹 4. Handle canceling enrollment
   const handleCancelEnrollment = async (id) => {
     if (
       !window.confirm("Haluatko varmasti peruuttaa kurssi-ilmoittautumisesi?")
@@ -239,11 +150,13 @@ function Profile() {
     }
   };
 
+  // 🔹 5. Handle logout
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
+  // 🔹 6. Handle account deletion
   const handleDelete = async () => {
     if (!window.confirm("Poistetaanko tili? Tätä toimintoa ei voi perua."))
       return;
@@ -265,6 +178,7 @@ function Profile() {
     }
   };
 
+  // 🔹 7. Define role color classes
   const roleColorClass = {
     admin: "w3-pale-red w3-text-red w3-border-red",
     coach: "w3-pale-blue w3-text-blue w3-border-blue",
@@ -278,6 +192,7 @@ function Profile() {
       </div>
     );
 
+  // 🔹 8. If user is not loaded yet, show loading state
   if (!user)
     return (
       <div className="w3-container w3-center w3-padding-24">
@@ -285,6 +200,7 @@ function Profile() {
       </div>
     );
 
+  // 🔹 9. Generate avatar URL
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     user.name
   )}&background=random&size=128`;
@@ -343,7 +259,7 @@ function Profile() {
               {enrollments.map((e) => (
                 <li key={e.id} className="w3-padding-16">
                   <header className="w3-container-fluid w3-padding w3-light-grey">
-                    <strong>{e.course?.title || "Без названия"}</strong>
+                    <strong>{e.course?.title || "Nimetön"}</strong>
                   </header>
                   <div className="w3-small w3-margin-top">
                     <div className="w3-margin-bottom">
@@ -352,7 +268,6 @@ function Profile() {
                           type="checkbox"
                           checked={!!e.invoiceSent}
                           readOnly
-                          // disabled
                         />{" "}
                         <label className="w3-margin-right">
                           Lasku on lähetetty

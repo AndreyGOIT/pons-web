@@ -17,7 +17,7 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
-      {/* Добавьте другие маршруты по мере необходимости */}
+      {/* Add other routes as needed. */}
     </Routes>
   );
 }

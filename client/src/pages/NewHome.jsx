@@ -2,8 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const NewHome = () => {
-  const { user } = useContext(AuthContext); // Предполагается, что user = { id, name, email, ... }
-  console.log("User from AuthContext:", user);
+  const { user } = useContext(AuthContext);
+  // console.log("User from AuthContext:", user);
   const [courses, setCourses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -23,14 +23,12 @@ const NewHome = () => {
   }, []);
 
   const handleOpenModal = (course) => {
-    console.log("handleOpenModal - user: ", user);
-    console.log("handleOpenModal - course: ", course);
     if (!user) {
       sessionStorage.setItem("pendingCourseId: ", course.id);
       setShowAuthModal(true);
       return;
     }
-    console.log("user в сеансе выбора курса существует: ", user);
+
     setSelectedCourse(course);
     setIsModalOpen(true);
   };
@@ -47,7 +45,13 @@ const NewHome = () => {
     setSuccessMessage("");
     setErrorMessage("");
 
-    const token = localStorage.getItem("token"); // или из контекста
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setErrorMessage("You must be logged in to enroll.");
+      return;
+    }
+
     try {
       const response = await fetch("/api/enrollments", {
         method: "POST",
@@ -64,7 +68,7 @@ const NewHome = () => {
       if (!response.ok) throw new Error("Enrollment failed.");
 
       const result = await response.json();
-      console.log("результат при регистрации: ", result);
+
       setSuccessMessage(`
       Kurssi: ${result.enrollment.courseTitle}\n
       Summa: ${result.enrollment.invoiceAmount} €\n

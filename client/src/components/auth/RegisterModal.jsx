@@ -112,7 +112,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
 
           <form onSubmit={handleRegister}>
             <p>
-              <label>Name</label>
+              <label>Nimi</label>
               <input
                 className="w3-input w3-border"
                 type="text"
@@ -134,7 +134,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
               />
             </p>
             <p>
-              <label>Password</label>
+              <label>Salasana</label>
               <input
                 className="w3-input w3-border"
                 type="password"
@@ -145,7 +145,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
               />
             </p>
             <p>
-              <label>Confirm Password</label>
+              <label>Vahvista salasana</label>
               <input
                 className="w3-input w3-border"
                 type="password"
@@ -161,7 +161,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
                 disabled={loading}
                 className="w3-button w3-teal w3-block"
               >
-                {loading ? "Please wait..." : "Register"}
+                {loading ? "Odota hetki..." : "Rekisteröidy"}
               </button>
             </p>
           </form>
