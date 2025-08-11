@@ -302,17 +302,17 @@ const NewHome = () => {
                 {/* <li className="w3-theme w3-padding-16"> */}
                 <li
                   className={
-                    course.title === "nuoriso"
+                    course.title === "Nuoriso ryhmä"
                       ? "w3-gray w3-padding-16"
                       : "w3-theme w3-padding-16"
                   }
                 >
                   <p className="w3-xlarge w3-margin-0">
-                    {course.title === "KN" &&
+                    {course.title === "KN - kuntonyrkkeily" &&
                       "KuntoNyrkkeily - Tehokas ja turvallinen treeni"}
-                    {course.title === "nuoriso" &&
+                    {course.title === "Nuoriso ryhmä" &&
                       "Nuorten Nyrkkeily - Hauska liikunta 12-15-vuotiaille"}
-                    {course.title === "kilpa" &&
+                    {course.title === "Kilparyhmä" &&
                       "KilpaNyrkkeily - Harrasta lajia ammattimaisesti"}
                   </p>
                 </li>
@@ -325,11 +325,11 @@ const NewHome = () => {
                   }}
                 >
                   <p>
-                    {course.title === "KN" &&
+                    {course.title === "KN - kuntonyrkkeily" &&
                       "Polta kalorit ja paranna kuntoasi hauskassa ryhmätreenissä. Sopii aloittelijoille ja edistyneille!"}
-                    {course.title === "nuoriso" &&
+                    {course.title === "Nuoriso ryhmä" &&
                       "Nuorten turvallinen ja motivoiva nyrkkeilyohjelma. Kehitä itsevarmuutta, kuntoa ja tiimityötaitoja!"}
-                    {course.title === "kilpa" &&
+                    {course.title === "Kilparyhmä" &&
                       "Valmistaudu kilpailuihin ammattivalmentajien johdolla. Tekninen harjoittelu ja ottelukokemus."}
                     <br />
                     <br />
@@ -340,16 +340,19 @@ const NewHome = () => {
                   <p>
                     <i className="fa fa-calendar w3-text-teal"></i>{" "}
                     <b>Harjoitusajat:</b>{" "}
-                    {course.title === "nuoriso"
-                      ? "Ti & To 16-17"
-                      : "Ma, Ke & Pe 18-19.30"}
+                    {course.title === "Nuoriso ryhmä"
+                      ? "Tiistai & Torstai 16.00 - 17.00   "
+                      : "Ma, Ke 19-20.30 & Pe 18-19.30"}
                   </p>
                 </li>
                 <li className="w3-padding-16">
                   <p>
                     <i className="fa fa-clock-o w3-text-teal"></i> <b>Kesto:</b>{" "}
-                    {course.title === "nuoriso" ? "30 treeniä" : "45 treeniä"} (
-                    {course.title === "nuoriso"
+                    {course.title === "Nuoriso ryhmä"
+                      ? "30 treeniä"
+                      : "45 treeniä"}{" "}
+                    (
+                    {course.title === "Nuoriso ryhmä"
                       ? "2 krt/viikossa"
                       : "3 krt/viikossa"}
                     )
@@ -359,7 +362,7 @@ const NewHome = () => {
                   <p>
                     <i className="fa fa-trophy w3-text-teal"></i>{" "}
                     <b>Sisältö:</b>{" "}
-                    {course.title === "nuoriso"
+                    {course.title === "Nuoriso ryhmä"
                       ? "Perustekniikat ja liikunta"
                       : "Tekniikka, kunto ja strategia"}
                   </p>
@@ -372,9 +375,9 @@ const NewHome = () => {
                     <br />
                     <span className="w3-small">
                       (
-                      {course.title === "nuoriso"
-                        ? "4,67 €/treeni"
-                        : "3,89 €/treeni"}
+                      {course.title === "Nuoriso ryhmä"
+                        ? "3,60 €/treeni"
+                        : "2,95 €/treeni"}
                       )
                     </span>
                   </p>
@@ -392,15 +395,16 @@ const NewHome = () => {
                   >
                     <i className="fa fa-check"></i> <b>ILMOITTAUDU NYT</b>
                   </button>
-                  <p className="w3-small w3-margin-top">
+                  {/* <p className="w3-small w3-margin-top">
                     Vain {course.title === "nuoriso" ? "15" : "10"} paikkaa
                     jäljellä!
-                  </p>
+                  </p> */}
                 </li>
               </ul>
             </div>
           ))}
         </div>
+
         {/*---alkuversio
           <div className="w3-row-padding w3-margin-top w3-center">
             {courses.map((course) => (
@@ -624,7 +628,7 @@ const NewHome = () => {
                   href="mailto:mika.vuorinen@pons.fi"
                   className="w3-text-dark-grey"
                 >
-                  mika.vuorinen@pons.fi
+                  mikvuo.pns@gmail.com
                 </a>
               </p>
             </div>

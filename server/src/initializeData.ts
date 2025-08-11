@@ -56,21 +56,21 @@ export const initializeDatabase = async () => {
         {
           title: CourseType.KN,
           description: 'Kuntonyrkkeily on tehokas ja hauska tapa kohottaa kuntoa, kehittää koordinaatiota ja purkaa stressiä. Kurssi sopii kaikentasoisille osallistujille – aiempaa kokemusta ei tarvita.',
-          price: 175,
+          price: 135,
           startDate: autumnStart,
           endDate: autumnEnd,
         },
         {
           title: CourseType.NUORISO,
           description: 'Nuorten nyrkkeilykurssi keskittyy tekniikkaan, kunnon kehittämiseen ja itsevarmuuden kasvattamiseen. Harjoitukset pidetään rennossa ja kannustavassa ilmapiirissä.',
-          price: 140,
+          price: 125,
           startDate: autumnStart,
           endDate: autumnEnd,
         },
         {
           title: CourseType.KILPA,
           description: 'Kilpanyrkkeilyn kurssi on suunnattu kokeneemmille harrastajille, jotka haluavat hioa taitojaan ja valmistautua otteluihin. Treenit sisältävät kovatehoisia harjoituksia ja sparrausta.',
-          price: 200,
+          price: 150,
           startDate: autumnStart,
           endDate: autumnEnd,
         }

@@ -185,29 +185,7 @@ const NavigationBar = () => {
           >
             Yhteystiedot
           </button>
-          {/* <div className="w3-bar-item" style={{ marginTop: "3px" }}>
-            <a href="#team" className=" w3-button w3-hide-small w3-hover-white">
-              Tiimi
-            </a>
-            <a
-              href="#koulutuskurssit"
-              className=" w3-button w3-hide-small w3-hover-white"
-            >
-              Koulutuskurssit
-            </a>
-            <a
-              href="#pricing"
-              className=" w3-button w3-hide-small w3-hover-white"
-            >
-              Hinnasto
-            </a>
-            <a
-              href="#contact"
-              className=" w3-button w3-hide-small w3-hover-white"
-            >
-              Yhteystiedot
-            </a>
-          </div> */}
+
           {/* block of code for login and register */}
           <div
             className="w3-bar-item w3-hide-small"
