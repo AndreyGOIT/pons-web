@@ -5,7 +5,7 @@ services:
     branch: main
     rootDir: server
     buildCommand: npm install && npm run build
-    startCommand: npm --prefix server start
+    startCommand: npm start
     plan: free
     envVars:
       - key: DB_HOST
