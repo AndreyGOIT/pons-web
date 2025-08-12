@@ -12,23 +12,23 @@ export class Course {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  // @Column({ type: 'enum', enum: CourseType }) // Use the enum type
-  @Column({ type: 'text' }) //for SQLITE
+  @Column({ type: 'enum', enum: CourseType }) // Use the enum type
+  // @Column({ type: 'text' }) //for SQLITE
   title!: CourseType;
 
   @Column({ type: 'text', nullable: true })
   description!: string;
 
-  @Column({ type: 'decimal', default: 0 })
+  @Column({ type: 'decimal',precision: 10, scale: 2,  default: 0 })
   price!: number;
 
   // Дата начала курса
-  @Column({ type: 'text', nullable: true }) // Используем TEXT, потому что SQLite не имеет отдельного типа DATE
-  startDate!: string; // можно использовать Date, но с SQLite проще как string (ISO формат)
+  @Column({ type: 'date', nullable: true })
+  startDate!: Date;
 
   // Дата окончания курса
-  @Column({ type: 'text', nullable: true })
-  endDate!: string;
+  @Column({ type: 'date', nullable: true })
+  endDate!: Date;
 
   @CreateDateColumn()
   createdAt!: Date;

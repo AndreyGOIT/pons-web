@@ -39,18 +39,19 @@ export const initializeDatabase = async () => {
 
     // === Курсы ===
     //------очистка данных из базы---------
-    // await AppDataSource.query('PRAGMA foreign_keys = OFF');
+    // await AppDataSource.query('SET FOREIGN_KEY_CHECKS=0');
 
     // await AppDataSource.getRepository(Enrollment).clear();
     // await AppDataSource.getRepository(Course).clear();
 
-    // await AppDataSource.query('PRAGMA foreign_keys = ON');
+    // await AppDataSource.query('SET FOREIGN_KEY_CHECKS=1');
     //---конец кода очистки данных из базы------
 
     const courseCount = await AppDataSource.getRepository(Course).count();
     if (courseCount === 0) {
-      const autumnStart = new Date(2025, 7, 25).toISOString(); // Месяц — с нуля
-      const autumnEnd = new Date(2025, 11, 12).toISOString();
+      const autumnStart = new Date(2025, 8, 1);
+      const autumnStartNuoriso = new Date(2025, 8, 2);
+      const autumnEnd = new Date(2025, 11, 12);
 
       const courses = [
         {
@@ -64,7 +65,7 @@ export const initializeDatabase = async () => {
           title: CourseType.NUORISO,
           description: 'Nuorten nyrkkeilykurssi keskittyy tekniikkaan, kunnon kehittämiseen ja itsevarmuuden kasvattamiseen. Harjoitukset pidetään rennossa ja kannustavassa ilmapiirissä.',
           price: 125,
-          startDate: autumnStart,
+          startDate: autumnStartNuoriso,
           endDate: autumnEnd,
         },
         {

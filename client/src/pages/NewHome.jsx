@@ -72,6 +72,7 @@ const NewHome = () => {
       setSuccessMessage(`
       Kurssi: ${result.enrollment.courseTitle}\n
       Summa: ${result.enrollment.invoiceAmount} €\n
+      Maksunsaaja: Porvoon Nyrkkeilyseura ry \n
       IBAN: ${result.enrollment.paymentIban}\n
       Viitenumero: ${result.enrollment.paymentReference}\n
       Eräpäivä: ${result.enrollment.invoiceDueDate}`);
@@ -299,7 +300,6 @@ const NewHome = () => {
           {courses.map((course) => (
             <div key={course.id} className="w3-third w3-margin-bottom">
               <ul className="w3-ul w3-border w3-hover-shadow w3-white w3-card-4">
-                {/* <li className="w3-theme w3-padding-16"> */}
                 <li
                   className={
                     course.title === "Nuoriso ryhmä"
@@ -341,7 +341,7 @@ const NewHome = () => {
                     <i className="fa fa-calendar w3-text-teal"></i>{" "}
                     <b>Harjoitusajat:</b>{" "}
                     {course.title === "Nuoriso ryhmä"
-                      ? "Tiistai & Torstai 16.00 - 17.00   "
+                      ? "Tiistai & Torstai 17.00 - 18.00   "
                       : "Ma, Ke 19-20.30 & Pe 18-19.30"}
                   </p>
                 </li>
@@ -404,79 +404,6 @@ const NewHome = () => {
             </div>
           ))}
         </div>
-
-        {/*---alkuversio
-          <div className="w3-row-padding w3-margin-top w3-center">
-            {courses.map((course) => (
-              <div key={course.id} className="w3-third w3-margin-bottom">
-                <ul className="w3-ul w3-border w3-hover-shadow w3-white w3-card-4">
-                  <li className="w3-theme w3-padding-16">
-                    <p className="w3-xlarge w3-margin-0">{course.title}</p>
-                  </li>
-                  <li
-                    className="w3-padding-16"
-                    style={{
-                      height: "150px",
-                      overflowY:
-                        "auto",
-                      minHeight:
-                        "150px",
-                    }}>
-                    <p>{course.description}</p>
-                  </li>
-                  <li className="w3-padding-16">
-                    <p>
-                      {course.title === "nuoriso"
-                        ? "2 krt/viikossa"
-                        : "3 krt/viikossa"}
-                    </p>
-                  </li>
-                  <li className="w3-padding-16">
-                    <p>
-                      {course.title === "nuoriso" ? "30 kertaa" : "45 kertaa"}
-                    </p>
-                  </li>
-                  <li className="w3-padding-16">
-                    <p>
-                      {course.title === "nuoriso"
-                        ? "60 min/treeni"
-                        : "90 min/treeni"}
-                    </p>
-                  </li>
-                  <li className="w3-padding-16">
-                    <p>
-                      <b>
-                        {course.title === "nuoriso"
-                          ? "4,67 €/1 treeni"
-                          : "3,89 €/1 treeni"}
-                      </b>
-                    </p>
-                  </li>
-                  <li className="w3-padding-16">
-                    <p>
-                      {new Date(course.startDate).toLocaleDateString("fi-FI")} –{" "}
-                      {new Date(course.endDate).toLocaleDateString("fi-FI")}
-                    </p>
-                  </li>
-                  <li className="w3-padding-16">
-                    <h2 className="w3-wide">
-                      <i className="fa fa-eur"></i> {course.price}
-                    </h2>
-                    <span className="w3-opacity">/ syyskausi</span>
-                  </li>
-                  <li className="w3-theme-l5 w3-padding-24">
-                    <button
-                      className="w3-button w3-teal w3-round-large"
-                      onClick={() => handleOpenModal(course)}
-                    >
-                      <i className="fa fa-check"></i> Ilmoittaudu
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            ))}
-          </div>
-        */}
       </section>
 
       {/* Modal */}

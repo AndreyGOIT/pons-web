@@ -33,7 +33,8 @@ export class User {
   phoneNumber?: string;
 
   @Column({
-    type: 'text',
+    type: 'varchar',
+    length: 50,
     default: UserRole.CLIENT,
   })
   role!: UserRole;
