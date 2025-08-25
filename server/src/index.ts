@@ -1,5 +1,6 @@
 // src/index.ts
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import { AppDataSource } from './data-source';
 import { initializeDatabase } from './initializeData';
@@ -19,15 +20,20 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5050;
 
+// ----------------- Middleware -----------------
+app.use(cors({
+  origin: process.env.FRONTEND_URL, // фронт локально
+  credentials: true,
+}));
 app.use('/public', express.static('public'));
 app.use(express.json());
 
-// Админские маршруты
+// ----admin routes----
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/trial-bookings', trialBookingAdminRoutes);
 app.use('/api/admin/contact', contactAdminRoutes);
 
-// Публичные маршруты
+// ----user routes----
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);

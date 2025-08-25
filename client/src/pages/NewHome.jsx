@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+
 const NewHome = () => {
   const { user } = useContext(AuthContext);
   // console.log("User from AuthContext:", user);
@@ -14,10 +16,14 @@ const NewHome = () => {
   // Fetch courses from the server
   useEffect(() => {
     const fetchCourses = async () => {
-      const res = await fetch("/api/courses");
-      const data = await res.json();
-      console.log("data - courses: ", data);
-      setCourses(data);
+      try {
+        const res = await fetch(`${API_BASE}/courses`);
+        const data = await res.json();
+        console.log("data - courses: ", data);
+        setCourses(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке курсов:", error);
+      }
     };
     fetchCourses();
   }, []);
@@ -53,7 +59,7 @@ const NewHome = () => {
     }
 
     try {
-      const response = await fetch("/api/enrollments", {
+      const response = await fetch(`${API_BASE}/enrollments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -474,11 +480,14 @@ const NewHome = () => {
                 const email = formData.get("email");
                 const message = formData.get("message");
 
-                const res = await fetch("/api/contact", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ name, email, message }),
-                });
+                const res = await fetch(
+                  `${import.meta.env.VITE_API_BASE}/api/contact`,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, message }),
+                  }
+                );
 
                 if (res.ok) {
                   alert("Viesti lähetetty!");

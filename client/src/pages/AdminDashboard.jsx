@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+
 function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
   const [users, setUsers] = useState([]);
@@ -13,7 +15,7 @@ function AdminDashboard() {
   // Fetch users
   const fetchUsers = async (token) => {
     try {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch(`${API_BASE}/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Ошибка получения списка пользователей");
@@ -28,7 +30,7 @@ function AdminDashboard() {
   // Fetch enrollments
   const fetchEnrollments = async (token) => {
     try {
-      const res = await fetch("/api/enrollments", {
+      const res = await fetch(`${API_BASE}/enrollments`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +49,7 @@ function AdminDashboard() {
   // Fetch trial bookings
   const fetchTrialBookings = async (token) => {
     try {
-      const res = await fetch("/api/admin/trial-bookings", {
+      const res = await fetch(`${API_BASE}/admin/trial-bookings`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +68,7 @@ function AdminDashboard() {
   const fetchMessages = async (token) => {
     console.log(`🪪 Token for messages fetch: ${token}`);
     try {
-      const res = await fetch("/api/admin/contact", {
+      const res = await fetch(`${API_BASE}/admin/contact`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +95,7 @@ function AdminDashboard() {
     // Fetch admin data
     const fetchAdminData = async () => {
       try {
-        const res = await fetch("/api/admin/profile", {
+        const res = await fetch(`${API_BASE}/admin/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -127,7 +129,7 @@ function AdminDashboard() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`/api/admin/users/${id}`, {
+      const res = await fetch(`${API_BASE}/admin/users/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -147,7 +149,7 @@ function AdminDashboard() {
     const token = localStorage.getItem("token");
     console.log("🪪 Token for trial delete:", token);
     try {
-      const res = await fetch(`/api/admin/trial-bookings/${id}`, {
+      const res = await fetch(`${API_BASE}/admin/trial-bookings/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -173,10 +175,13 @@ function AdminDashboard() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`/api/enrollments/${enrollmentId}/confirm`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/enrollments/${enrollmentId}/confirm`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) throw new Error("Confirmation error");
 
@@ -224,7 +229,7 @@ function AdminDashboard() {
       return;
     }
     try {
-      const response = await fetch("/api/admin/users/pdf", {
+      const response = await fetch(`${API_BASE}/admin/users/pdf`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

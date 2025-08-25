@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth"; // <-- import hook from context
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+
 function Profile() {
   const [user, setUser] = useState(null);
   const [enrollments, setEnrollments] = useState([]);
@@ -20,9 +22,12 @@ function Profile() {
     const fetchEnrollments = async (userId) => {
       try {
         // Correct user endpoint for fetching user's enrollments
-        const res = await fetch(`/api/enrollments/mine?userId=${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${API_BASE}/enrollments/mine?userId=${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (!res.ok) throw new Error("Ошибка при получении регистраций");
 
@@ -39,7 +44,7 @@ function Profile() {
     const fetchProfileAndRegister = async () => {
       try {
         // Correct user profile endpoint
-        const res = await fetch("/api/users/me", {
+        const res = await fetch(`${API_BASE}/users/me`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -62,7 +67,7 @@ function Profile() {
         if (pendingCourseId) {
           try {
             // Correct endpoint for creating enrollment
-            const enrollRes = await fetch("/api/enrollments", {
+            const enrollRes = await fetch(`${API_BASE}/enrollments`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -104,13 +109,16 @@ function Profile() {
     const token = localStorage.getItem("token");
     try {
       // Correct endpoint for marking enrollment as paid
-      const res = await fetch(`/api/enrollments/${enrollmentId}/mark-paid`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `${API_BASE}/enrollments/${enrollmentId}/mark-paid`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!res.ok) throw new Error("Ошибка при отметке оплаты");
 
@@ -134,7 +142,7 @@ function Profile() {
     try {
       const token = localStorage.getItem("token");
       // Correct endpoint for deleting user's enrollment
-      const res = await fetch(`/api/enrollments/${id}`, {
+      const res = await fetch(`${API_BASE}/enrollments/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -170,7 +178,7 @@ function Profile() {
 
     try {
       // Correct endpoint for deleting own account
-      const res = await fetch("/api/users/me", {
+      const res = await fetch(`${API_BASE}/users/me`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
