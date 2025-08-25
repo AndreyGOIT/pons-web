@@ -5,7 +5,7 @@ services:
     branch: main
     rootDir: server
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node dist/index.js
     plan: free
     envVars:
       - key: DB_HOST
@@ -22,6 +22,8 @@ services:
         sync: false
       - key: NODE_ENV
         value: production
+      - key: FRONTEND_URL
+        value: "https://pons-frontend.onrender.com"
 
   - type: web
     name: pons-frontend
@@ -33,4 +35,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_BASE
-        sync: false
+        value: "https://pons-backend.onrender.com/api"
