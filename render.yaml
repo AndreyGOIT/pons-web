@@ -25,9 +25,8 @@ services:
       - key: FRONTEND_URL
         value: "https://pons-frontend.onrender.com"
 
-  - type: web
+  - type: static
     name: pons-frontend
-    runtime: static
     branch: main
     rootDir: client
     buildCommand: npm install && npm run build
@@ -35,4 +34,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_BASE
-        value: "https://pons-backend.onrender.com/api"
+        sync: false
