@@ -20,12 +20,16 @@ const Footer = () => {
             <a
               href="https://www.facebook.com/porvoonnyrkkeilyseura"
               className="w3-button w3-theme-d3 w3-hover-opacity w3-margin-right"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <i className="fab fa-facebook-f"></i>
             </a>
             <a
               href="https://www.instagram.com/pons_nyrkkeily/"
               className="w3-button w3-theme-d3 w3-hover-opacity"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <i className="fab fa-instagram"></i>
             </a>
@@ -45,8 +49,8 @@ const Footer = () => {
               Robert Helenius ja Arslan Khataev.
             </p>
             <p>
-              Vuonna 2024 seura keskittyy nuorten harrastusnyrkkeilyyn ja
-              kilpanyrkkeilyyn.
+              Vuonna 2025 seura keskittyy nuorten harrastusnyrkkeilyyn ja
+              kuntonyrkkeilyyn.
             </p>
           </div>
 
@@ -58,7 +62,7 @@ const Footer = () => {
           {/* Yhteystiedot */}
           <div className="w3-third w3-left-align w3-padding">
             <h5>Yhteystiedot</h5>
-            <p>📧 pons@pons.fi</p>
+            <p>📧 mikvuo.pns@gmail.com</p>
             <p>📍 Kirkkokatu 1, 06100 Porvoo</p>
             <p>💳 FI78 4055 0012 3222 24</p>
           </div>
@@ -77,48 +81,6 @@ const Footer = () => {
           </button>
         </div>
       </footer>
-      {/* <footer className="w3-container w3-padding-32 w3-theme-d1 w3-center">
-        <h4>Seuraa meitä / Follow us</h4>
-
-        <div className="w3-margin-bottom">
-          <a
-            className="w3-button w3-large w3-theme-d3 w3-hover-opacity"
-            href="https://www.facebook.com/porvoonnyrkkeilyseura"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Facebook"
-          >
-            <i className="fab fa-facebook-f"></i>
-          </a>
-          <a
-            className="w3-button w3-large w3-theme-d3 w3-hover-opacity"
-            href="https://www.instagram.com/pons_nyrkkeily/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Instagram"
-          >
-            <i className="fab fa-instagram"></i>
-          </a>
-        </div>
-
-        <div>
-          <Link
-            to="/"
-            className="w3-bar-item w3-button "
-            style={{ marginLeft: "10px", padding: "5px" }}
-          >
-            <img src="/images/pons_logo.jpg" alt="pons_logo" width="100px" />
-          </Link>
-        </div>
-
-        <p>(c) Porvoon Nyrkkelyseura PONS, 2025</p>
-        <button
-          className="w3-button w3-small w3-theme-l3 w3-hover-theme w3-hide-small"
-          onClick={() => setShowAdminLoginModal(true)}
-        >
-          Admin Login
-        </button>
-      </footer> */}
 
       {showAdminLoginModal && (
         <AdminLoginModal

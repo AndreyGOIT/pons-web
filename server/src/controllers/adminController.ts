@@ -2,8 +2,6 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User, UserRole } from '../models/User';
-// import { Course } from '../models/Course';
-// import { generateCoursesPdf } from '../utils/pdf/generateCoursesReport';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateUsersPdf } from "../utils/pdf/generateUsersPdf";
@@ -87,15 +85,3 @@ export const getUsersPdf = async (req: Request, res: Response) => {
 
   generateUsersPdf(users, res);
 };
-
-// скачать PDF с курсами
-// export const downloadCoursesPdf = async (req: Request, res: Response) => {
-//   const courseRepo = AppDataSource.getRepository(Course);
-//   const courses = await courseRepo.find();
-
-//   if (!courses.length) {
-//     return res.status(404).json({ message: 'Нет курсов для отчёта' });
-//   }
-
-//   generateCoursesPdf(courses, res); // PDF будет отправлен напрямую в res
-// };

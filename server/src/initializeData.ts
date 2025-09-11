@@ -26,9 +26,9 @@ export const initializeDatabase = async () => {
 
     if (adminCount === 0) {
       const admin = new User();
-      admin.name = 'Admin';
-      admin.email = 'admin@pons.fi';
-      admin.password = await bcrypt.hash('admin123', 10);
+      admin.name = 'Mika';
+      admin.email = 'mika@pons.fi';
+      admin.password = await bcrypt.hash('mika-admin-2025', 10);
       admin.role = UserRole.ADMIN;
 
       await AppDataSource.manager.save(admin);

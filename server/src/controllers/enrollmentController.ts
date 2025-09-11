@@ -41,7 +41,18 @@ export const enrollToCourse = async (
     const invoiceAmount = course.price; // 💰 Стоимость курса
     const paymentIban = "FI78 4055 0012 3222 24"; // ← PONS IBAN
     const dateStr = new Date().toLocaleDateString("fi-FI"); // формат: "4.7.2025"
-    const paymentReference = `KURSSI-${course.title}-${user.name}-${dateStr}`;
+
+    // 🔑 Фиксированные viitenumero для конкретных курсов
+    const referenceMap: Record<string, string> = {
+      "KN - kuntonyrkkeily": "1025",
+      "Nuoriso ryhmä": "1070",
+    };
+
+    const paymentReference =
+      referenceMap[course.title] ||
+      `KURSSI-${course.title}-${user.name}-${dateStr}`;
+      
+      // Срок оплаты - через 7 дней
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7); // 7 дней на оплату
 

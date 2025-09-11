@@ -327,7 +327,7 @@ function Profile() {
                           )}
                           {e.paymentReference && (
                             <tr>
-                              <td>📌 Maksun tarkoitus</td>
+                              <td>📌 Viitenumero</td>
                               <td>{e.paymentReference}</td>
                             </tr>
                           )}

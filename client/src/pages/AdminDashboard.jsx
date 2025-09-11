@@ -300,6 +300,7 @@ function AdminDashboard() {
               <th>Email</th>
               <th>Rooli</th>
               <th>Kurssi</th>
+              <th>Rekisteröity pvm</th>
               <th>Toiminnot</th>
             </tr>
           </thead>
@@ -397,6 +398,9 @@ function AdminDashboard() {
                       </div>
                     ))
                   )}
+                </td>
+                <td data-label="Rekisteröity pvm">
+                  {new Date(u.createdAt).toLocaleDateString("fi-FI")}
                 </td>
                 <td data-label="Toiminnot">
                   <button

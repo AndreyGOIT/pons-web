@@ -97,7 +97,7 @@ const NewHome = () => {
         <p>Tapaa menestyksemme takana olevat upeat ihmiset</p>
 
         <div className="w3-row-padding w3-margin-top">
-          <div className="w3-third">
+          <div className="w3-half w3-margin-bottom">
             <img
               src="/images/MikaVuorinen_pons.png"
               alt="Member 1"
@@ -112,7 +112,7 @@ const NewHome = () => {
             <p>Puheenjohtaja &amp; vetäjä</p>
           </div>
 
-          <div className="w3-third">
+          <div className="w3-half w3-margin-bottom">
             <img
               src="/images/AndyErokhin_pons.png"
               alt="Member 2"
@@ -124,10 +124,10 @@ const NewHome = () => {
               className="w3-circle w3-hover-opacity"
             />
             <h3>Andy Erokhin</h3>
-            <p>KN-ryhmän vetäjä</p>
+            <p>KN-ryhmän ja Nuorten ryhmän vetäjä</p>
           </div>
 
-          <div className="w3-third">
+          {/* <div className="w3-third">
             <img
               src="/images/DimiZhuravel_pons.png"
               alt="Member 3"
@@ -140,7 +140,7 @@ const NewHome = () => {
             />
             <h3>Dimi Zhuravel</h3>
             <p>Nuorten ja kilpa ryhmien vetäjä</p>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -347,7 +347,7 @@ const NewHome = () => {
                     <i className="fa fa-calendar w3-text-teal"></i>{" "}
                     <b>Harjoitusajat:</b>{" "}
                     {course.title === "Nuoriso ryhmä"
-                      ? "Tiistai & Torstai 17.00 - 18.00   "
+                      ? "Tiistai & Torstai 16.30 - 17.30   "
                       : "Ma, Ke 19-20.30 & Pe 18-19.30"}
                   </p>
                 </li>
@@ -398,13 +398,10 @@ const NewHome = () => {
                   <button
                     className="w3-button w3-teal w3-round-large w3-padding-large"
                     onClick={() => handleOpenModal(course)}
+                    disabled={course.title === "Kilparyhmä"}
                   >
                     <i className="fa fa-check"></i> <b>ILMOITTAUDU NYT</b>
                   </button>
-                  {/* <p className="w3-small w3-margin-top">
-                    Vain {course.title === "nuoriso" ? "15" : "10"} paikkaa
-                    jäljellä!
-                  </p> */}
                 </li>
               </ul>
             </div>
@@ -481,7 +478,7 @@ const NewHome = () => {
                 const message = formData.get("message");
 
                 const res = await fetch(
-                  `${import.meta.env.VITE_API_BASE}/api/contact`,
+                  `${import.meta.env.VITE_API_BASE}/contact`,
                   {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
