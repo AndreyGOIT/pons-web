@@ -3,21 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppDataSource } from '../data-source';
 import { User } from '../models/User';
-import { UserRole } from '../models/User'; 
-
-// ✅ Обновляем глобальную типизацию Express Request
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        role: UserRole;
-        name: string;
-        email: string;
-      };
-    }
-  }
-}
+import { UserRole } from '../models/User';
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -45,13 +31,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return;
     }
 
-    // ✅ Устанавливаем все нужные поля
-    req.user = {
-      id: Number(user.id),
-      role: user.role,
-      name: user.name,
-      email: user.email,
-    };
+    // Используем уже тип User из index.d.ts
+    req.user = user;
 
     next();
   } catch (err) {

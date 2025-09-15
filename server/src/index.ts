@@ -18,7 +18,7 @@ import contactRoutes from './routes/contactRoutes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5050;
+const PORT = Number(process.env.PORT) || 5050;
 
 // ----------------- Middleware -----------------
 app.use(cors({
@@ -49,8 +49,8 @@ AppDataSource.initialize()
       res.send('API is running...');
     });
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
     });
   })
   .catch((err) => {
