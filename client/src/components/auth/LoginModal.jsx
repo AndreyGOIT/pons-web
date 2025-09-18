@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+
 const LoginModal = ({ onClose, onSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +44,7 @@ const LoginModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/users/login", {
+      const res = await fetch(`${API_BASE}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

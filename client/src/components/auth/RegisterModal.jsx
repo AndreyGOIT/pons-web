@@ -1,4 +1,7 @@
+// RegisterModal.jsx
 import React, { useState, useEffect, useRef } from "react";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
 
 const RegisterModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -52,7 +55,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/users/register", {
+      const res = await fetch(`${API_BASE}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -22,7 +22,7 @@ export const adminLogin = async (req: Request, res: Response) => {
           return;
         }
     console.log('проверка пароля admin, что он верный:', isValid);
-    const token = jwt.sign({ id: admin.id }, process.env.JWT_SECRET!, {
+    const token = jwt.sign({ id: admin.id, role: admin.role }, process.env.JWT_SECRET!, {
             expiresIn: '1h',
           });
     console.log('token при логине admin сгенерирован: ', token);

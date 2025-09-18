@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+
 const Header = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,7 +31,7 @@ const Header = () => {
     }
 
     try {
-      const res = await fetch("/api/trial-bookings", {
+      const res = await fetch(`${API_BASE}/trial-bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

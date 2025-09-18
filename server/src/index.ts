@@ -21,12 +21,15 @@ const app = express();
 const PORT = Number(process.env.PORT) || 5050;
 
 // ----------------- Middleware -----------------
-app.use(cors({
-  origin: process.env.FRONTEND_URL, // фронт локально
-  credentials: true,
-}));
 app.use('/public', express.static('public'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cors({
+  origin: ["https://pons.fi", "https://api.pons.fi"],
+  credentials: true,
+}));
+// ----------------- Routes -----------------
 
 // ----admin routes----
 app.use('/api/admin', adminRoutes);

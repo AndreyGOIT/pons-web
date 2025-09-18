@@ -1,5 +1,3 @@
-// server/src/controllers/userController.ts
-
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User, UserRole } from '../models/User';
@@ -40,7 +38,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     const savedUser = await userRepo.save(user);
 
     // ✅ Генерация токена
-    const token = jwt.sign({ id: savedUser.id }, process.env.JWT_SECRET!, {
+    const token = jwt.sign({ id: savedUser.id, role: savedUser.role }, process.env.JWT_SECRET!, {
       expiresIn: '1h',
     });
     console.log('✅ Токен при регистрации успешно сгенерирован:', token);
@@ -73,23 +71,36 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
-console.log('проверка пароля, что он верный:', isValid);
-    // 🔐 Генерация токена
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
-        expiresIn: '1h',
-      });
-  console.log('token при логине сгенерирован: ', token);
-      // ✅ Ответ клиенту
-      res.json({
-        message: 'Login successful',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-        token, // <-- добавляем токен
-      });
+    console.log('проверка пароля, что он верный:', isValid);
+
+    // 🔐 Генерация токена с более строгой типизацией payload
+    interface JwtPayload {
+      id: number;
+      role: UserRole;
+      iat?: number;
+      exp?: number;
+    }
+
+    const payload: JwtPayload = { id: user.id, role: user.role };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+      expiresIn: '1h',
+    });
+
+    console.log('token при логине сгенерирован: ', token);
+    console.log('payload.role:', payload.role);
+
+    // ✅ Ответ клиенту
+    res.json({
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      token, // <-- добавляем токен
+    });
     console.log('ответ клиенту с токеном:', res.json);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
@@ -118,7 +129,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
       where: { id: userId },
       select: ['id', 'name', 'email', 'role', 'createdAt', 'updatedAt'],
     });
-console.log("user in getCurrentUser:", user);
+    console.log("user in getCurrentUser:", user);
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;

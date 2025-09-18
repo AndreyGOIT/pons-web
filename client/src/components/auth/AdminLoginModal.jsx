@@ -1,4 +1,7 @@
+// AdminLoginModal.jsx
 import React, { useState, useEffect, useRef } from "react";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
 
 const AdminLoginModal = ({ onClose, onSuccess }) => {
   const [email, setEmail] = useState("");
@@ -41,7 +44,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch(`${API_BASE}/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
