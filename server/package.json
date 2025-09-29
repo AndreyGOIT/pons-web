@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src --ext ts,json --exec ts-node src/index.ts",
+    "dev:sqlite": "dotenv -e .env.development -- nodemon --watch src --ext ts,json --exec ts-node src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "typeorm": "typeorm-ts-node-commonjs"
@@ -28,6 +29,7 @@
     "pdfkit": "^0.17.1",
     "pg": "^8.16.2",
     "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
     "typeorm": "^0.3.25"
   },
   "devDependencies": {
@@ -40,6 +42,7 @@
     "@types/pdfkit": "^0.17.0",
     "nodemon": "^3.1.10",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "dotenv-cli": "^7.1.0"
   }
 }
