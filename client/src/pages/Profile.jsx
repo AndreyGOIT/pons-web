@@ -25,7 +25,10 @@ function Profile() {
         const res = await fetch(
           `${API_BASE}/enrollments/mine?userId=${userId}`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 

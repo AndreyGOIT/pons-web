@@ -11,21 +11,27 @@ This web application provides:
 - Admin panel for content and order management
 - PDF invoice generation
 - REST API (Node.js + Express)
-- Frontend built with React and W3.CSS + Tailwind
+- Frontend built with React and W3.CSS
+
+The project is now deployed in production at https://pons.fi and is actively used by the sports club.
 
 ## 📦 Tech Stack
 
-- **Frontend**: React, Vite, W3.CSS, TailwindCSS
-- **Backend**: Node.js, Express, MariaDB
+- **Frontend**: React, Vite, W3.CSS
+- **Backend**: Node.js, Express, MariaDB, TypeORM
 - **Auth**: Email/password (JWT), role-based access
-- **PDF**: pdfkit / puppeteer
-- **Mail**: Nodemailer + SMTP (Mailjet, SendGrid, etc.)
-- **Deployment**: Azure (manual at first)
+- **PDF**: pdfkit
+- **Mail**: Nodemailer + SMTP (zone.fi)
+- **Deployment**: zone.fi (pm2, Apache reverse proxy)
 
 ## 🚀 Project Goals
 
-Build a scalable and modern website for PONS with a smooth user experience and admin capabilities.
+Built a scalable and modern website for PONS with a smooth user experience and admin capabilities. The site is live and actively serving the club.
 
 ## 📄 License
 
 MIT
+
+## 🌐 Live
+
+[https://pons.fi](https://pons.fi)

@@ -16,7 +16,10 @@ function AdminDashboard() {
   const fetchUsers = async (token) => {
     try {
       const res = await fetch(`${API_BASE}/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!res.ok) throw new Error("Ошибка получения списка пользователей");
 
@@ -97,6 +100,7 @@ function AdminDashboard() {
       try {
         const res = await fetch(`${API_BASE}/admin/profile`, {
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
@@ -128,10 +132,19 @@ function AdminDashboard() {
     if (!window.confirm("Poistetaanko käyttäjä?")) return;
     const token = localStorage.getItem("token");
 
+    // Log the request details before fetch
+    console.log("🪪 Delete user request:", {
+      url: `${API_BASE}/admin/users/${id}`,
+      token,
+    });
+
     try {
       const res = await fetch(`${API_BASE}/admin/users/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) throw new Error("Poistovirhe");
@@ -152,6 +165,7 @@ function AdminDashboard() {
       const res = await fetch(`${API_BASE}/admin/trial-bookings/${id}`, {
         method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
@@ -179,7 +193,10 @@ function AdminDashboard() {
         `${API_BASE}/enrollments/${enrollmentId}/confirm`,
         {
           method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -231,6 +248,7 @@ function AdminDashboard() {
     try {
       const response = await fetch(`${API_BASE}/admin/users/pdf`, {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
@@ -259,9 +277,12 @@ function AdminDashboard() {
     if (!window.confirm("Poistetaanko viesti?")) return;
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`/api/admin/contact/${id}`, {
+      const res = await fetch(`${API_BASE}/admin/contact/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!res.ok) throw new Error("Poistovirhe");
       setMessages((prev) => prev.filter((m) => m.id !== id));
@@ -483,7 +504,7 @@ function AdminDashboard() {
                         e.preventDefault();
                         const reply = e.target.reply.value;
                         const token = localStorage.getItem("token");
-                        await fetch(`/api/admin/contact/${m.id}/reply`, {
+                        await fetch(`${API_BASE}/admin/contact/${m.id}/reply`, {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
