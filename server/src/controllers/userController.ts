@@ -9,7 +9,7 @@ const userRepo = AppDataSource.getRepository(User);
 //user registration
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password, role } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     // Проверка на корректную роль
     if (!Object.values(UserRole).includes(role)) {
@@ -18,7 +18,9 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     }
 
     const user = new User();
-    user.name = name;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.name = `${firstName ?? ''} ${lastName ?? ''}`.trim();
     user.email = email;
     user.password = await bcrypt.hash(password, 10);
     user.role = role;
@@ -96,6 +98,8 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       user: {
         id: user.id,
         name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         role: user.role,
       },
@@ -127,7 +131,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
   try {
     const user = await AppDataSource.getRepository(User).findOne({
       where: { id: userId },
-      select: ['id', 'name', 'email', 'role', 'createdAt', 'updatedAt'],
+      select: ['id', 'name', 'firstName', 'lastName', 'email', 'role', 'createdAt', 'updatedAt'],
     });
     console.log("user in getCurrentUser:", user);
     if (!user) {
@@ -140,6 +144,8 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
       res.json({
         id: user.id,
         name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         role: user.role,
         createdAt: user.createdAt,
@@ -199,9 +205,12 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
         return;
       }
   
-      const { name, email, password } = req.body;
+      const { firstName, lastName, name, email, password } = req.body;
   
       if (name) user.name = name;
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      user.name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
       if (email) user.email = email;
       if (password) {
         // тут может быть хэширование, если используешь bcrypt
@@ -213,6 +222,8 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
       res.json({
         id: updatedUser.id,
         name: updatedUser.name,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
         email: updatedUser.email,
         role: updatedUser.role,
       });

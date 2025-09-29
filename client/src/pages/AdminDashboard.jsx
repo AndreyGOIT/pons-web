@@ -328,7 +328,11 @@ function AdminDashboard() {
           <tbody>
             {users.map((u) => (
               <tr key={u.id}>
-                <td data-label="Nimi">{u.name}</td>
+                <td data-label="Nimi">
+                  {u.firstName && u.lastName
+                    ? `${u.firstName} ${u.lastName}`
+                    : u.name}
+                </td>
                 <td data-label="Email">{u.email}</td>
                 <td data-label="Rooli">
                   <span
@@ -493,7 +497,11 @@ function AdminDashboard() {
           <tbody>
             {messages.map((m) => (
               <tr key={m.id}>
-                <td>{m.name}</td>
+                <td>
+                  {m.firstName && m.lastName
+                    ? `${m.firstName} ${m.lastName}`
+                    : m.name}
+                </td>
                 <td>{m.email}</td>
                 <td>{m.message}</td>
                 <td>{new Date(m.createdAt).toLocaleDateString("fi-FI")}</td>

@@ -18,6 +18,14 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column({ nullable: true })
+  @Length(2, 50)
+  firstName?: string;
+
+  @Column({ nullable: true })
+  @Length(2, 50)
+  lastName?: string;
+
   @Column()
   @Length(2, 50)
   name!: string;

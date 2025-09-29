@@ -223,8 +223,12 @@ function Profile() {
     );
 
   // 🔹 9. Generate avatar URL
+  const fullName =
+    user.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user.name;
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    user.name
+    fullName
   )}&background=random&size=128`;
 
   return (
@@ -249,7 +253,7 @@ function Profile() {
             className="w3-circle"
             style={{ width: "96px", height: "96px", boxShadow: "0 0 8px #ccc" }}
           />
-          <h2 className="w3-margin-top">{user.name}</h2>
+          <h2 className="w3-margin-top">{fullName}</h2>
           <p className="w3-text-grey">{user.email}</p>
           <span
             className={`w3-tag w3-border ${

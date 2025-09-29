@@ -5,7 +5,8 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
 
 const RegisterModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -59,7 +60,8 @@ const RegisterModal = ({ onClose, onSuccess }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
           role: "client",
@@ -76,7 +78,8 @@ const RegisterModal = ({ onClose, onSuccess }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       setFormData({
-        name: "",
+        firstName: "",
+        lastName: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -115,13 +118,24 @@ const RegisterModal = ({ onClose, onSuccess }) => {
 
           <form onSubmit={handleRegister}>
             <p>
-              <label>Nimi</label>
+              <label>Etunimi</label>
               <input
                 className="w3-input w3-border"
                 type="text"
-                name="name"
+                name="firstName"
                 required
-                value={formData.name}
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </p>
+            <p>
+              <label>Sukunimi</label>
+              <input
+                className="w3-input w3-border"
+                type="text"
+                name="lastName"
+                required
+                value={formData.lastName}
                 onChange={handleChange}
               />
             </p>
