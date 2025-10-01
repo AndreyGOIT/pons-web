@@ -4,7 +4,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToMany,
+  JoinTable
 } from 'typeorm';
+import { User } from './User';
 import { CourseType } from '../enums/CourseType';
 
 @Entity()
@@ -30,6 +33,12 @@ export class Course {
   @Column({ type: 'date', nullable: true })
   endDate!: Date;
 
+  // Дата создания записи
   @CreateDateColumn()
   createdAt!: Date;
+
+  @ManyToMany(() => User, user => user.coursesAsTrainer, { eager: true })
+    
+  @JoinTable()
+  trainers!: User[];
 }

@@ -5,7 +5,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany
 } from 'typeorm';
+import { Course } from './Course';
 import { Length, IsEmail } from 'class-validator';
 
 export enum UserRole {
@@ -52,4 +54,8 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  // Courses where the user is a trainer
+  @ManyToMany(() => Course, course => course.trainers)
+  coursesAsTrainer!: Course[];
 }
