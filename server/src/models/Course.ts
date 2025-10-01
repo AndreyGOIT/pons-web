@@ -37,8 +37,7 @@ export class Course {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @ManyToMany(() => User, user => user.coursesAsTrainer, { eager: true })
-    
+  @ManyToMany(() => User, user => user.coursesAsTrainer, { eager: true })    
   @JoinTable()
   trainers!: User[];
 }

@@ -73,7 +73,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
-    console.log('проверка пароля, что он верный:', isValid);
 
     // 🔐 Генерация токена с более строгой типизацией payload
     interface JwtPayload {
@@ -88,9 +87,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(payload, process.env.JWT_SECRET!, {
       expiresIn: '1h',
     });
-
-    console.log('token при логине сгенерирован: ', token);
-    console.log('payload.role:', payload.role);
 
     // ✅ Ответ клиенту
     res.json({
@@ -133,7 +129,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
       where: { id: userId },
       select: ['id', 'name', 'firstName', 'lastName', 'email', 'role', 'createdAt', 'updatedAt'],
     });
-    console.log("user in getCurrentUser:", user);
+    
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
@@ -207,7 +203,6 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   
       const { firstName, lastName, name, email, password } = req.body;
   
-      if (name) user.name = name;
       if (firstName) user.firstName = firstName;
       if (lastName) user.lastName = lastName;
       user.name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();

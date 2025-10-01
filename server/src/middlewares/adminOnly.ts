@@ -11,3 +11,14 @@ export const adminOnly = (req: Request, res: Response, next: NextFunction): void
 
   next();
 };
+
+export const trainerOnly = (req: Request, res: Response, next: NextFunction): void => {
+  console.log('req.user в trainerOnly:', req.user);
+  if (!req.user || req.user.role !== 'trainer') {
+    console.warn('Access denied. User:', req.user);
+    res.status(403).json({ message: 'Access denied' });
+    return;
+  }
+
+  next();
+};

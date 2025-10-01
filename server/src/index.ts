@@ -14,6 +14,7 @@ import courseRoutes from './routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import trialRoutes from './routes/trialRoutes';
 import contactRoutes from './routes/contactRoutes';
+import trainerRoutes from './routes/trainerRoutes';
 
 dotenv.config();
 
@@ -29,19 +30,22 @@ app.use(cors({
   origin: ["https://pons.fi", "https://api.pons.fi"],
   credentials: true,
 }));
-// ----------------- Routes -----------------
+// ------------- Routes ----------------
 
-// ----admin routes----
+// ---- admin routes ----
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/trial-bookings', trialBookingAdminRoutes);
 app.use('/api/admin/contact', contactAdminRoutes);
 
-// ----user routes----
+// ---- user routes ----
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/trial-bookings', trialRoutes);
 app.use('/api/contact', contactRoutes);
+
+// ---- trainer routes ------
+app.use('/api/trainer', trainerRoutes);
 
 AppDataSource.initialize()
   .then(async () => {
