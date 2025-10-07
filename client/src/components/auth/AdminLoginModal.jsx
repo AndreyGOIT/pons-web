@@ -1,9 +1,10 @@
 // AdminLoginModal.jsx
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
 
 const AdminLoginModal = ({ onClose, onSuccess }) => {
+  const [role, setRole] = useState("admin"); // "admin" или "trainer"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -11,6 +12,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
+    // Close modal on Escape key
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
@@ -18,12 +20,14 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  // Close modal if clicking outside
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       onClose();
     }
   };
 
+  // Basic validation
   const validate = () => {
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError("Invalid email format");
@@ -36,15 +40,18 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
     return true;
   };
 
+  // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     if (!validate()) return;
 
+    const endpoint = role === "admin" ? "/admin/login" : "/trainer/login";
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/admin/login`, {
+      // const res = await fetch(`${API_BASE}/admin/login`, {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -88,10 +95,37 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
           <span onClick={onClose} className="w3-button w3-display-topright">
             &times;
           </span>
-          <h3>Kirjaudu sisään ylläpitäjänä</h3>
+          <h3>
+            Kirjaudu sisään {role === "admin" ? "ylläpitäjänä" : "valmentajana"}
+          </h3>
         </header>
 
         <div className="w3-container">
+          <div className="w3-margin-bottom">
+            <label className="w3-margin-right w3-large">
+              <input
+                type="radio"
+                name="role"
+                value="admin"
+                checked={role === "admin"}
+                onChange={() => setRole("admin")}
+                className="w3-radio"
+              />
+              Admin
+            </label>
+            <label className="w3-large">
+              <input
+                type="radio"
+                name="role"
+                value="trainer"
+                checked={role === "trainer"}
+                onChange={() => setRole("trainer")}
+                className="w3-radio"
+              />
+              Trainer
+            </label>
+          </div>
+
           {error && (
             <div className="w3-panel w3-red w3-padding-small">{error}</div>
           )}
@@ -123,7 +157,11 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
                 disabled={loading}
                 className="w3-button w3-teal w3-block"
               >
-                {loading ? "Odota hetki..." : "Kirjaudu sisään"}
+                {loading
+                  ? "Odota hetki..."
+                  : `Kirjaudu sisään ${
+                      role === "admin" ? "ylläpitäjänä" : "valmentajana"
+                    }`}
               </button>
             </p>
           </form>

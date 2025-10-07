@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import AdminLoginModal from "./auth/AdminLoginModal";
@@ -88,8 +88,16 @@ const Footer = () => {
           onSuccess={({ token, user }) => {
             login(token, user);
             setShowAdminLoginModal(false);
+            // Use timeout to ensure state updates before navigation
             setTimeout(() => {
-              navigate("/adminpanel");
+              if (user.role === "ADMIN") {
+                navigate("/adminpanel");
+              } else if (user.role === "TRAINER") {
+                navigate("/trainer/dashboard");
+              } else {
+                // fallback, если вдруг другая роль (например CLIENT)
+                navigate("/");
+              }
             }, 0);
           }}
         />
