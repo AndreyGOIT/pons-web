@@ -1,7 +1,8 @@
 // AdminLoginModal.jsx
+import api from "../../api/api";
 import { useState, useEffect, useRef } from "react";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+// const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
 
 const AdminLoginModal = ({ onClose, onSuccess }) => {
   const [role, setRole] = useState("admin"); // "admin" или "trainer"
@@ -50,19 +51,8 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
     const endpoint = role === "admin" ? "/admin/login" : "/trainer/login";
     setLoading(true);
     try {
-      // const res = await fetch(`${API_BASE}/admin/login`, {
-      const res = await fetch(`${API_BASE}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
+      const { data } = await api.post(endpoint, { email, password });
       const { token, user } = data;
-      if (!res.ok) {
-        setError(data.message || "Login failed");
-        return;
-      }
 
       localStorage.setItem("token", token);
       console.log(
@@ -74,7 +64,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
       onSuccess({ token, user });
     } catch (err) {
       console.error(err);
-      setError("Something went wrong");
+      setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

@@ -27,10 +27,14 @@ app.use('/public', express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({
-  origin: ["https://pons.fi", "https://api.pons.fi"],
-  credentials: true,
-}));
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+} else {
+  app.use(cors({
+    origin: ["https://pons.fi", "https://api.pons.fi"],
+    credentials: true,
+  }));
+}
 // ------------- Routes ----------------
 
 // ---- admin routes ----

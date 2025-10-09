@@ -136,7 +136,7 @@ const NavigationBar = () => {
       </nav>
 
       {/* Top Navbar */}
-      <div className="w3-bar w3-theme-d2 w3-left-align">
+      <div className="w3-bar w3-theme-d2 w3-left-align ">
         <div
           style={{
             maxWidth: "1280px",
@@ -161,30 +161,32 @@ const NavigationBar = () => {
             <img src="/images/pons_logo.jpg" alt="pons_logo" width="50px" />
           </Link>
 
-          <button
-            className="w3-bar-item w3-button"
-            onClick={() => goToSection("team")}
-          >
-            Tiimi
-          </button>
-          <button
-            className="w3-bar-item w3-button"
-            onClick={() => goToSection("koulutuskurssit")}
-          >
-            Koulutuskurssit
-          </button>
-          <button
-            className="w3-bar-item w3-button"
-            onClick={() => goToSection("pricing")}
-          >
-            Hinnasto
-          </button>
-          <button
-            className="w3-bar-item w3-button"
-            onClick={() => goToSection("contact")}
-          >
-            Yhteystiedot
-          </button>
+          <div className="w3-bar-item w3-hide-small">
+            <button
+              className="w3-bar-item w3-button"
+              onClick={() => goToSection("team")}
+            >
+              Tiimi
+            </button>
+            <button
+              className="w3-bar-item w3-button"
+              onClick={() => goToSection("koulutuskurssit")}
+            >
+              Koulutuskurssit
+            </button>
+            <button
+              className="w3-bar-item w3-button"
+              onClick={() => goToSection("pricing")}
+            >
+              Hinnasto
+            </button>
+            <button
+              className="w3-bar-item w3-button"
+              onClick={() => goToSection("contact")}
+            >
+              Yhteystiedot
+            </button>
+          </div>
 
           {/* block of code for login and register */}
           <div
@@ -196,7 +198,13 @@ const NavigationBar = () => {
                 <span>Tervetuloa, {user.name}!</span>
                 <button
                   onClick={() => {
-                    navigate("/profile");
+                    if (user.role === "admin") {
+                      navigate("/adminpanel");
+                    } else if (user.role === "trainer") {
+                      navigate("/trainer/dashboard");
+                    } else {
+                      navigate("/profile");
+                    }
                   }}
                 >
                   Profile

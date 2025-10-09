@@ -90,9 +90,11 @@ const Footer = () => {
             setShowAdminLoginModal(false);
             // Use timeout to ensure state updates before navigation
             setTimeout(() => {
-              if (user.role === "ADMIN") {
+              const role = user.role?.toLowerCase();
+
+              if (role === "admin") {
                 navigate("/adminpanel");
-              } else if (user.role === "TRAINER") {
+              } else if (role === "trainer") {
                 navigate("/trainer/dashboard");
               } else {
                 // fallback, если вдруг другая роль (например CLIENT)

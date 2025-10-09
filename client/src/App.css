@@ -47,3 +47,10 @@
 .pulse-button {
   animation: pulse 2s infinite;
 }
+
+@media screen and (max-width: 768px) {
+  .enroll-button {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+}

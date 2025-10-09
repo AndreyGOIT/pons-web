@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+import api from "../api/api";
 
 const NewHome = () => {
   const { user } = useContext(AuthContext);
@@ -17,8 +16,7 @@ const NewHome = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch(`${API_BASE}/courses`);
-        const data = await res.json();
+        const { data } = await api.get("/courses");
         console.log("data - courses: ", data);
         setCourses(data);
       } catch (error) {
@@ -34,7 +32,6 @@ const NewHome = () => {
       setShowAuthModal(true);
       return;
     }
-
     setSelectedCourse(course);
     setIsModalOpen(true);
   };
@@ -51,29 +48,16 @@ const NewHome = () => {
     setSuccessMessage("");
     setErrorMessage("");
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+    if (!user || !selectedCourse) {
       setErrorMessage("You must be logged in to enroll.");
       return;
     }
 
     try {
-      const response = await fetch(`${API_BASE}/enrollments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          courseId: selectedCourse.id,
-        }),
+      const { data: result } = await api.post("/enrollments", {
+        userId: user.id,
+        courseId: selectedCourse.id,
       });
-
-      if (!response.ok) throw new Error("Enrollment failed.");
-
-      const result = await response.json();
 
       setSuccessMessage(`
       Kurssi: ${result.enrollment.courseTitle}\n
@@ -84,8 +68,24 @@ const NewHome = () => {
       Eräpäivä: ${result.enrollment.invoiceDueDate}`);
       // setTimeout(() => handleCloseModal(), 2000);
     } catch (err) {
-      console.error("error: ", err);
+      console.error("Ошибка при записи на курс: ", err);
       setErrorMessage("Virhe ilmoittautumisessa. Yritä uudelleen.");
+    }
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+      await api.post("/contact", {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        message: formData.get("message"),
+      });
+      alert("Viesti lähetetty!");
+      e.target.reset();
+    } catch {
+      alert("Virhe lähetyksessä");
     }
   };
 
@@ -396,7 +396,7 @@ const NewHome = () => {
                 </li>
                 <li className="w3-theme-l5 w3-padding-24">
                   <button
-                    className="w3-button w3-teal w3-round-large w3-padding-large"
+                    className="w3-button w3-teal w3-round-large w3-padding-large enroll-button"
                     onClick={() => handleOpenModal(course)}
                     disabled={course.title === "Kilparyhmä"}
                   >
@@ -470,29 +470,7 @@ const NewHome = () => {
         <div className="w3-row-padding w3-margin-top">
           <div className="w3-half">
             <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const name = formData.get("name");
-                const email = formData.get("email");
-                const message = formData.get("message");
-
-                const res = await fetch(
-                  `${import.meta.env.VITE_API_BASE}/contact`,
-                  {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, email, message }),
-                  }
-                );
-
-                if (res.ok) {
-                  alert("Viesti lähetetty!");
-                  e.target.reset();
-                } else {
-                  alert("Virhe lähetyksessä");
-                }
-              }}
+              onSubmit={handleContactSubmit}
               className="w3-container w3-card w3-padding"
             >
               <p>

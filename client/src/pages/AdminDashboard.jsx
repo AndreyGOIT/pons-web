@@ -1,7 +1,7 @@
+// client/src/pages/AdminDashboard.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+import api from "../api/api";
 
 function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
@@ -13,17 +13,9 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   // Fetch users
-  const fetchUsers = async (token) => {
+  const fetchUsers = async () => {
     try {
-      const res = await fetch(`${API_BASE}/admin/users`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Ошибка получения списка пользователей");
-
-      const data = await res.json();
+      const { data } = await api.get("/admin/users");
       setUsers(data);
     } catch (err) {
       console.error(err);
@@ -31,18 +23,9 @@ function AdminDashboard() {
   };
 
   // Fetch enrollments
-  const fetchEnrollments = async (token) => {
+  const fetchEnrollments = async () => {
     try {
-      const res = await fetch(`${API_BASE}/enrollments`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
-        },
-      });
-      if (!res.ok) throw new Error("Ошибка получения регистраций");
-
-      const data = await res.json();
+      const { data } = await api.get("/enrollments");
       setEnrollments(data);
     } catch (err) {
       console.error(err);
@@ -50,17 +33,9 @@ function AdminDashboard() {
   };
 
   // Fetch trial bookings
-  const fetchTrialBookings = async (token) => {
+  const fetchTrialBookings = async () => {
     try {
-      const res = await fetch(`${API_BASE}/admin/trial-bookings`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
-        },
-      });
-      if (!res.ok) throw new Error("Ошибка получения пробных бронирований");
-      const data = await res.json();
+      const { data } = await api.get("/admin/trial-bookings");
       setTrialBookings(data);
     } catch (err) {
       console.error(err);
@@ -68,19 +43,9 @@ function AdminDashboard() {
   };
 
   // Fetch messages
-  const fetchMessages = async (token) => {
-    console.log(`🪪 Token for messages fetch: ${token}`);
+  const fetchMessages = async () => {
     try {
-      const res = await fetch(`${API_BASE}/admin/contact`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ убедись, что token реально есть
-        },
-      });
-      if (!res.ok) throw new Error("Ошибка получения сообщений");
-
-      const data = await res.json();
+      const { data } = await api.get("/admin/contact");
       setMessages(data);
     } catch (err) {
       console.error(err);
@@ -98,26 +63,17 @@ function AdminDashboard() {
     // Fetch admin data
     const fetchAdminData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/admin/profile`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Ошибка получения профиля");
-
-        const data = await res.json();
+        const { data } = await api.get("/admin/profile");
         if (data.role !== "admin") {
           navigate("/");
           return;
         }
 
         setAdmin(data);
-        fetchUsers(token);
-        fetchEnrollments(token);
-        fetchTrialBookings(token);
-        fetchMessages(token);
+        fetchUsers();
+        fetchEnrollments();
+        fetchTrialBookings();
+        fetchMessages();
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
@@ -130,24 +86,9 @@ function AdminDashboard() {
   // 🔹 4. Handle user deletion
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Poistetaanko käyttäjä?")) return;
-    const token = localStorage.getItem("token");
-
-    // Log the request details before fetch
-    console.log("🪪 Delete user request:", {
-      url: `${API_BASE}/admin/users/${id}`,
-      token,
-    });
 
     try {
-      const res = await fetch(`${API_BASE}/admin/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Poistovirhe");
+      await api.delete(`/admin/users/${id}`);
 
       setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
@@ -159,18 +100,8 @@ function AdminDashboard() {
   const handleDeleteTrial = async (id) => {
     if (!window.confirm("Poistetaanko käyttäjä kokeilusta?")) return;
 
-    const token = localStorage.getItem("token");
-    console.log("🪪 Token for trial delete:", token);
     try {
-      const res = await fetch(`${API_BASE}/admin/trial-bookings/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Poistovirhe");
+      await api.delete(`/admin/trial-bookings/${id}`);
 
       // Обновить состояние:
       setTrialBookings((prev) => prev.filter((t) => t.id !== id));
@@ -184,26 +115,10 @@ function AdminDashboard() {
   const getUserEnrollments = (userId) =>
     enrollments.filter((e) => e.user.id === userId);
 
-  // 🔹 7. Handle enrollment deletion
+  // 🔹 7. Handle enrollment paid
   const handleToggleConfirm = async (enrollmentId) => {
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await fetch(
-        `${API_BASE}/enrollments/${enrollmentId}/confirm`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("Confirmation error");
-
-      // Reloading the list
-      await res.json();
+      await api.patch(`/enrollments/${enrollmentId}/confirm`);
 
       setEnrollments((prev) =>
         prev.map((e) =>
@@ -246,16 +161,10 @@ function AdminDashboard() {
       return;
     }
     try {
-      const response = await fetch(`${API_BASE}/admin/users/pdf`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await api.get("/admin/users/pdf", {
+        responseType: "blob",
       });
-      if (!response.ok) {
-        throw new Error("PDF lataus epäonnistui");
-      }
-      const blob = await response.blob();
+      const blob = response.data;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -275,16 +184,9 @@ function AdminDashboard() {
   // Handler for deleting a message
   const handleDeleteMessage = async (id) => {
     if (!window.confirm("Poistetaanko viesti?")) return;
-    const token = localStorage.getItem("token");
+
     try {
-      const res = await fetch(`${API_BASE}/admin/contact/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Poistovirhe");
+      await api.delete(`/admin/contact/${id}`);
       setMessages((prev) => prev.filter((m) => m.id !== id));
     } catch (err) {
       console.error("Error deleting message:", err);
@@ -511,16 +413,10 @@ function AdminDashboard() {
                       onSubmit={async (e) => {
                         e.preventDefault();
                         const reply = e.target.reply.value;
-                        const token = localStorage.getItem("token");
-                        await fetch(`${API_BASE}/admin/contact/${m.id}/reply`, {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                          },
-                          body: JSON.stringify({ reply }),
+                        await api.post(`/admin/contact/${m.id}/reply`, {
+                          reply,
                         });
-                        fetchMessages(token);
+                        fetchMessages();
                       }}
                     >
                       <input

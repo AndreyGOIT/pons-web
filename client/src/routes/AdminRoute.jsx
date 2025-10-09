@@ -16,7 +16,7 @@ const AdminRoute = ({ children }) => {
   }
 
   // Проверяем, что роль ADMIN
-  if (payload.role !== "ADMIN") {
+  if (payload.role !== "admin") {
     console.warn("Access denied: admin only");
     return <Navigate to="/" replace />;
   }
