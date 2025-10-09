@@ -26,13 +26,19 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const user = await userRepo.findOneBy({ id: decoded.id });
     console.log('user found:', user);
 
-    if (!user || !Object.values(UserRole).includes(user.role)) {
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    if (!Object.values(UserRole).includes(user.role)) {
       res.status(401).json({ message: 'User not found or has invalid role' });
       return;
     }
 
     // Используем уже тип User из index.d.ts
     req.user = user;
+    console.log('✅ Authenticated user:', req.user?.id, req.user?.role);
 
     next();
   } catch (err) {

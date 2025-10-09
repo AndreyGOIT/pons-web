@@ -1,5 +1,5 @@
 // src/types/express/index.d.ts
-import { User } from '../../models/User';
+import { User } from "../../models/User";
 
 declare global {
   namespace Express {
@@ -8,3 +8,5 @@ declare global {
     }
   }
 }
+
+export {};

@@ -10,7 +10,10 @@ import { CourseSession } from "../models/CourseSession";
 // GET /api/trainer/courses
 export const getTrainerCourses = async (req: Request, res: Response) => {
   try {
-    const trainer = req.user as User;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const trainer = req.user;
     const userRepo = AppDataSource.getRepository(User);
 
     const trainerData = await userRepo.findOne({
@@ -32,7 +35,10 @@ export const getTrainerCourses = async (req: Request, res: Response) => {
 // GET /api/trainer/courses/:courseId/attendances
 export const getCourseAttendances = async (req: Request, res: Response) => {
   try {
-    const trainer = req.user as User;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const trainer = req.user;
     const { courseId } = req.params;
 
     const courseRepo = AppDataSource.getRepository(Course);
@@ -70,8 +76,8 @@ export const getCourseAttendances = async (req: Request, res: Response) => {
 // POST /api/trainer/courses/:courseId/attendances/:sessionId/toggle
 export const toggleAttendance = async (req: Request, res: Response) => {
   try {
-    const user = req.user as User | undefined;
-    if (!user) return res.status(401).json({ message: "Unauthorized" });
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    const user = req.user;
 
     const { courseId, sessionId } = req.params;
     const { userId, present } = req.body;
@@ -130,8 +136,8 @@ export const toggleAttendance = async (req: Request, res: Response) => {
 
 export async function markAttendance(req: Request, res: Response) {
   try {
-    const user = req.user as User | undefined;
-    if (!user) return res.status(401).json({ message: "Unauthorized" });
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    const user = req.user;
     const { enrollmentId, sessionId, present } = req.body;
 
     const enrollmentRepo = AppDataSource.getRepository(Enrollment);

@@ -115,7 +115,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  const userId = Number((req.user as any)?.id); // или создать типизацию правильно
+  const userId = Number(req.user.id); // или создать типизацию правильно
   console.log('req.user:', req.user);
   console.log('userId:', userId, typeof userId);
 
@@ -186,8 +186,13 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   };
   
   // Обновить пользователя
-  export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
-    const userId = Number((req.user as any)?.id);
+export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+    res.status(401).json({ message: "Not authenticated" });
+    return; // важно return, чтобы дальше TS не ругался
+  }
+  
+    const userId = Number(req.user.id);
     if (!userId) {
       res.status(401).json({ message: "Not authenticated" });
       return;
@@ -229,8 +234,13 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   };
   
   // Удалить пользователя
-  export const deleteCurrentUser = async (req: Request, res: Response): Promise<void> => {
-    const userId = Number((req.user as any)?.id);
+export const deleteCurrentUser = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+    res.status(401).json({ message: "Not authenticated" });
+    return; // важно return, чтобы дальше TS не ругался
+  }
+
+    const userId = Number(req.user.id);
     if (!userId) {
       res.status(401).json({ message: "Not authenticated" });
       return;
