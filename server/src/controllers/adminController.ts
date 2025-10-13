@@ -5,6 +5,8 @@ import { User, UserRole } from '../models/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateUsersPdf } from "../utils/pdf/generateUsersPdf";
+import { validate } from 'class-validator';
+
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -84,4 +86,100 @@ export const getUsersPdf = async (req: Request, res: Response) => {
   });
 
   generateUsersPdf(users, res);
+};
+
+export const createTrainer = async (req: Request, res: Response) => {
+  try {
+    // Проверяем, что запрос делает администратор
+    if (!req.user || req.user.role !== UserRole.ADMIN) {
+      return res.status(403).json({ message: "Access denied: only admin can create trainers." });
+    }
+console.log("📩 Получены данные для создания тренера:", req.body);
+    const { firstName, lastName, email, password, phoneNumber } = req.body;
+
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ message: "FirstName, lastName, email, and password are required." });
+    }
+
+    // Проверяем, существует ли уже пользователь с таким email
+    const existingUser = await userRepo.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: "User with this email already exists." });
+    }
+
+    // Хэшируем пароль
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Создаём нового тренера
+    const newTrainer = userRepo.create({
+      firstName,
+      lastName,
+      name: `${firstName ?? ""} ${lastName ?? ""}`.trim(),
+      email,
+      password: hashedPassword,
+      phoneNumber,
+      role: UserRole.TRAINER,
+    });
+
+    const errors = await validate(newTrainer);
+    if (errors.length > 0) return res.status(400).json(errors);
+
+    await userRepo.save(newTrainer);
+
+    res.status(201).json({
+      message: "Trainer created successfully.",
+      trainer: {
+        id: newTrainer.id,
+        firstName: newTrainer.firstName,
+        lastName: newTrainer.lastName,
+        email: newTrainer.email,
+        role: newTrainer.role,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating trainer:", error);
+    res.status(500).json({ message: "Server error while creating trainer." });
+  }
+};
+
+
+export const getTrainers = async (req: Request, res: Response) => {
+  try {
+    // Проверяем, что запрос делает администратор
+    if (!req.user || req.user.role !== UserRole.ADMIN) {
+      return res.status(403).json({ message: "Access denied: only admin can view trainers." });
+    }
+
+    const trainers = await userRepo.find({ where: { role: UserRole.TRAINER } });
+
+    res.json(trainers);
+  } catch (error) {
+    console.error("Error fetching trainers:", error);
+    res.status(500).json({ message: "Server error while fetching trainers." });
+  }
+};
+export const deleteTrainer = async (req: Request, res: Response) => {
+  try {
+    // Проверяем, что запрос делает администратор
+    if (!req.user || req.user.role !== UserRole.ADMIN) {
+      return res.status(403).json({ message: "Access denied: only admin can delete trainers." });
+    }
+
+    const trainerId = parseInt(req.params.id, 10);
+    if (isNaN(trainerId)) {
+      return res.status(400).json({ message: "Invalid trainer ID." });
+    }
+
+    const trainer = await userRepo.findOne({ where: { id: trainerId, role: UserRole.TRAINER } });
+    if (!trainer) {
+      return res.status(404).json({ message: "Trainer not found." });
+    }
+
+    await userRepo.remove(trainer);
+
+    res.json({ message: "Trainer deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting trainer:", error);
+    res.status(500).json({ message: "Server error while deleting trainer." });
+  }
 };

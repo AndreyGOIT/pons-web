@@ -10,6 +10,15 @@ function AdminDashboard() {
   const [trialBookings, setTrialBookings] = useState([]);
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
+  const [trainers, setTrainers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+  });
   const navigate = useNavigate();
 
   // Fetch users
@@ -53,6 +62,16 @@ function AdminDashboard() {
     }
   };
 
+  // Fetch trainers
+  const fetchTrainers = async () => {
+    try {
+      const { data } = await api.get("/admin/trainers");
+      setTrainers(data);
+    } catch (err) {
+      console.error("Ошибка загрузки тренеров:", err);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -74,6 +93,7 @@ function AdminDashboard() {
         fetchEnrollments();
         fetchTrialBookings();
         fetchMessages();
+        fetchTrainers();
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
@@ -152,6 +172,39 @@ function AdminDashboard() {
         <p>Ladataan...</p>
       </div>
     );
+
+  // 🔹 10. Handlers and state for creating a trainer
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleCreateTrainer = async () => {
+    console.log("Создаётся тренер:", form);
+    try {
+      await api.post("/admin/trainers", form);
+      setShowModal(false);
+      fetchTrainers();
+      setForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+      });
+    } catch (err) {
+      console.error("Virhe valmentajan luomisessa:", err);
+    }
+  };
+
+  const handleDeleteTrainer = async (id) => {
+    if (!window.confirm("Poista tämä valmentaja?")) return;
+    try {
+      await api.delete(`/admin/trainers/${id}`);
+      fetchTrainers();
+    } catch (err) {
+      console.error("Virhe poistettaessa valmentajaa:", err);
+    }
+  };
+  //-----end of handlers and state for creating a trainer
 
   // Function to download users PDF with authentication and trigger download
   const downloadUsersPdf = async () => {
@@ -436,6 +489,106 @@ function AdminDashboard() {
                 <td>
                   <button
                     onClick={() => handleDeleteMessage(m.id)}
+                    className="w3-button w3-small w3-red w3-round"
+                  >
+                    Poista
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Trainers Section */}
+      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
+        <h3>Valmentajat</h3>
+        <button
+          className="w3-button w3-green w3-margin-bottom"
+          onClick={() => setShowModal(true)}
+        >
+          Lisää uusi valmentaja
+        </button>
+        {showModal && (
+          <div
+            className="w3-card w3-white w3-padding w3-round-large w3-margin-top"
+            style={{ maxWidth: 400 }}
+          >
+            <h3>Luo valmentaja</h3>
+            <input
+              className="w3-input w3-border w3-margin-bottom"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              placeholder="Etunimi"
+            />
+            <input
+              className="w3-input w3-border w3-margin-bottom"
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              placeholder="Sukunimi"
+            />
+            <input
+              className="w3-input w3-border w3-margin-bottom"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Email"
+            />
+            <input
+              className="w3-input w3-border w3-margin-bottom"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Salasana"
+              type="password"
+            />
+            <input
+              className="w3-input w3-border w3-margin-bottom"
+              name="phoneNumber"
+              value={form.phoneNumber}
+              onChange={handleChange}
+              placeholder="Puhelin"
+            />
+            <div>
+              <button
+                className="w3-button w3-teal w3-margin-right"
+                onClick={handleCreateTrainer}
+              >
+                Luoda
+              </button>
+              <button
+                className="w3-button w3-light-grey"
+                onClick={() => setShowModal(false)}
+              >
+                Peruuta
+              </button>
+            </div>
+          </div>
+        )}
+        <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
+          <thead className="w3-light-grey">
+            <tr>
+              <th>Nimi</th>
+              <th>Email</th>
+              <th>Puhelin</th>
+              <th>Rekisteröity pvm</th>
+              <th>Toiminnot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {trainers.map((t) => (
+              <tr key={t.id}>
+                <td>
+                  {t.firstName} {t.lastName}
+                </td>
+                <td>{t.email}</td>
+                <td>{t.phoneNumber}</td>
+                <td>{new Date(t.createdAt).toLocaleDateString("fi-FI")}</td>
+                <td data-label="Toiminnot">
+                  <button
+                    onClick={() => handleDeleteTrainer(t.id)}
                     className="w3-button w3-small w3-red w3-round"
                   >
                     Poista
