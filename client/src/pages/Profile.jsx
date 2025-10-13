@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth"; // <-- import hook from context
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+import api from "../api/api";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -22,19 +21,8 @@ function Profile() {
     const fetchEnrollments = async (userId) => {
       try {
         // Correct user endpoint for fetching user's enrollments
-        const res = await fetch(
-          `${API_BASE}/enrollments/mine?userId=${userId}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const { data } = await api.get(`/enrollments/mine?userId=${userId}`);
 
-        if (!res.ok) throw new Error("Ошибка при получении регистраций");
-
-        const data = await res.json();
         console.log("Регистрации пользователя:", data);
         setEnrollments(data);
       } catch (err) {
@@ -47,22 +35,8 @@ function Profile() {
     const fetchProfileAndRegister = async () => {
       try {
         // Correct user profile endpoint
-        const res = await fetch(`${API_BASE}/users/me`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/users/me`);
 
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-          return;
-        }
-
-        if (!res.ok) throw new Error("Error retrieving user data");
-
-        const data = await res.json();
         setUser(data);
 
         const pendingCourseId = sessionStorage.getItem("pendingCourseId");
@@ -70,19 +44,12 @@ function Profile() {
         if (pendingCourseId) {
           try {
             // Correct endpoint for creating enrollment
-            const enrollRes = await fetch(`${API_BASE}/enrollments`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                userId: data.id,
-                courseId: Number(pendingCourseId),
-              }),
+            const enrollRes = await api.post(`/enrollments`, {
+              userId: data.id,
+              courseId: Number(pendingCourseId),
             });
 
-            if (enrollRes.ok) {
+            if (enrollRes.status >= 200 && enrollRes.status < 300) {
               console.log(
                 "✅ Automatic registration for the course was successful"
               );
@@ -99,6 +66,11 @@ function Profile() {
         // ✅ Receive registration only after possible registration
         fetchEnrollments(data.id);
       } catch (err) {
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
         console.error("Error loading profile:", err);
         setError("Failed to load profile. Please log in again.");
       }
@@ -109,21 +81,9 @@ function Profile() {
 
   // 🔹 3. Handle marking enrollment as paid
   const handleMarkAsPaid = async (enrollmentId) => {
-    const token = localStorage.getItem("token");
     try {
       // Correct endpoint for marking enrollment as paid
-      const res = await fetch(
-        `${API_BASE}/enrollments/${enrollmentId}/mark-paid`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("Ошибка при отметке оплаты");
+      await api.patch(`/enrollments/${enrollmentId}/mark-paid`);
 
       setEnrollments((prev) =>
         prev.map((e) =>
@@ -143,17 +103,8 @@ function Profile() {
       return;
 
     try {
-      const token = localStorage.getItem("token");
       // Correct endpoint for deleting user's enrollment
-      const res = await fetch(`${API_BASE}/enrollments/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Ошибка при удалении регистрации");
+      await api.delete(`/enrollments/${id}`);
 
       setEnrollments((prev) => prev.filter((e) => e.id !== id));
     } catch (err) {
@@ -181,15 +132,7 @@ function Profile() {
 
     try {
       // Correct endpoint for deleting own account
-      const res = await fetch(`${API_BASE}/users/me`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Error while deleting");
+      await api.delete(`/users/me`);
 
       logout();
       alert("Tili on poistettu onnistuneesti.");

@@ -1,7 +1,6 @@
 // RegisterModal.jsx
 import React, { useState, useEffect, useRef } from "react";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+import api from "../../api/api";
 
 const RegisterModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -56,25 +55,15 @@ const RegisterModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/users/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-          role: "client",
-        }),
+      const { data } = await api.post("/users/register", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: "client",
       });
 
-      const data = await res.json();
       const { token, user } = data;
-      if (!res.ok) {
-        setError(data.message || "Registration failed");
-        return;
-      }
-
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       setFormData({
@@ -87,7 +76,11 @@ const RegisterModal = ({ onClose, onSuccess }) => {
       onSuccess({ token, user });
     } catch (err) {
       console.error(err);
-      setError("Something went wrong");
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+import api from "../../api/api";
 
 const LoginModal = ({ onClose, onSuccess }) => {
   const [email, setEmail] = useState("");
@@ -44,23 +43,8 @@ const LoginModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const { data } = await api.post("/users/login", { email, password });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || "Login failed");
-        // setEmail("");
-        setPassword("");
-        setShake(true); // start animation
-        setTimeout(() => setShake(false), 500); // class reset
-        return;
-      }
-
-      const data = await res.json();
       const { token, user } = data;
 
       localStorage.setItem("token", token);
@@ -69,8 +53,11 @@ const LoginModal = ({ onClose, onSuccess }) => {
       setPassword("");
       onSuccess({ token, user });
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong");
+      if (err.response?.data?.message) setError(err.response.data.message);
+      else setError("Login failed");
+      setPassword("");
+      setShake(true); // start animation
+      setTimeout(() => setShake(false), 500); // class reset
     } finally {
       setLoading(false);
     }

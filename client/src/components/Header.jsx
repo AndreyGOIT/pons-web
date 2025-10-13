@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
+import api from "../api/api";
 
 const Header = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,23 +30,15 @@ const Header = () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/trial-bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      await api.post("/trial-bookings", formData);
 
-      if (res.ok) {
-        setSubmitted(true);
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-        });
-      } else {
-        setError("Lähetysvirhe. Yritä uudelleen.");
-      }
+      setSubmitted(true);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+      });
     } catch (err) {
       console.error(err);
       setError("Virhe yhdistettäessä palvelimeen. Yritä myöhemmin uudelleen.");
