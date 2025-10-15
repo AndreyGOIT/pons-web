@@ -3,14 +3,20 @@ import {Router} from "express";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { trainerOnly } from "../middlewares/adminOnly";
 import { catchAsync } from '../utils/catchAsync';
-import { getTrainerCourses, getCourseAttendances, toggleAttendance } from "../controllers/trainerController";
+import { trainerLogin,getTrainerProfile, getTrainerCourses, getCourseAttendances, toggleAttendance } from "../controllers/trainerController";
 
 
 const router = Router();
 
+// POST /api/trainer/login
+router.post("/login", catchAsync(trainerLogin));
+
 // Все маршруты ниже требуют авторизацию тренера
 router.use(authMiddleware);
 router.use(trainerOnly);
+  
+// GET /api/trainer/profile
+router.get("/profile", catchAsync(getTrainerProfile));
 
 // GET /api/trainer/courses
 router.get("/courses", catchAsync(getTrainerCourses));

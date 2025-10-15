@@ -5,7 +5,8 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { adminOnly } from '../middlewares/adminOnly';
 import { catchAsync } from '../utils/catchAsync';
 import { getAdminProfile, updateAdminProfile, adminLogin, getUsersPdf } from '../controllers/adminController';
-import {createTrainer, getTrainers, deleteTrainer} from "../controllers/adminController";
+import { createTrainer, getTrainers, deleteTrainer } from "../controllers/adminController";
+import { createAdminUser } from "../controllers/adminController";
 
 const router = Router();
 
@@ -29,6 +30,7 @@ router.get('/users/:id', catchAsync(getUserById));
 router.put('/users/:id', catchAsync(updateCurrentUser));
 router.delete('/users/:id', catchAsync(deleteUserByAdmin));
 
+// Управление тренерами
 // POST /api/admin/trainers — только админ может создавать тренера
 router.post("/trainers", catchAsync(createTrainer));
 // GET /api/admin/trainers
@@ -37,5 +39,8 @@ router.get("/trainers", catchAsync(getTrainers));
 // router.put("/trainers/:id", catchAsync(updateTrainer)); // можно добавить, если нужно обновление тренера
 // DELETE /api/admin/trainers/:id
 router.delete("/trainers/:id", catchAsync(deleteTrainer)); // можно добавить, если нужно удаление тренера
+
+// Создание админа (можно удалить после первого создания)
+router.post("/admins", catchAsync(createAdminUser));
 
 export default router;

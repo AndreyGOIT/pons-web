@@ -55,16 +55,13 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
       const { token, user } = data;
 
       localStorage.setItem("token", token);
-      console.log(
-        "Token as a result of login saved:",
-        localStorage.getItem("token")
-      );
+      console.log("Token as a result of login saved:", token);
       setEmail("");
       setPassword("");
       onSuccess({ token, user });
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Something went wrong");
+      console.error("❌ Trainer login error:", err);
+      setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }

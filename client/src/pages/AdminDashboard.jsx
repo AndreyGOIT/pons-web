@@ -511,59 +511,69 @@ function AdminDashboard() {
         </button>
         {showModal && (
           <div
-            className="w3-card w3-white w3-padding w3-round-large w3-margin-top"
-            style={{ maxWidth: 400 }}
+            className="w3-modal"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start", // можно "center", если вертикально тоже по центру
+              paddingTop: "50px", // отступ сверху
+            }}
           >
-            <h3>Luo valmentaja</h3>
-            <input
-              className="w3-input w3-border w3-margin-bottom"
-              name="firstName"
-              value={form.firstName}
-              onChange={handleChange}
-              placeholder="Etunimi"
-            />
-            <input
-              className="w3-input w3-border w3-margin-bottom"
-              name="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-              placeholder="Sukunimi"
-            />
-            <input
-              className="w3-input w3-border w3-margin-bottom"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="Email"
-            />
-            <input
-              className="w3-input w3-border w3-margin-bottom"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Salasana"
-              type="password"
-            />
-            <input
-              className="w3-input w3-border w3-margin-bottom"
-              name="phoneNumber"
-              value={form.phoneNumber}
-              onChange={handleChange}
-              placeholder="Puhelin"
-            />
-            <div>
-              <button
-                className="w3-button w3-teal w3-margin-right"
-                onClick={handleCreateTrainer}
-              >
-                Luoda
-              </button>
-              <button
-                className="w3-button w3-light-grey"
-                onClick={() => setShowModal(false)}
-              >
-                Peruuta
-              </button>
+            <div
+              className="w3-card w3-white w3-padding w3-round-large"
+              style={{ maxWidth: 400, width: "100%" }}
+            >
+              <h3>Luo valmentaja</h3>
+              <input
+                className="w3-input w3-border w3-margin-bottom"
+                name="firstName"
+                value={form.firstName}
+                onChange={handleChange}
+                placeholder="Etunimi"
+              />
+              <input
+                className="w3-input w3-border w3-margin-bottom"
+                name="lastName"
+                value={form.lastName}
+                onChange={handleChange}
+                placeholder="Sukunimi"
+              />
+              <input
+                className="w3-input w3-border w3-margin-bottom"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Email"
+              />
+              <input
+                className="w3-input w3-border w3-margin-bottom"
+                name="phoneNumber"
+                value={form.phoneNumber}
+                onChange={handleChange}
+                placeholder="Puhelin"
+              />
+              <input
+                className="w3-input w3-border w3-margin-bottom"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Salasana"
+                type="password"
+              />
+              <div>
+                <button
+                  className="w3-button w3-teal w3-margin-right"
+                  onClick={handleCreateTrainer}
+                >
+                  Luoda
+                </button>
+                <button
+                  className="w3-button w3-light-grey"
+                  onClick={() => setShowModal(false)}
+                >
+                  Peruuta
+                </button>
+              </div>
             </div>
           </div>
         )}

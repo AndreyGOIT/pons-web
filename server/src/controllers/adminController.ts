@@ -10,6 +10,7 @@ import { validate } from 'class-validator';
 
 const userRepo = AppDataSource.getRepository(User);
 
+//
 export const adminLogin = async (req: Request, res: Response) => {
     try {
     const { email, password } = req.body;
@@ -88,57 +89,49 @@ export const getUsersPdf = async (req: Request, res: Response) => {
   generateUsersPdf(users, res);
 };
 
-export const createTrainer = async (req: Request, res: Response) => {
+// Создание тренера (только для ADMIN)
+export const createTrainer = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Проверяем, что запрос делает администратор
-    if (!req.user || req.user.role !== UserRole.ADMIN) {
-      return res.status(403).json({ message: "Access denied: only admin can create trainers." });
-    }
-console.log("📩 Получены данные для создания тренера:", req.body);
     const { firstName, lastName, email, password, phoneNumber } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
-      return res.status(400).json({ message: "FirstName, lastName, email, and password are required." });
+    // Проверка прав
+    if (req.user?.role !== UserRole.ADMIN) {
+      res.status(403).json({ message: "Access denied" });
+      return;
     }
 
-    // Проверяем, существует ли уже пользователь с таким email
-    const existingUser = await userRepo.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(409).json({ message: "User with this email already exists." });
+    // Проверка существующего пользователя
+    const existing = await userRepo.findOne({ where: { email } });
+    if (existing) {
+      res.status(409).json({ message: "Email already in use" });
+      return;
     }
 
-    // Хэшируем пароль
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User();
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.name = `${firstName ?? ''} ${lastName ?? ''}`.trim();
+    user.email = email;
+    user.password = await bcrypt.hash(password, 10);
+    user.phoneNumber = phoneNumber;
+    user.role = UserRole.TRAINER;
 
-    // Создаём нового тренера
-    const newTrainer = userRepo.create({
-      firstName,
-      lastName,
-      name: `${firstName ?? ""} ${lastName ?? ""}`.trim(),
-      email,
-      password: hashedPassword,
-      phoneNumber,
-      role: UserRole.TRAINER,
-    });
+    const errors = await validate(user);
+    if (errors.length > 0) {
+      res.status(400).json(errors);
+      return;
+    }
 
-    const errors = await validate(newTrainer);
-    if (errors.length > 0) return res.status(400).json(errors);
-
-    await userRepo.save(newTrainer);
+    const savedTrainer = await userRepo.save(user);
+    const { password: _, ...trainerWithoutPassword } = savedTrainer;
 
     res.status(201).json({
-      message: "Trainer created successfully.",
-      trainer: {
-        id: newTrainer.id,
-        firstName: newTrainer.firstName,
-        lastName: newTrainer.lastName,
-        email: newTrainer.email,
-        role: newTrainer.role,
-      },
+      message: "Trainer created successfully",
+      trainer: trainerWithoutPassword,
     });
-  } catch (error) {
-    console.error("Error creating trainer:", error);
-    res.status(500).json({ message: "Server error while creating trainer." });
+  } catch (err) {
+    console.error("❌ Error creating trainer:", err);
+    res.status(500).json({ message: "Server error", error: err });
   }
 };
 
@@ -181,5 +174,35 @@ export const deleteTrainer = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting trainer:", error);
     res.status(500).json({ message: "Server error while deleting trainer." });
+  }
+};
+
+// Создание первого админа (если нужно)
+export const createAdminUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+
+    // Проверяем существование
+    const existing = await userRepo.findOne({ where: { email } });
+    if (existing) {
+      res.status(409).json({ message: "Email already in use" });
+      return;
+    }
+
+    const user = new User();
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+    user.email = email;
+    user.password = await bcrypt.hash(password, 10);
+    user.role = UserRole.ADMIN;
+
+    const saved = await userRepo.save(user);
+    const { password: _, ...userWithoutPassword } = saved;
+
+    res.status(201).json({ message: "Admin user created", user: userWithoutPassword });
+  } catch (err) {
+    console.error("Error creating admin:", err);
+    res.status(500).json({ message: "Server error", error: err });
   }
 };

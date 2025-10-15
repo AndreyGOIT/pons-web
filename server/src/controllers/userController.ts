@@ -9,11 +9,11 @@ const userRepo = AppDataSource.getRepository(User);
 //user registration
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
-    // Проверка на корректную роль
-    if (!Object.values(UserRole).includes(role)) {
-      res.status(400).json({ message: 'Invalid role' });
+    const existing = await userRepo.findOne({ where: { email } });
+    if (existing) {
+      res.status(409).json({ message: 'Email already in use' });
       return;
     }
 
@@ -23,17 +23,12 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     user.name = `${firstName ?? ''} ${lastName ?? ''}`.trim();
     user.email = email;
     user.password = await bcrypt.hash(password, 10);
-    user.role = role;
-
+    user.role = UserRole.CLIENT; // фиксированная роль
+    
+    // Валидация данных пользователя
     const errors = await validate(user);
     if (errors.length > 0) {
       res.status(400).json(errors);
-      return;
-    }
-
-    const existing = await userRepo.findOne({ where: { email } });
-    if (existing) {
-      res.status(409).json({ message: 'Email already in use' });
       return;
     }
 

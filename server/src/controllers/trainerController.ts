@@ -2,10 +2,80 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User, UserRole } from "../models/User";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { Course } from "../models/Course";
 import { Enrollment } from "../models/Enrollment";
 import { Attendance } from "../models/Attendance";
 import { CourseSession } from "../models/CourseSession";
+
+
+const userRepo = AppDataSource.getRepository(User);
+console.log("Репо Пользователей: ", userRepo);
+
+// trainer login
+export const trainerLogin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+    console.log("email, password из тела запроса при логине тренера: ", email, password);
+    console.log("how role TRAINER looks like: ", UserRole.TRAINER);
+    if (!email || !password) {
+      res.status(400).json({ message: "Email and password are required" });
+      return;
+    }
+    // ищем пользователя с ролью TRAINER
+    const trainer = await userRepo.findOne({ where: { email, role: UserRole.TRAINER } });
+    console.log("Trainer из репо при логине: ", trainer);
+    if (trainer) {
+      console.log("Роль пользователя при логине тренера:", trainer.role);
+    }
+    if (!trainer) {
+      res.status(401).json({ message: "Trainer not found or role mismatch" });
+      return;
+    }
+    // проверка пароля с использованием bcrypt
+    const isValid = await bcrypt.compare(password, trainer.password);
+    console.log("password is correct?: ", isValid);
+    if (!isValid) {
+      res.status(401).json({ message: "Invalid password" });
+      return;
+    }
+    // если пароль верный, создаем токен
+    const token = jwt.sign({ id: trainer.id, role: trainer.role.toUpperCase() }, process.env.JWT_SECRET!, {
+      expiresIn: "1h",
+    });
+    // Исключаем пароль из ответа
+    const { password: _, ...trainerWithoutPassword } = trainer;
+    console.log("Token generated for trainer: ", token);
+
+    // ✅ Ответ клиенту
+    res.json({
+      message: "TrainerLogin successful",
+      user: trainerWithoutPassword,
+      token, // <-- добавляем токен
+    });
+  } catch (err) {
+    console.error("Trainer login error:", err);
+    res.status(500).json({ message: "Server error", error: err });
+  }
+};
+
+export const getTrainerProfile = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { id, firstName, lastName, name, email, role } = req.user;
+
+  return res.json({
+    id,
+    firstName,
+    lastName,
+    name,
+    email,
+    role,
+  });
+};
 
 // GET /api/trainer/courses
 export const getTrainerCourses = async (req: Request, res: Response) => {
