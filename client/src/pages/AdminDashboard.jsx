@@ -19,6 +19,10 @@ function AdminDashboard() {
     password: "",
     phoneNumber: "",
   });
+  // state for assigning a trainer to a course
+  const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedTrainer, setSelectedTrainer] = useState("");
   const navigate = useNavigate();
 
   // Fetch users
@@ -68,10 +72,22 @@ function AdminDashboard() {
       const { data } = await api.get("/admin/trainers");
       setTrainers(data);
     } catch (err) {
-      console.error("Ошибка загрузки тренеров:", err);
+      console.error("Error loading trainers:", err);
     }
   };
 
+  // Fetch courses for assigning trainers
+  const fetchCourses = async () => {
+    try {
+      // Используем api.ts для получения только курсов тренера
+      const { data } = await api.get("/courses");
+      setCourses(data);
+    } catch (err) {
+      console.error("Error loading courses:", err);
+    }
+  };
+
+  // On component mount, check auth and fetch data
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -94,6 +110,7 @@ function AdminDashboard() {
         fetchTrialBookings();
         fetchMessages();
         fetchTrainers();
+        fetchCourses();
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
@@ -173,7 +190,7 @@ function AdminDashboard() {
       </div>
     );
 
-  // 🔹 10. Handlers and state for creating a trainer
+  // 🔹 10. Handlers for creating and deleting a trainer
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -234,7 +251,7 @@ function AdminDashboard() {
     }
   };
 
-  // Handler for deleting a message
+  // 🔹 11. Handler for deleting a message
   const handleDeleteMessage = async (id) => {
     if (!window.confirm("Poistetaanko viesti?")) return;
 
@@ -244,6 +261,22 @@ function AdminDashboard() {
     } catch (err) {
       console.error("Error deleting message:", err);
       alert("Virhe viestin poistossa");
+    }
+  };
+
+  // 🔹 12. Handler for assigning a trainer to a course
+  const handleAssignTrainer = async () => {
+    if (!selectedCourse || !selectedTrainer) return;
+    try {
+      const { data } = await api.post(
+        `/admin/courses/${selectedCourse}/assign-trainer`,
+        { trainerId: selectedTrainer }
+      );
+      alert("✅ Valmentaja on onnistuneesti määritetty kurssille!");
+      console.log("Trainer assigned:", data);
+    } catch (err) {
+      console.error("Error when assigning a coach:", err);
+      alert("❌ Error when assigning a coach. Check the console.");
     }
   };
 
@@ -259,7 +292,6 @@ function AdminDashboard() {
           <span className="w3-tag w3-red w3-round">Admin</span>
         </p>
       </div>
-
       {/* users */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Käyttäjät</h3>
@@ -396,7 +428,6 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
-
       {/* trials */}
       <div className="w3-card w3-white w3-padding w3-round-large">
         <h3>KN kokeilijat</h3>
@@ -434,7 +465,6 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
-
       {/* Saapuneet viestit */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
         <h3>Saapuneet viestit</h3>
@@ -499,7 +529,6 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
-
       {/* Trainers Section */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
         <h3>Valmentajat</h3>
@@ -608,6 +637,65 @@ function AdminDashboard() {
             ))}
           </tbody>
         </table>
+      </div>
+      {/* --- Assign Trainer to Course Section ---*/}
+      <div className="w3-container w3-margin-top">
+        <div className="w3-card w3-round-large w3-white w3-padding-large">
+          <h3 className="w3-text-teal">
+            <i className="fa fa-user-plus w3-margin-right"></i>
+            Määritä valmentaja kurssille
+          </h3>
+
+          {/* --Course selection-- */}
+          <div className="w3-section">
+            <label className="w3-text-dark-grey">
+              <b>Valitse kurssi:</b>
+            </label>
+            <select
+              className="w3-select w3-border"
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+            >
+              <option value="">-- Valitse kurssi --</option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/*-- Choosing a coach --*/}
+          <div className="w3-section">
+            <label className="w3-text-dark-grey">
+              <b>Valitse valmentaja:</b>
+            </label>
+            <select
+              className="w3-select w3-border"
+              value={selectedTrainer}
+              onChange={(e) => setSelectedTrainer(e.target.value)}
+            >
+              <option value="">-- Valitse valmentaja --</option>
+              {trainers.map((trainer) => (
+                <option key={trainer.id} value={trainer.id}>
+                  {trainer.firstName} {trainer.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/*-- Button --*/}
+          <div className="w3-center w3-margin-top">
+            <button
+              className="w3-button w3-teal w3-round-large w3-padding-large"
+              onClick={handleAssignTrainer}
+              disabled={!selectedCourse || !selectedTrainer}
+            >
+              <i className="fa fa-check w3-margin-right"></i>
+              Määritä
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

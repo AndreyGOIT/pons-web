@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User, UserRole } from '../models/User';
+import { Course } from '../models/Course';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateUsersPdf } from "../utils/pdf/generateUsersPdf";
@@ -9,8 +10,10 @@ import { validate } from 'class-validator';
 
 
 const userRepo = AppDataSource.getRepository(User);
+const courseRepo = AppDataSource.getRepository(Course);
 
-//
+
+// admin login
 export const adminLogin = async (req: Request, res: Response) => {
     try {
     const { email, password } = req.body;
@@ -47,6 +50,7 @@ export const adminLogin = async (req: Request, res: Response) => {
   }
 };
 
+// Get admin profile
 export const getAdminProfile = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -62,6 +66,7 @@ export const getAdminProfile = async (req: Request, res: Response) => {
   });
 };
 
+// Update admin profile
 export const updateAdminProfile = async (req: Request, res: Response) => {
       const user = req.user; // 👈 теперь TypeScript точно знает, что он определён
   if (!user) {
@@ -89,7 +94,7 @@ export const getUsersPdf = async (req: Request, res: Response) => {
   generateUsersPdf(users, res);
 };
 
-// Создание тренера (только для ADMIN)
+// Create a new trainer (only ADMIN)
 export const createTrainer = async (req: Request, res: Response): Promise<void> => {
   try {
     const { firstName, lastName, email, password, phoneNumber } = req.body;
@@ -135,7 +140,7 @@ export const createTrainer = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-
+// Get all trainers (only ADMIN)
 export const getTrainers = async (req: Request, res: Response) => {
   try {
     // Проверяем, что запрос делает администратор
@@ -177,7 +182,43 @@ export const deleteTrainer = async (req: Request, res: Response) => {
   }
 };
 
-// Создание первого админа (если нужно)
+// Assign trainer to course (only ADMIN)
+export const assignTrainerToCourse = async (req: Request, res: Response) => {
+  try {
+    const { courseId } = req.params;
+    const { trainerId } = req.body;
+
+    const course = await courseRepo.findOne({
+      where: { id: Number(courseId) },
+      relations: ["trainers"],
+    });
+    const trainer = await userRepo.findOne({
+      where: { id: Number(trainerId), role: UserRole.TRAINER },
+    });
+
+    if (!course || !trainer) {
+      return res.status(404).json({ message: "Course or trainer not found" });
+    }
+
+    // Check if trainer is already assigned
+    if (course.trainers?.some((t) => t.id === trainer.id)) {
+      return res.status(409).json({ message: "Trainer already assigned to this course" });
+    }
+
+    course.trainers = [...(course.trainers || []), trainer];
+    await courseRepo.save(course);
+
+    res.status(200).json({
+      message: "Trainer successfully assigned to course",
+      course,
+    });
+  } catch (err) {
+    console.error("Error assigning trainer:", err);
+    res.status(500).json({ message: "Server error", error: err });
+  }
+};
+
+// Create an admin user (for initial setup)
 export const createAdminUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { firstName, lastName, email, password } = req.body;
