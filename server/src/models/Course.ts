@@ -5,10 +5,14 @@ import {
   Column,
   CreateDateColumn,
   ManyToMany,
+  OneToMany,
   JoinTable
 } from 'typeorm';
 import { User } from './User';
 import { CourseType } from '../enums/CourseType';
+import { CourseSession } from './CourseSession';
+import { Enrollment } from './Enrollment';
+import { Attendance } from './Attendance';
 
 @Entity()
 export class Course {
@@ -42,4 +46,13 @@ title!: CourseType;
   @ManyToMany(() => User, user => user.coursesAsTrainer, { eager: true })    
   @JoinTable()
   trainers!: User[];
+  
+@OneToMany(() => CourseSession, (session) => session.course)
+  sessions!: CourseSession[];
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
+  enrollments!: Enrollment[];
+
+  @OneToMany(() => Attendance, (attendance) => attendance.course)
+  attendances!: Attendance[];
 }

@@ -59,7 +59,7 @@ export const trainerLogin = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ message: "Server error", error: err });
   }
 };
-
+// trainer profile
 export const getTrainerProfile = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -110,6 +110,7 @@ export const getCourseAttendances = async (req: Request, res: Response) => {
     }
     const trainer = req.user;
     const { courseId } = req.params;
+    console.log("📘 Запрос посещаемости курса:", courseId);
 
     const courseRepo = AppDataSource.getRepository(Course);
     const course = await courseRepo.findOne({
@@ -126,16 +127,18 @@ export const getCourseAttendances = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
+    // get sessions
     const sessions = await AppDataSource.getRepository(CourseSession).find({
       where: { course: { id: Number(courseId) } },
       order: { date: "ASC" },
     });
 
+     // get attendances
     const attendances = await AppDataSource.getRepository(Attendance).find({
       where: { enrollment: { course: { id: Number(courseId) } } },
       relations: ["enrollment", "enrollment.user", "session"],
     });
-
+    console.log(`📊 Found ${attendances.length} attendance records for course ID ${courseId}`);
     res.json({ course, sessions, attendances });
   } catch (error) {
     console.error("Error in getCourseAttendances:", error);
@@ -188,12 +191,12 @@ export const toggleAttendance = async (req: Request, res: Response) => {
         session,
         present: !!present,
         markedAt: new Date(),
-        markedByUserId: user.id,
+        markedByUser: user,
       });
     } else {
       attendance.present = !!present;
       attendance.markedAt = new Date();
-      attendance.markedByUserId = user.id;
+      attendance.markedByUser = user;
     }
 
     await attendanceRepo.save(attendance);
@@ -241,12 +244,12 @@ export async function markAttendance(req: Request, res: Response) {
         session,
         present: !!present,
         markedAt: new Date(),
-        markedByUserId: user.id,
+        markedByUser: user,
       });
     } else {
       att.present = !!present;
       att.markedAt = new Date();
-      att.markedByUserId = user.id;
+      att.markedByUser = user;
     }
 
     await repo.save(att);

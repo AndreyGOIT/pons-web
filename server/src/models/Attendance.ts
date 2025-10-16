@@ -2,6 +2,8 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, Unique, Index } from "typeorm";
 import { CourseSession } from "./CourseSession";
 import { Enrollment } from "./Enrollment";
+import { Course } from "./Course";
+import { User } from "./User";
 
 @Entity()
 @Unique(["enrollment", "session"])
@@ -21,9 +23,14 @@ export class Attendance {
   @Column({ type: "datetime", nullable: true })
   markedAt?: Date;
 
-  @Column({ type: "int", nullable: true })
-  markedByUserId?: number; // optional: who marked (trainer/admin)
+  @ManyToOne(() => User, { nullable: true })
+  markedByUser?: User;
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @ManyToOne(() => Course, (course) => course.attendances, {
+    onDelete: "CASCADE",
+  })
+  course!: Course;
 }

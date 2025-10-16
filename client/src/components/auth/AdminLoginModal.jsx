@@ -109,7 +109,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
                 onChange={() => setRole("trainer")}
                 className="w3-radio"
               />
-              Trainer
+              Valmentaja
             </label>
           </div>
 
