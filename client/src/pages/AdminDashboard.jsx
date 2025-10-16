@@ -70,6 +70,7 @@ function AdminDashboard() {
   const fetchTrainers = async () => {
     try {
       const { data } = await api.get("/admin/trainers");
+      console.log("Fetched trainers in adminpanel: ", data);
       setTrainers(data);
     } catch (err) {
       console.error("Error loading trainers:", err);
@@ -279,6 +280,30 @@ function AdminDashboard() {
       alert("❌ Error when assigning a coach. Check the console.");
     }
   };
+  // Handler for unassigning a trainer from a course
+  const handleUnassignCourse = async (trainerId, courseId) => {
+    if (!window.confirm("Haluatko varmasti poistaa valmentajan kurssilta?"))
+      return;
+
+    try {
+      const { data } = await api.delete(
+        `/admin/trainers/${trainerId}/courses/${courseId}`
+      );
+      console.log("Trainer unassigned:", data);
+
+      // Set updated trainers state
+      setTrainers((prev) =>
+        prev.map((t) =>
+          t.id === trainerId
+            ? { ...t, courses: t.courses.filter((c) => c.id !== courseId) }
+            : t
+        )
+      );
+    } catch (err) {
+      console.error("Virhe poistettaessa kurssilta:", err);
+      alert("Virhe poistettaessa valmentajaa kurssilta");
+    }
+  };
 
   return (
     <div
@@ -306,9 +331,10 @@ function AdminDashboard() {
             <tr>
               <th>Nimi</th>
               <th>Email</th>
+              <th>Puhelin</th>
               <th>Rooli</th>
-              <th>Kurssi</th>
               <th>Rekisteröity pvm</th>
+              <th>Kurssi</th>
               <th>Toiminnot</th>
             </tr>
           </thead>
@@ -321,18 +347,22 @@ function AdminDashboard() {
                     : u.name}
                 </td>
                 <td data-label="Email">{u.email}</td>
+                <td data-label="Puhelin">{u.phoneNumber || "—"}</td>
                 <td data-label="Rooli">
                   <span
                     className={`w3-tag w3-round ${
                       u.role === "admin"
                         ? "w3-red"
-                        : u.role === "coach"
+                        : u.role === "trainer"
                         ? "w3-blue"
                         : "w3-green"
                     }`}
                   >
                     {u.role}
                   </span>
+                </td>
+                <td data-label="Rekisteröity pvm">
+                  {new Date(u.createdAt).toLocaleDateString("fi-FI")}
                 </td>
                 <td data-label="Kurssi">
                   {getUserEnrollments(u.id).length === 0 ? (
@@ -353,7 +383,7 @@ function AdminDashboard() {
                           <strong>Lasku:</strong>{" "}
                           <span>
                             {enr.invoiceSent
-                              ? "✅ on lähetetty"
+                              ? " on lähetetty ✅"
                               : "Ei lähetetty"}
                           </span>
                         </div>
@@ -411,16 +441,13 @@ function AdminDashboard() {
                     ))
                   )}
                 </td>
-                <td data-label="Rekisteröity pvm">
-                  {new Date(u.createdAt).toLocaleDateString("fi-FI")}
-                </td>
                 <td data-label="Toiminnot">
                   <button
                     className="w3-button w3-small w3-red w3-round"
                     onClick={() => handleDeleteUser(u.id)}
                     disabled={u.role === "admin"}
                   >
-                    X Poista
+                    <i className="fa fa-trash"></i> Poista käyttäjä
                   </button>
                 </td>
               </tr>
@@ -429,13 +456,12 @@ function AdminDashboard() {
         </table>
       </div>
       {/* trials */}
-      <div className="w3-card w3-white w3-padding w3-round-large">
+      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>KN kokeilijat</h3>
         <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
           <thead className="w3-light-grey">
             <tr>
-              <th>Etunimi</th>
-              <th>Sukunimi</th>
+              <th>Nimi</th>
               <th>Email</th>
               <th>Puhelin</th>
               <th>Rekisteröity pvm</th>
@@ -445,8 +471,9 @@ function AdminDashboard() {
           <tbody>
             {trialBookings.map((t) => (
               <tr key={t.id}>
-                <td data-label="Etunimi">{t.firstName}</td>
-                <td data-label="Sukunimi">{t.lastName}</td>
+                <td data-label="Nimi">
+                  {t.firstName} {t.lastName}
+                </td>
                 <td data-label="Email">{t.email}</td>
                 <td data-label="Puhelin">{t.phone}</td>
                 <td data-label="Rekisteröity pvm">
@@ -457,7 +484,7 @@ function AdminDashboard() {
                     onClick={() => handleDeleteTrial(t.id)}
                     className="w3-button w3-small w3-red w3-round"
                   >
-                    Poista
+                    <i className="fa fa-trash"></i> Poista kokeilija
                   </button>
                 </td>
               </tr>
@@ -466,7 +493,7 @@ function AdminDashboard() {
         </table>
       </div>
       {/* Saapuneet viestit */}
-      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
+      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Saapuneet viestit</h3>
         <table className="w3-table w3-bordered w3-striped w3-small responsive-table">
           <thead>
@@ -521,7 +548,7 @@ function AdminDashboard() {
                     onClick={() => handleDeleteMessage(m.id)}
                     className="w3-button w3-small w3-red w3-round"
                   >
-                    Poista
+                    <i className="fa fa-trash"></i> Poista viesti
                   </button>
                 </td>
               </tr>
@@ -530,13 +557,14 @@ function AdminDashboard() {
         </table>
       </div>
       {/* Trainers Section */}
-      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
+      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Valmentajat</h3>
         <button
           className="w3-button w3-green w3-margin-bottom"
           onClick={() => setShowModal(true)}
         >
-          Lisää uusi valmentaja
+          <i className="fa fa-user-plus w3-margin-right"></i>Lisää uusi
+          valmentaja
         </button>
         {showModal && (
           <div
@@ -610,9 +638,10 @@ function AdminDashboard() {
           <thead className="w3-light-grey">
             <tr>
               <th>Nimi</th>
-              <th>Email</th>
+              <th>Sähköposti</th>
               <th>Puhelin</th>
               <th>Rekisteröity pvm</th>
+              <th>Kurssit</th>
               <th>Toiminnot</th>
             </tr>
           </thead>
@@ -624,13 +653,59 @@ function AdminDashboard() {
                 </td>
                 <td>{t.email}</td>
                 <td>{t.phoneNumber}</td>
-                <td>{new Date(t.createdAt).toLocaleDateString("fi-FI")}</td>
+                <td>
+                  {t.createdAt
+                    ? new Date(t.createdAt).toLocaleDateString("fi-FI")
+                    : "—"}
+                </td>
+                <td>
+                  {t.courses?.length > 0 ? (
+                    t.courses.map((course) => (
+                      <div
+                        key={course.id}
+                        className="w3-tag w3-teal w3-round w3-small w3-padding-small w3-animate-opacity"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "185px",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        <span
+                          key={course.id}
+                          className="w3-tag w3-teal w3-round w3-small"
+                          style={{ padding: "4px 8px" }}
+                        >
+                          {course.title}
+                          <button
+                            className="w3-button w3-transparent w3-small w3-hover-red w3-padding-small"
+                            style={{
+                              marginLeft: "4px",
+                              lineHeight: "1",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            title="Poista kurssilta"
+                            onClick={() =>
+                              handleUnassignCourse(t.id, course.id)
+                            }
+                          >
+                            ❌
+                          </button>
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="w3-text-grey">Ei vielä kursseja</span>
+                  )}
+                </td>
                 <td data-label="Toiminnot">
                   <button
                     onClick={() => handleDeleteTrainer(t.id)}
                     className="w3-button w3-small w3-red w3-round"
                   >
-                    Poista
+                    <i className="fa fa-trash"></i> Poista valmentaja
                   </button>
                 </td>
               </tr>
@@ -640,7 +715,15 @@ function AdminDashboard() {
       </div>
       {/* --- Assign Trainer to Course Section ---*/}
       <div className="w3-container w3-margin-top">
-        <div className="w3-card w3-round-large w3-white w3-padding-large">
+        <div
+          className="w3-card w3-round-large w3-white w3-padding-large"
+          style={{
+            maxWidth: "768px", // ограничение по ширине
+            margin: "0 auto", // выравнивание по центру
+            width: "95%", // адаптивная ширина на маленьких экранах
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)", // немного глубины
+          }}
+        >
           <h3 className="w3-text-teal">
             <i className="fa fa-user-plus w3-margin-right"></i>
             Määritä valmentaja kurssille

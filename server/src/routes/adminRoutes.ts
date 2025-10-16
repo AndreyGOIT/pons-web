@@ -5,7 +5,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { adminOnly } from '../middlewares/adminOnly';
 import { catchAsync } from '../utils/catchAsync';
 import { getAdminProfile, updateAdminProfile, adminLogin, getUsersPdf } from '../controllers/adminController';
-import { createTrainer, getTrainers, deleteTrainer, assignTrainerToCourse } from "../controllers/adminController";
+import { createTrainer, getTrainers, deleteTrainer, assignTrainerToCourse, unassignTrainerFromCourse } from "../controllers/adminController";
 import { createAdminUser } from "../controllers/adminController";
 
 const router = Router();
@@ -43,6 +43,13 @@ router.delete("/trainers/:id", catchAsync(deleteTrainer)); // можно доб�
 // assign trainer to course
 // POST /api/admin/courses/:courseId/assign-trainer
 router.post("/courses/:courseId/assign-trainer", catchAsync(assignTrainerToCourse));
+
+// unassign trainer from course
+// DELETE /api/admin/trainers/:trainerId/courses/:courseId
+router.delete(
+  "/trainers/:trainerId/courses/:courseId",
+  catchAsync(unassignTrainerFromCourse)
+);
 
 // create an admin user (for initial setup)
 // POST /api/admin/admins

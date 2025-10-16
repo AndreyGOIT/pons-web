@@ -148,9 +148,22 @@ export const getTrainers = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Access denied: only admin can view trainers." });
     }
 
-    const trainers = await userRepo.find({ where: { role: UserRole.TRAINER } });
+    const trainers = await userRepo.find({ where: { role: UserRole.TRAINER },
+      relations: ["coursesAsTrainer"], // добавляем связь с курсами 
+      order: { name: "ASC" } // сортируем по имени
+    });
 
-    res.json(trainers);
+    const formatted = trainers.map((t) => ({
+      id: t.id,
+      firstName: t.firstName,
+      lastName: t.lastName,
+      email: t.email,
+      phoneNumber: t.phoneNumber,
+      createdAt: t.createdAt ? t.createdAt.toISOString() : null,
+      courses: t.coursesAsTrainer?.map((c) => ({ id: c.id, title: c.title })) || [],
+    }));
+
+    res.status(200).json(formatted);
   } catch (error) {
     console.error("Error fetching trainers:", error);
     res.status(500).json({ message: "Server error while fetching trainers." });
@@ -215,6 +228,38 @@ export const assignTrainerToCourse = async (req: Request, res: Response) => {
   } catch (err) {
     console.error("Error assigning trainer:", err);
     res.status(500).json({ message: "Server error", error: err });
+  }
+};
+
+// Unassign trainer from course (only ADMIN)
+export const unassignTrainerFromCourse = async (req: Request, res: Response) => {
+  try {
+    const { trainerId, courseId } = req.params;
+
+    const trainer = await userRepo.findOne({
+      where: { id: Number(trainerId), role: UserRole.TRAINER },
+      relations: ["coursesAsTrainer"],
+    });
+
+    if (!trainer) {
+      res.status(404).json({ message: "Trainer not found" });
+      return;
+    }
+
+    trainer.coursesAsTrainer = trainer.coursesAsTrainer.filter(
+      (course) => course.id !== Number(courseId)
+    );
+
+    await userRepo.save(trainer);
+
+    res.status(200).json({
+      message: "Trainer successfully unassigned from course",
+      trainerId,
+      courseId,
+    });
+  } catch (error) {
+    console.error("Error unassigning trainer:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
