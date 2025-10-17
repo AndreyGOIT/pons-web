@@ -5,9 +5,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToMany
+  ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import { Course } from './Course';
+import { Enrollment } from './Enrollment';
 import { Length, IsEmail } from 'class-validator';
 
 export enum UserRole {
@@ -54,6 +56,11 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.user, {
+    cascade: true,
+  })
+  enrollments!: Enrollment[];
 
   // Courses where the user is a trainer
   @ManyToMany(() => Course, course => course.trainers)

@@ -7,6 +7,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
     firstName: "",
     lastName: "",
     email: "",
+    phoneNumber: "",
     password: "",
     confirmPassword: "",
   });
@@ -59,6 +60,7 @@ const RegisterModal = ({ onClose, onSuccess }) => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        phoneNumber: formData.phoneNumber,
         password: formData.password,
         role: "client",
       });
@@ -141,6 +143,18 @@ const RegisterModal = ({ onClose, onSuccess }) => {
                 required
                 value={formData.email}
                 onChange={handleChange}
+              />
+            </p>
+            <p>
+              <label>Puhelinnumero</label>
+              <input
+                className="w3-input w3-border"
+                type="text"
+                name="phoneNumber"
+                required
+                value={formData.phoneNumber || ""}
+                onChange={handleChange}
+                placeholder="Esim. 0401234567"
               />
             </p>
             <p>

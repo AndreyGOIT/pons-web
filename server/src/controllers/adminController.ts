@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { generateUsersPdf } from "../utils/pdf/generateUsersPdf";
 import { validate } from 'class-validator';
 import { CourseSession } from "../models/CourseSession";
+import { Attendance } from "../models/Attendance";
 import { Between } from "typeorm";
 
 const userRepo = AppDataSource.getRepository(User);
@@ -85,10 +86,44 @@ export const updateAdminProfile = async (req: Request, res: Response) => {
   res.json({ message: 'Данные обновлены', admin });
 };
 
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    // Получаем всех пользователей с ролью "user" (то есть клиентов)
+    const userRepo = AppDataSource.getRepository(User);
+    const users = await userRepo.find({
+      where: { role: UserRole.CLIENT },
+      order: { createdAt: "DESC" },
+      relations: ["enrollments", "enrollments.course"],
+    });
+
+    // Форматируем данные при необходимости
+    const formatted = users.map((u) => ({
+      id: u.id,
+      firstName: u.firstName,
+      lastName: u.lastName,
+      email: u.email,
+      phoneNumber: u.phoneNumber,
+      createdAt: u.createdAt,
+      enrollments: u.enrollments?.map((e) => ({
+        id: e.id,
+        courseTitle: e.course?.title,
+        invoicePaid: e.invoicePaid,
+        paymentConfirmedByAdmin: e.paymentConfirmedByAdmin,
+      })),
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // download Users in PDF
 export const getUsersPdf = async (req: Request, res: Response) => {
   const users = await AppDataSource.getRepository(User).find({
     order: { name: "ASC" },
+    relations: ["enrollments", "enrollments.course"],
   });
 
   generateUsersPdf(users, res);
@@ -171,27 +206,41 @@ export const getTrainers = async (req: Request, res: Response) => {
 };
 export const deleteTrainer = async (req: Request, res: Response) => {
   try {
-    // Проверяем, что запрос делает администратор
-    if (!req.user || req.user.role !== UserRole.ADMIN) {
-      return res.status(403).json({ message: "Access denied: only admin can delete trainers." });
-    }
+    const trainerId = Number(req.params.id);
+    const userRepo = AppDataSource.getRepository(User);
+    const attendanceRepo = AppDataSource.getRepository(Attendance);
 
-    const trainerId = parseInt(req.params.id, 10);
-    if (isNaN(trainerId)) {
-      return res.status(400).json({ message: "Invalid trainer ID." });
-    }
+    const trainer = await userRepo.findOne({
+      where: { id: trainerId, role: UserRole.TRAINER },
+      relations: ["coursesAsTrainer"],
+    });
 
-    const trainer = await userRepo.findOne({ where: { id: trainerId, role: UserRole.TRAINER } });
     if (!trainer) {
-      return res.status(404).json({ message: "Trainer not found." });
+      return res.status(404).json({ message: "Trainer not found" });
     }
 
+    console.log(`🧹 Cleaning up relations for trainer ID: ${trainer.id}`);
+
+    // 1️⃣ Убираем ссылки из таблицы курсов
+    trainer.coursesAsTrainer = [];
+    await userRepo.save(trainer);
+
+    // 2️⃣ Обнуляем markedByUser в Attendance
+    await attendanceRepo
+      .createQueryBuilder()
+      .update(Attendance)
+      .set({ markedByUser: null as unknown as User  })
+      .where("markedByUserId = :trainerId", { trainerId })
+      .execute();
+
+    // 3️⃣ Удаляем самого тренера
     await userRepo.remove(trainer);
 
-    res.json({ message: "Trainer deleted successfully." });
+    console.log(`✅ Trainer ID ${trainer.id} deleted successfully`);
+    res.json({ message: "Trainer deleted successfully" });
   } catch (error) {
     console.error("Error deleting trainer:", error);
-    res.status(500).json({ message: "Server error while deleting trainer." });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

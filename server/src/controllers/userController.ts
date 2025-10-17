@@ -9,7 +9,7 @@ const userRepo = AppDataSource.getRepository(User);
 //user registration
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, phoneNumber, password } = req.body;
 
     const existing = await userRepo.findOne({ where: { email } });
     if (existing) {
@@ -22,6 +22,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     user.lastName = lastName;
     user.name = `${firstName ?? ''} ${lastName ?? ''}`.trim();
     user.email = email;
+    user.phoneNumber = phoneNumber;
     user.password = await bcrypt.hash(password, 10);
     user.role = UserRole.CLIENT; // фиксированная роль
     

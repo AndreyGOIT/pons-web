@@ -341,16 +341,43 @@ const TrainerDashboard: React.FC = () => {
               <tbody>
                 {enrollments.map((e) => (
                   <tr key={e.user.id}>
-                    <td
-                      style={{
-                        position: "sticky",
-                        left: 0,
-                        backgroundColor: "#fff",
-                        zIndex: 1,
-                        fontWeight: "500",
-                      }}
-                    >
-                      {e.user.firstName} {e.user.lastName}
+                    <td>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                        }}
+                      >
+                        {/* Имя и фамилия */}
+                        <span>
+                          {e.user.firstName} {e.user.lastName}
+                        </span>
+
+                        {/* Иконка: платеж произведён, но админ ещё не подтвердил */}
+                        {e.invoicePaid && !e.paymentConfirmedByAdmin && (
+                          <i
+                            className="fa fa-money w3-text-green"
+                            title="Payment made (pending admin confirmation)"
+                          ></i>
+                        )}
+
+                        {/* Иконка: платеж ожидается */}
+                        {!e.invoicePaid && !e.paymentConfirmedByAdmin && (
+                          <i
+                            className="fa fa-hourglass-half w3-text-orange"
+                            title="Payment pending"
+                          ></i>
+                        )}
+
+                        {/* Иконка: платеж подтверждён админом */}
+                        {e.paymentConfirmedByAdmin && (
+                          <i
+                            className="fa fa-check-circle w3-text-blue"
+                            title="Payment confirmed by admin"
+                          ></i>
+                        )}
+                      </div>
                     </td>
                     {sessions.map((s) => (
                       <td key={s.id} className="w3-center w3-border-left">

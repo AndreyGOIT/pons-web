@@ -1,10 +1,10 @@
 // src/routes/adminRoutes.ts
 import { Router } from 'express';
-import { getUsers, getUserById, updateCurrentUser, deleteUserByAdmin } from '../controllers/userController';
+import { getUserById, updateCurrentUser, deleteUserByAdmin } from '../controllers/userController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { adminOnly } from '../middlewares/adminOnly';
 import { catchAsync } from '../utils/catchAsync';
-import { getAdminProfile, updateAdminProfile, adminLogin, getUsersPdf } from '../controllers/adminController';
+import { getAdminProfile, updateAdminProfile, adminLogin, getUsers, getUsersPdf } from '../controllers/adminController';
 import { createTrainer, getTrainers, deleteTrainer, assignTrainerToCourse, unassignTrainerFromCourse } from "../controllers/adminController";
 import { createAdminUser } from "../controllers/adminController";
 import { generateCourseSessions,

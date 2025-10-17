@@ -281,6 +281,22 @@ function AdminDashboard() {
       );
       alert("✅ Valmentaja on onnistuneesti määritetty kurssille!");
       console.log("Trainer assigned:", data);
+
+      // Обновляем локальный список тренеров
+      setTrainers((prevTrainers) =>
+        prevTrainers.map((t) =>
+          t.id === selectedTrainer
+            ? {
+                ...t,
+                courses: [...t.courses, data.course], // добавляем новый курс
+              }
+            : t
+        )
+      );
+
+      // Сброс выбора
+      setSelectedCourse("");
+      setSelectedTrainer("");
     } catch (err) {
       console.error("Error when assigning a coach:", err);
       alert("❌ Error when assigning a coach. Check the console.");
@@ -338,7 +354,6 @@ function AdminDashboard() {
               <th>Nimi</th>
               <th>Email</th>
               <th>Puhelin</th>
-              <th>Rooli</th>
               <th>Rekisteröity pvm</th>
               <th>Kurssi</th>
               <th>Toiminnot</th>
@@ -354,19 +369,6 @@ function AdminDashboard() {
                 </td>
                 <td data-label="Email">{u.email}</td>
                 <td data-label="Puhelin">{u.phoneNumber || "—"}</td>
-                <td data-label="Rooli">
-                  <span
-                    className={`w3-tag w3-round ${
-                      u.role === "admin"
-                        ? "w3-red"
-                        : u.role === "trainer"
-                        ? "w3-blue"
-                        : "w3-green"
-                    }`}
-                  >
-                    {u.role}
-                  </span>
-                </td>
                 <td data-label="Rekisteröity pvm">
                   {new Date(u.createdAt).toLocaleDateString("fi-FI")}
                 </td>
@@ -762,7 +764,7 @@ function AdminDashboard() {
             <select
               className="w3-select w3-border"
               value={selectedTrainer}
-              onChange={(e) => setSelectedTrainer(e.target.value)}
+              onChange={(e) => setSelectedTrainer(Number(e.target.value))}
             >
               <option value="">-- Valitse valmentaja --</option>
               {trainers.map((trainer) => (
