@@ -20,4 +20,10 @@ export class CourseSession {
   // optional: scheduled weekday or session number
   @Column({ type: "tinyint", nullable: true })
   weekday?: number; // 1-7 (Mon=1)
+
+  @Column({ type: "time", nullable: true })
+  startTime?: string;
+
+  @Column({ type: "time", nullable: true })
+  endTime?: string;
 }

@@ -7,6 +7,9 @@ import { catchAsync } from '../utils/catchAsync';
 import { getAdminProfile, updateAdminProfile, adminLogin, getUsersPdf } from '../controllers/adminController';
 import { createTrainer, getTrainers, deleteTrainer, assignTrainerToCourse, unassignTrainerFromCourse } from "../controllers/adminController";
 import { createAdminUser } from "../controllers/adminController";
+import { generateCourseSessions,
+  getCourseSessions,
+  deleteCourseSession, } from "../controllers/adminController";
 
 const router = Router();
 
@@ -54,5 +57,16 @@ router.delete(
 // create an admin user (for initial setup)
 // POST /api/admin/admins
 router.post("/admins", catchAsync(createAdminUser));
+
+//-------course sessions routes-------//
+// Creation of course sessions
+router.post("/courses/:courseId/sessions/generate", catchAsync(generateCourseSessions));
+
+// Getting course sessions
+router.get("/courses/:courseId/sessions", catchAsync(getCourseSessions));
+
+// Deleting a course session
+router.delete("/sessions/:sessionId", catchAsync(deleteCourseSession));
+
 
 export default router;

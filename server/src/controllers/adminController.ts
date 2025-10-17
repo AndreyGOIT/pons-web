@@ -7,11 +7,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateUsersPdf } from "../utils/pdf/generateUsersPdf";
 import { validate } from 'class-validator';
-
+import { CourseSession } from "../models/CourseSession";
+import { Between } from "typeorm";
 
 const userRepo = AppDataSource.getRepository(User);
 const courseRepo = AppDataSource.getRepository(Course);
-
 
 // admin login
 export const adminLogin = async (req: Request, res: Response) => {
@@ -290,5 +290,92 @@ export const createAdminUser = async (req: Request, res: Response): Promise<void
   } catch (err) {
     console.error("Error creating admin:", err);
     res.status(500).json({ message: "Server error", error: err });
+  }
+};
+
+
+// Generate course sessions based on weekdays and time (only ADMIN)
+// =============================================
+// 📅 1. Генерация расписания тренировок курса
+// =============================================
+export const generateCourseSessions = async (req: Request, res: Response) => {
+  try {
+    const { courseId } = req.params;
+    const { weekdays, startTime, endTime } = req.body;
+
+    const courseRepo = AppDataSource.getRepository(Course);
+    const sessionRepo = AppDataSource.getRepository(CourseSession);
+
+    const course = await courseRepo.findOne({ where: { id: Number(courseId) } });
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    if (!Array.isArray(weekdays) || weekdays.length === 0) {
+      return res.status(400).json({ message: "No weekdays provided" });
+    }
+
+    const start = new Date(course.startDate);
+    const end = new Date(course.endDate);
+    let count = 0;
+
+    // Генерируем даты между startDate и endDate по выбранным дням недели
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const weekday = d.getDay() === 0 ? 7 : d.getDay(); // Sunday → 7
+      if (weekdays.includes(weekday)) {
+        const exists = await sessionRepo.exists({
+          where: { course: { id: course.id }, date: d.toISOString().slice(0, 10) },
+        });
+        if (!exists) {
+          const session = sessionRepo.create({
+            course,
+            date: d.toISOString().slice(0, 10),
+            weekday,
+          });
+          await sessionRepo.save(session);
+          count++;
+        }
+      }
+    }
+
+    res.json({ message: "Sessions generated", count });
+  } catch (error) {
+    console.error("Error generating sessions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// =============================================
+// 📋 2. Получение всех тренировок курса
+// =============================================
+export const getCourseSessions = async (req: Request, res: Response) => {
+  try {
+    const { courseId } = req.params;
+    const sessionRepo = AppDataSource.getRepository(CourseSession);
+    const sessions = await sessionRepo.find({
+      where: { course: { id: Number(courseId) } },
+      order: { date: "ASC" },
+    });
+    res.json(sessions);
+  } catch (error) {
+    console.error("Error fetching course sessions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// =============================================
+// 🗑️ 3. Удаление отдельной тренировки
+// =============================================
+export const deleteCourseSession = async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+    const sessionRepo = AppDataSource.getRepository(CourseSession);
+
+    const session = await sessionRepo.findOne({ where: { id: Number(sessionId) } });
+    if (!session) return res.status(404).json({ message: "Session not found" });
+
+    await sessionRepo.remove(session);
+    res.json({ message: "Session deleted" });
+  } catch (error) {
+    console.error("Error deleting session:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import AdminCourseSchedule from "../components/AdminCourseSchedule";
 
 function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
@@ -23,6 +24,11 @@ function AdminDashboard() {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTrainer, setSelectedTrainer] = useState("");
+  //-----state for creating course schedule
+  //   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  // const [weekdays, setWeekdays] = useState<number[]>([]);
+  // const [startTime, setStartTime] = useState("19:00");
+  // const [endTime, setEndTime] = useState("20:30");
   const navigate = useNavigate();
 
   // Fetch users
@@ -280,7 +286,7 @@ function AdminDashboard() {
       alert("❌ Error when assigning a coach. Check the console.");
     }
   };
-  // Handler for unassigning a trainer from a course
+  // 🔹 13.  Handler for unassigning a trainer from a course
   const handleUnassignCourse = async (trainerId, courseId) => {
     if (!window.confirm("Haluatko varmasti poistaa valmentajan kurssilta?"))
       return;
@@ -780,6 +786,8 @@ function AdminDashboard() {
           </div>
         </div>
       </div>
+      {/* --- Course Schedule Generation Section --- */}
+      <AdminCourseSchedule courses={courses} />
     </div>
   );
 }

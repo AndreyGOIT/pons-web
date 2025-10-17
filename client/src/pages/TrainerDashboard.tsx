@@ -61,22 +61,18 @@ const TrainerDashboard: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [attendanceData, setAttendanceData] = useState<AttendanceData>({});
-  const [filterDates, setFilterDates] = useState<{
-    start: string;
-    end: string;
-  }>({ start: "", end: "" });
+  const [filterDates, setFilterDates] = useState({ start: "", end: "" });
+  const [notification, setNotification] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
-  const fetchCourses = async () => {
-    try {
-      // Используем api.ts для получения только курсов тренера
-      const { data } = await api.get<Course[]>("/trainer/courses");
-      setCourses(data);
-    } catch (err) {
-      console.error("Ошибка при загрузке курсов:", err);
-    }
+  // Показ уведомлений
+  const showNotification = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 3000);
   };
 
+  // Получаем профиль тренера
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -87,9 +83,7 @@ const TrainerDashboard: React.FC = () => {
     const fetchTrainerData = async () => {
       try {
         const { data } = await api.get("/trainer/profile");
-        console.log("Trainer profile data:", data);
         setTrainer(data);
-
         fetchCourses();
       } catch (err) {
         console.error("Error fetching trainer profile:", err);
@@ -97,9 +91,19 @@ const TrainerDashboard: React.FC = () => {
       }
     };
 
+    const fetchCourses = async () => {
+      try {
+        const { data } = await api.get<Course[]>("/trainer/courses");
+        setCourses(data);
+      } catch (err) {
+        console.error("Ошибка при загрузке курсов:", err);
+      }
+    };
+
     fetchTrainerData();
   }, [navigate]);
 
+  // Выбор курса и загрузка посещаемости
   const handleCourseSelect = async (courseId: string) => {
     if (!courseId) {
       setSelectedCourse(null);
@@ -118,29 +122,33 @@ const TrainerDashboard: React.FC = () => {
       );
 
       setSessions(data.sessions);
-      setEnrollments(data.course.enrollments || []);
+      setEnrollments(data.course.enrollments);
 
-      const initialAttendanceData: AttendanceData = {};
-      data.course.enrollments.forEach((enrollment) => {
-        initialAttendanceData[enrollment.user.id] = {};
-        data.attendances.forEach((attendance) => {
-          if (attendance.enrollment.id === enrollment.id) {
-            initialAttendanceData[enrollment.user.id][attendance.session.id] =
-              attendance.present;
+      // Формируем объект посещаемости
+      const initialData: AttendanceData = {};
+      data.course.enrollments.forEach((enroll) => {
+        initialData[enroll.user.id] = {};
+        data.attendances.forEach((att) => {
+          if (att.enrollment.id === enroll.id) {
+            initialData[enroll.user.id][att.session.id] = att.present;
           }
         });
       });
-      setAttendanceData(initialAttendanceData);
+      setAttendanceData(initialData);
 
       setFilterDates({
         start: data.course.startDate,
         end: data.course.endDate,
       });
+
+      showNotification("Kurssin tiedot ladattu onnistuneesti ✅");
     } catch (error) {
       console.error("Ошибка при загрузке посещаемости:", error);
+      showNotification("Virhe ladattaessa kurssin tietoja ❌");
     }
   };
 
+  // Переключение посещаемости
   const handleToggleAttendance = async (userId: number, sessionId: number) => {
     const newValue = !attendanceData[userId]?.[sessionId];
     setAttendanceData((prev) => ({
@@ -153,12 +161,15 @@ const TrainerDashboard: React.FC = () => {
         `/trainer/courses/${selectedCourse}/attendances/${sessionId}/toggle`,
         { userId, present: newValue }
       );
+      showNotification("Tallennettu onnistuneesti ✅");
     } catch (err) {
       console.error("Ошибка при обновлении посещаемости:", err);
+      showNotification("Virhe tallennettaessa läsnäoloa ❌");
     }
   };
 
-  const exportPDF = (): void => {
+  // Экспорт в PDF
+  const exportPDF = () => {
     const doc = new jsPDF();
     doc.text(`Attendance Report for Course`, 10, 10);
     let y = 20;
@@ -178,7 +189,8 @@ const TrainerDashboard: React.FC = () => {
     doc.save(`attendance_${selectedCourse}.pdf`);
   };
 
-  const exportExcel = (): void => {
+  // Экспорт в Excel
+  const exportExcel = () => {
     const data = enrollments.map((e) => {
       const row: { [key: string]: string } = {
         User: `${e.user.firstName} ${e.user.lastName}`,
@@ -204,16 +216,52 @@ const TrainerDashboard: React.FC = () => {
   };
 
   return (
-    <div className="w3-container w3-margin-top">
-      <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
+    <div className="w3-container w3-margin-top w3-margin-bottom">
+      {/* Уведомления */}
+      {notification && (
+        <div
+          className="w3-panel w3-round w3-animate-opacity w3-center"
+          style={{
+            backgroundColor: notification.includes("✅")
+              ? "#d9fdd3"
+              : "#ffe0e0",
+            color: notification.includes("✅") ? "#155724" : "#721c24",
+            transition: "opacity 0.5s ease",
+          }}
+        >
+          {notification}
+        </div>
+      )}
+
+      {/* Профиль тренера */}
+      <div
+        className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom"
+        style={{
+          maxWidth: "700px",
+          margin: "0 auto",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+        }}
+      >
         <h2 className="w3-center">Hallintapaneeli</h2>
-        <p className="w3-center w3-text-grey">
-          {trainer?.firstName} {trainer?.lastName} ({trainer?.email}) | Rooli:{" "}
-          <span className="w3-tag w3-red w3-round">Valmentaja</span>
+        <p className="w3-center w3-text-grey w3-large">
+          <strong>
+            {trainer?.firstName} {trainer?.lastName}
+          </strong>
+        </p>
+        <p className="w3-center">
+          <span className="w3-text-dark-gray">{trainer?.email}</span> |{" "}
+          <span className="w3-tag w3-teal w3-round">Valmentaja</span>
+        </p>
+        <p className="w3-center w3-small w3-text-gray">
+          Aktiivisia kursseja: <b>{courses.length}</b>
         </p>
       </div>
 
-      <div className="w3-card w3-padding w3-light-grey">
+      {/* Выбор курса */}
+      <div
+        className="w3-card w3-light-grey w3-round w3-padding w3-margin-bottom"
+        style={{ maxWidth: "700px", margin: "0 auto" }}
+      >
         <label className="w3-text-dark-grey">
           <b>Valitse kurssi:</b>
         </label>
@@ -223,7 +271,7 @@ const TrainerDashboard: React.FC = () => {
             handleCourseSelect(e.target.value)
           }
         >
-          <option value="">--Select Course--</option>
+          <option value="">--Valitse kurssi--</option>
           {courses.map((c) => (
             <option key={c.id} value={c.id}>
               {c.title}
@@ -232,59 +280,80 @@ const TrainerDashboard: React.FC = () => {
         </select>
       </div>
 
+      <h4 className="w3-center w3-text-teal w3-margin-top">
+        Kurssin osallistujien läsnäolot
+      </h4>
+      {/* Таблица посещаемости */}
       {selectedCourse && (
-        <>
-          <div className="w3-card w3-padding w3-light-grey w3-margin-top">
-            <label className="w3-text-dark-grey">
-              <b>Suodata päivämäärien mukaan:</b>
-            </label>
-            <input
-              type="date"
-              className="w3-input w3-border w3-margin-bottom"
-              value={filterDates.start}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setFilterDates((prev) => ({ ...prev, start: e.target.value }))
-              }
-            />
-            <input
-              type="date"
-              className="w3-input w3-border"
-              value={filterDates.end}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setFilterDates((prev) => ({ ...prev, end: e.target.value }))
-              }
-            />
-          </div>
-
-          <table className="w3-table-all w3-bordered w3-striped w3-margin-top w3-hoverable">
-            <thead className="w3-teal">
-              <tr>
-                <th>Käyttäjä</th>
-                {sessions
-                  .filter(
-                    (s) =>
-                      new Date(s.date) >= new Date(filterDates.start) &&
-                      new Date(s.date) <= new Date(filterDates.end)
-                  )
-                  .map((s) => (
-                    <th key={s.id}>{new Date(s.date).toLocaleDateString()}</th>
-                  ))}
-              </tr>
-            </thead>
-            <tbody>
-              {enrollments.map((e) => (
-                <tr key={e.user.id}>
-                  <td>
-                    {e.user.firstName} {e.user.lastName}
-                  </td>
-                  {sessions
-                    .filter(
-                      (s) =>
-                        new Date(s.date) >= new Date(filterDates.start) &&
-                        new Date(s.date) <= new Date(filterDates.end)
-                    )
-                    .map((s) => (
-                      <td key={s.id} className="w3-center">
+        <div
+          className="w3-card w3-round-large w3-padding w3-animate-opacity"
+          style={{
+            maxWidth: "95%",
+            margin: "20px auto",
+            backgroundColor: "#fefefe",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+          }}
+        >
+          <div style={{ overflowX: "auto" }}>
+            <table
+              className="w3-table-all w3-hoverable w3-margin-top w3-centered"
+              style={{
+                borderSpacing: "0 6px",
+                minWidth: "900px",
+                borderCollapse: "separate",
+              }}
+            >
+              <thead style={{ backgroundColor: "#009688", color: "#fff" }}>
+                <tr>
+                  <th
+                    style={{
+                      position: "sticky",
+                      left: 0,
+                      backgroundColor: "#009688",
+                      color: "#fff",
+                      zIndex: 2,
+                    }}
+                  >
+                    Käyttäjä
+                  </th>
+                  {sessions.map((s) => {
+                    const date = new Date(s.date);
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const month = String(date.getMonth() + 1).padStart(2, "0"); // месяцы от 0 до 11
+                    return (
+                      <th
+                        key={s.id}
+                        className="w3-border-left"
+                        style={{
+                          position: "sticky",
+                          top: 0,
+                          backgroundColor: "#009688",
+                          color: "#fff",
+                          zIndex: 1,
+                        }}
+                      >
+                        {`${day}/${month}`}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {enrollments.map((e) => (
+                  <tr key={e.user.id}>
+                    <td
+                      style={{
+                        position: "sticky",
+                        left: 0,
+                        backgroundColor: "#fff",
+                        zIndex: 1,
+                        fontWeight: "500",
+                      }}
+                    >
+                      {e.user.firstName} {e.user.lastName}
+                    </td>
+                    {sessions.map((s) => (
+                      <td key={s.id} className="w3-center w3-border-left">
                         <input
                           type="checkbox"
                           className="w3-check"
@@ -295,23 +364,27 @@ const TrainerDashboard: React.FC = () => {
                         />
                       </td>
                     ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          <div className="w3-margin-top">
+          <div className="w3-margin-top w3-center">
             <button
-              className="w3-button w3-green w3-margin-right"
+              className="w3-button w3-green w3-margin-right w3-margin-bottom"
               onClick={exportPDF}
             >
               Vie PDF-muodossa
             </button>
-            <button className="w3-button w3-blue" onClick={exportExcel}>
+            <button
+              className="w3-button w3-blue w3-margin-bottom"
+              onClick={exportExcel}
+            >
               Vie Excel-muodossa
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
