@@ -2,8 +2,7 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { jsPDF } from "jspdf";
-import * as XLSX from "xlsx";
+import XLSX from "xlsx-js-style";
 
 // TypeScript interfaces
 interface User {
@@ -168,51 +167,61 @@ const TrainerDashboard: React.FC = () => {
     }
   };
 
-  // Экспорт в PDF
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Attendance Report for Course`, 10, 10);
-    let y = 20;
-    enrollments.forEach((e) => {
-      let row = `${e.user.firstName} ${e.user.lastName}`;
-      sessions.forEach((s) => {
-        if (
-          new Date(s.date) >= new Date(filterDates.start) &&
-          new Date(s.date) <= new Date(filterDates.end)
-        ) {
-          row += ` | ${attendanceData[e.user.id]?.[s.id] ? "✔️" : "❌"}`;
-        }
-      });
-      doc.text(row, 10, y);
-      y += 10;
-    });
-    doc.save(`attendance_${selectedCourse}.pdf`);
-  };
-
   // Экспорт в Excel
   const exportExcel = () => {
+    // Формируем данные для экспорта
     const data = enrollments.map((e) => {
       const row: { [key: string]: string } = {
-        User: `${e.user.firstName} ${e.user.lastName}`,
+        Osallistuja: `${e.user.firstName} ${e.user.lastName}`,
       };
+
       sessions.forEach((s) => {
         if (
           new Date(s.date) >= new Date(filterDates.start) &&
           new Date(s.date) <= new Date(filterDates.end)
         ) {
-          row[new Date(s.date).toLocaleDateString()] = attendanceData[
-            e.user.id
-          ]?.[s.id]
-            ? "Present"
-            : "Absent";
+          const dateKey = new Date(s.date)
+            .toLocaleDateString("fi-FI", { day: "2-digit", month: "2-digit" })
+            .replace(".", "/");
+
+          row[dateKey] = attendanceData[e.user.id]?.[s.id] ? "✅" : "❌";
         }
       });
+
       return row;
     });
+
+    // Создаем лист и книгу
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Attendance");
-    XLSX.writeFile(wb, `attendance_${selectedCourse}.xlsx`);
+
+    // Получаем диапазон таблицы
+    const range = XLSX.utils.decode_range(ws["!ref"]!);
+
+    // ✅ Автоширина первого столбца (по длине имени)
+    const maxNameLength = Math.max(
+      "Osallistuja".length,
+      ...enrollments.map((e) => `${e.user.firstName} ${e.user.lastName}`.length)
+    );
+    ws["!cols"] = [
+      { wch: Math.ceil(maxNameLength * 1.2) }, // первый столбец шире
+      ...Array(range.e.c).fill({ wch: 8 }), // остальные фиксированные
+    ];
+
+    // ✅ Увеличиваем высоту всех строк (включая последнюю)
+    const totalRows = range.e.r + 1;
+    ws["!rows"] = Array(totalRows).fill({ hpt: 24 }); // hpt = height in points (~px)
+
+    // ✅ Центрируем содержимое всех ячеек
+    Object.keys(ws).forEach((cell) => {
+      if (cell[0] === "!") return; // пропускаем служебные ключи
+      if (!ws[cell].s) ws[cell].s = {};
+      ws[cell].s.alignment = { vertical: "center", horizontal: "center" };
+    });
+
+    // Добавляем лист в книгу и сохраняем файл
+    XLSX.utils.book_append_sheet(wb, ws, "Läsnäoloraportti");
+    XLSX.writeFile(wb, `läsnäoloraportti_${selectedCourse}.xlsx`);
   };
 
   return (
@@ -314,7 +323,7 @@ const TrainerDashboard: React.FC = () => {
                       zIndex: 2,
                     }}
                   >
-                    Käyttäjä
+                    Osallistuja
                   </th>
                   {sessions.map((s) => {
                     const date = new Date(s.date);
@@ -356,27 +365,16 @@ const TrainerDashboard: React.FC = () => {
 
                         {/* Иконка: платеж произведён, но админ ещё не подтвердил */}
                         {e.invoicePaid && !e.paymentConfirmedByAdmin && (
-                          <i
-                            className="fa fa-money w3-text-green"
-                            title="Payment made (pending admin confirmation)"
-                          ></i>
+                          <span>🔄</span>
                         )}
 
                         {/* Иконка: платеж ожидается */}
                         {!e.invoicePaid && !e.paymentConfirmedByAdmin && (
-                          <i
-                            className="fa fa-hourglass-half w3-text-orange"
-                            title="Payment pending"
-                          ></i>
+                          <span>❌</span>
                         )}
 
                         {/* Иконка: платеж подтверждён админом */}
-                        {e.paymentConfirmedByAdmin && (
-                          <i
-                            className="fa fa-check-circle w3-text-blue"
-                            title="Payment confirmed by admin"
-                          ></i>
-                        )}
+                        {e.paymentConfirmedByAdmin && <span>✅</span>}
                       </div>
                     </td>
                     {sessions.map((s) => (
@@ -398,12 +396,6 @@ const TrainerDashboard: React.FC = () => {
           </div>
 
           <div className="w3-margin-top w3-center">
-            <button
-              className="w3-button w3-green w3-margin-right w3-margin-bottom"
-              onClick={exportPDF}
-            >
-              Vie PDF-muodossa
-            </button>
             <button
               className="w3-button w3-blue w3-margin-bottom"
               onClick={exportExcel}

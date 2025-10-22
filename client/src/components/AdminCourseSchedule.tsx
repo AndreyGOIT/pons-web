@@ -141,7 +141,15 @@ const AdminCourseSchedule: React.FC<{ courses: any[] }> = ({ courses }) => {
 
       {/* Список тренировок */}
       {sessions.length > 0 && (
-        <div className="w3-card w3-white w3-padding w3-round-large w3-margin-top">
+        <div
+          className="w3-card w3-white w3-padding w3-round-large w3-margin-top"
+          style={{
+            maxWidth: "768px", // ограничение по ширине
+            margin: "0 auto", // выравнивание по центру
+            width: "95%", // адаптивная ширина на маленьких экранах
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)", // немного глубины
+          }}
+        >
           <h4 className="w3-center">Luodut harjoituskerrat</h4>
           <table className="w3-table-all w3-hoverable w3-margin-top">
             <thead className="w3-light-grey">
@@ -163,7 +171,7 @@ const AdminCourseSchedule: React.FC<{ courses: any[] }> = ({ courses }) => {
                       className="w3-button w3-small w3-red w3-round"
                       onClick={() => handleDeleteSession(s.id)}
                     >
-                      Poista
+                      <i className="fa fa-trash"></i> Poista
                     </button>
                   </td>
                 </tr>
