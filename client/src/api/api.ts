@@ -1,17 +1,12 @@
 // client/src/api/api.ts
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5050/api";
-console.log("API_BASE", API_BASE);
-// const api = axios.create({
-//   baseURL: API_BASE,
-//   withCredentials: true,
-// });
+const API_BASE = import.meta.env.VITE_API_BASE;
+console.log("Using API_BASE: ", API_BASE);
 const api = axios.create({
-  baseURL: "http://localhost:5050/api",
-  withCredentials: false, // временно отключаем
+  baseURL: API_BASE,
+  withCredentials: false,
 });
-
 
 // Интерцептор запросов
 api.interceptors.request.use(
