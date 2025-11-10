@@ -8,10 +8,12 @@ This web application provides:
 
 - User registration with email confirmation
 - Private dashboard with personal info, invoices, notifications
-- Admin panel for content and order management
+- Attendance tracking and course management
+- Admin panel for content, order, and attendance management
 - PDF invoice generation
 - REST API (Node.js + Express)
 - Frontend built with React and W3.CSS
+- Live data fetching of courses with trainers
 
 The project is now deployed in production at https://pons.fi and is actively used by the sports club.
 
@@ -20,6 +22,7 @@ The project is now deployed in production at https://pons.fi and is actively use
 - **Frontend**: React, Vite, W3.CSS
 - **Backend**: Node.js, Express, MariaDB, TypeORM
 - **Auth**: Email/password (JWT), role-based access
+- **Attendance & Courses**: TypeORM entities, migrations, API endpoints
 - **PDF**: pdfkit
 - **Mail**: Nodemailer + SMTP (zone.fi)
 - **Deployment**: zone.fi (pm2, Apache reverse proxy)

@@ -363,9 +363,9 @@ function AdminDashboard() {
             {users.map((u) => (
               <tr key={u.id}>
                 <td data-label="Nimi">
-                  {u.firstName && u.lastName
-                    ? `${u.firstName} ${u.lastName}`
-                    : u.name}
+                  {`${u.firstName || ""} ${u.lastName || ""}`.trim() ||
+                    u.name ||
+                    "—"}
                 </td>
                 <td data-label="Email">{u.email}</td>
                 <td data-label="Puhelin">{u.phoneNumber || "—"}</td>

@@ -101,6 +101,7 @@ export const getUsers = async (req: Request, res: Response) => {
       id: u.id,
       firstName: u.firstName,
       lastName: u.lastName,
+      name: u.name,
       email: u.email,
       phoneNumber: u.phoneNumber,
       createdAt: u.createdAt,
