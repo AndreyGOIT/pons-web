@@ -16,6 +16,7 @@ import enrollmentRoutes from './routes/enrollmentRoutes';
 import trialRoutes from './routes/trialRoutes';
 import contactRoutes from './routes/contactRoutes';
 import trainerRoutes from './routes/trainerRoutes';
+import membershipRoutes from "./routes/membershipRoutes";
 
 dotenv.config();
 
@@ -51,6 +52,9 @@ app.use('/api/contact', contactRoutes);
 
 // ---- trainer routes ------
 app.use('/api/trainer', trainerRoutes);
+
+// ---- membership payment routes ----
+app.use('/api/membership', membershipRoutes);
 
 AppDataSource.initialize()
   .then(async () => {
