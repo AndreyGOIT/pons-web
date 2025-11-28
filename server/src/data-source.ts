@@ -9,7 +9,11 @@ import { ContactMessage } from './models/ContactMessage';
 import { Attendance } from './models/Attendance';
 import { CourseSession } from './models/CourseSession';
 import dotenv from "dotenv";
-dotenv.config();
+import {MembershipPayment} from "./models/MembershipPayment";
+
+dotenv.config({
+    path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development'
+});
 
 const isProd = process.env.NODE_ENV === 'production';
 const dbType = process.env.DB_TYPE || (isProd ? 'mysql' : 'sqlite');
@@ -23,7 +27,7 @@ if (dbType === 'sqlite') {
     database: process.env.DB_DATABASE || `${__dirname}/../db.sqlite`,
     synchronize: true, // удобно в dev
     logging: true,
-    entities: [User, Course, Enrollment, TrialBooking, ContactMessage, Attendance, CourseSession],
+    entities: [User, Course, Enrollment, TrialBooking, ContactMessage, Attendance, CourseSession, MembershipPayment],
     migrations: [],
     subscribers: [],
   });
@@ -38,7 +42,7 @@ if (dbType === 'sqlite') {
     ssl: { rejectUnauthorized: false },
     synchronize: false, // в продакшне лучше использовать МИГРАЦИИ !!!
     logging: false,
-    entities: [User, Course, Enrollment, TrialBooking, ContactMessage, Attendance, CourseSession],
+    entities: [User, Course, Enrollment, TrialBooking, ContactMessage, Attendance, CourseSession, MembershipPayment],
     migrations: ['dist/migration/*.js'],
   });
 }

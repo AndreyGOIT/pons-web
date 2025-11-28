@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Course } from './Course';
 import { Enrollment } from './Enrollment';
+import {MembershipPayment} from './MembershipPayment';
 import { Length, IsEmail } from 'class-validator';
 
 export enum UserRole {
@@ -65,4 +66,7 @@ export class User {
   // Courses where the user is a trainer
   @ManyToMany(() => Course, course => course.trainers)
   coursesAsTrainer!: Course[];
+
+  @OneToMany(() => MembershipPayment, (mp) => mp.user)
+  membershipPayments!: MembershipPayment[];
 }
