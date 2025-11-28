@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth"; // <-- import hook from context
 import api from "../api/api";
+import MembershipCard from "../components/MembershipCard";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -219,6 +220,8 @@ function Profile() {
             </p>
           )}
         </div>
+
+          <MembershipCard />
 
         {/* Kurssit */}
         <div className="w3-section">
