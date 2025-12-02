@@ -1,12 +1,12 @@
 // client/src/api/membership.ts
 import api from "./api";
 
-export const getMyMembership = async () => {
-    const { data } = await api.get("/membership/me/current");
+export const getUserPayments = async () => {
+    const { data } = await api.get("/membership/user/payments");
     return data;
 };
 
-export const markMembershipPaid = async () => {
-    const { data } = await api.patch("/membership/me/mark-paid");
+export const markMembershipPaid = async (paymentId) => {
+    const { data } = await api.post("/membership/user/mark-paid", { paymentId });
     return data;
 };

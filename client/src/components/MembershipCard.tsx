@@ -1,17 +1,17 @@
 // client/src/components/MembershipCard.tsx
 import { useEffect, useState } from "react";
-import { getMyMembership, markMembershipPaid } from "../api/membership";
+import { getUserPayments, markMembershipPaid } from "../api/membership";
 
 export default function MembershipCard() {
-    const [membership, setMembership] = useState(null);
+    const [membership, setMembership] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [error, setError] = useState("");
 
-    useEffect(() => {
         const loadMembership = async () => {
             try {
-                const data = await getMyMembership();
+                const data = await getUserPayments();
+                console.log("дата по членским взносам: ",data);
                 setMembership(data);
             } catch (err) {
                 console.error(err);
@@ -20,63 +20,58 @@ export default function MembershipCard() {
                 setLoading(false);
             }
         };
+    useEffect(() => {
         loadMembership();
     }, []);
 
-    const handleMarkPaid = async () => {
-        try {
-            setSubmitLoading(true);
-            const data = await markMembershipPaid();
-            setMembership(data);
-        } catch (err) {
-            console.error(err);
-            setError("Virhe tallennettaessa tietoja.");
-        } finally {
-            setSubmitLoading(false);
-        }
+    const handleMarkPaid = async (paymentId) => {
+        await markMembershipPaid(paymentId);
+        loadMembership(); // обновляем UI
     };
 
     if (loading) return <div>Ladataan...</div>;
-    if (!membership) return <div>Ei tietoja jäsenmaksusta.</div>;
-
-    const { status, markedPaidAt, confirmedAt } = membership;
+    if (membership.length === 0)
+        return <p>Ei tietoja jäsenmaksusta.</p>;
 
     return (
-        <div className="membership-card">
-            <h3>Jäsenmaksu {new Date().getFullYear()}</h3>
+        <div className="w3-card w3-padding w3-light-grey w3-round">
+            <h3>Jäsenmaksu</h3>
 
-            <p>
-                <strong>Tila:</strong>{" "}
-                {status === "unpaid" && <span style={{ color: "darkred" }}>Ei maksettu</span>}
-                {status === "pending" && <span style={{ color: "orange" }}>Odottaa vahvistusta</span>}
-                {status === "paid" && <span style={{ color: "green" }}>Maksettu</span>}
-            </p>
+            {membership.map((p) => (
+                <div
+                    key={p.id}
+                    className="w3-padding w3-margin-bottom w3-white w3-round w3-border"
+                >
+                    <p>
+                        <strong>Vuosi:</strong> {p.year}
+                    </p>
+                    <p>
+                        <strong>Tila:</strong>{" "}
+                        {p.status === "unpaid" ? "❌ Ei maksettu" : "✔️ Maksettu"}
+                    </p>
 
-            {markedPaidAt && (
-                <p>
-                    Ilmoitettu maksetuksi:{" "}
-                    {new Date(markedPaidAt).toLocaleDateString("fi-FI")}
-                </p>
-            )}
+                    {p.status === "unpaid" && (
+                        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            Olen maksanut jäsenmaksun
+                            <input
+                                type="checkbox"
+                                onChange={() => handleMarkPaid(p.id)}
+                                style={{ width: "16px", height: "16px", accentColor: "#f0f0f0", opacity: 0.5 }}
+                            />
+                        </label>
+                    )}
 
-            {confirmedAt && (
-                <p>
-                    Vahvistettu:{" "}
-                    {new Date(confirmedAt).toLocaleDateString("fi-FI")}
-                </p>
-            )}
+                    {p.status === "pending" && (
+                        <p className="w3-text-orange">
+                            🧭 Odottaa ylläpitäjän vahvistusta…
+                        </p>
+                    )}
 
-            {/* Unpaid → show button */}
-            {status === "unpaid" && (
-                <button onClick={handleMarkPaid} disabled={submitLoading}>
-                    {submitLoading ? "Tallennetaan..." : "Olen maksanut"}
-                </button>
-            )}
-
-            {/* Pending → no button */}
-            {status === "pending" && (
-                <p>Tiedot odottavat ylläpidon vahvistusta.</p>
-            )}
+                    {p.status === "paid" && (
+                        <p className="w3-text-green">✅ Hyväksytty ✔</p>
+                    )}
+                </div>
+            ))}
         </div>
     )
 }

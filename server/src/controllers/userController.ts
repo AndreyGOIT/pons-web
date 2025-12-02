@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { User, UserRole } from '../models/User';
+import {MembershipPayment, MembershipStatus} from "../models/MembershipPayment";
 import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
 import jwt from 'jsonwebtoken';
 
 const userRepo = AppDataSource.getRepository(User);
+const paymentRepo = AppDataSource.getRepository(MembershipPayment);
+
 //user registration
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -26,7 +29,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     user.password = await bcrypt.hash(password, 10);
     user.role = UserRole.CLIENT; // фиксированная роль
     
-    // Валидация данных пользователя
+    // Validate
     const errors = await validate(user);
     if (errors.length > 0) {
       res.status(400).json(errors);
@@ -35,14 +38,29 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
     const savedUser = await userRepo.save(user);
 
-    // ✅ Генерация токена
+    // ======================================================
+    // ✅ Create an initial MembershipPayment record
+    // ======================================================
+
+      const payment = new MembershipPayment();
+      payment.user = savedUser;
+      payment.year = new Date().getFullYear(); // текущий год
+      payment.status = MembershipStatus.UNPAID; // дефолтное значение
+
+      await paymentRepo.save(payment);
+
+      console.log(
+          `📌 Default membership payment created for ${savedUser.email} (year: ${payment.year})`
+      );
+
+      // ✅ Token generation and response
     const token = jwt.sign({ id: savedUser.id, role: savedUser.role }, process.env.JWT_SECRET!, {
       expiresIn: '1h',
     });
-    console.log('✅ Токен при регистрации успешно сгенерирован:', token);
+
     const { password: _, ...userWithoutPassword } = savedUser;
 
-    // ✅ Ответ с токеном и пользователем
+    // ✅ Response with token and user
     res.status(201).json({
       message: 'Registration successful',
       user: userWithoutPassword,

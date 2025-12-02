@@ -1,3 +1,4 @@
+// server/src/routes/membershipRoutes.ts
 import {Router} from "express";
 import {authMiddleware} from "../middlewares/authMiddleware";
 import {adminOnly} from "../middlewares/adminOnly";

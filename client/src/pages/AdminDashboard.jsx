@@ -24,11 +24,9 @@ function AdminDashboard() {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTrainer, setSelectedTrainer] = useState("");
-  //-----state for creating course schedule
-  //   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
-  // const [weekdays, setWeekdays] = useState<number[]>([]);
-  // const [startTime, setStartTime] = useState("19:00");
-  // const [endTime, setEndTime] = useState("20:30");
+  // state for membershipPayments
+    const [memberships, setMemberships] = useState([]);
+
   const navigate = useNavigate();
 
   // Fetch users
@@ -40,6 +38,16 @@ function AdminDashboard() {
       console.error(err);
     }
   };
+
+  // Fetch memberships
+    const fetchMemberships = async () => {
+        try {
+            const {data} = await api.get("/membership/admin/all")
+            setMemberships(data);
+        } catch (err) {
+            console.error("Failed to load memberships", err);
+        }
+    };
 
   // Fetch enrollments
   const fetchEnrollments = async () => {
@@ -112,19 +120,20 @@ function AdminDashboard() {
         }
 
         setAdmin(data);
-        fetchUsers();
-        fetchEnrollments();
-        fetchTrialBookings();
-        fetchMessages();
-        fetchTrainers();
-        fetchCourses();
+          void fetchUsers();
+          void fetchEnrollments();
+          void fetchTrialBookings();
+          void fetchMessages();
+          void fetchTrainers();
+          void fetchCourses();
+          void fetchMemberships();
       } catch (err) {
         console.error(err);
         setError("Ошибка при загрузке данных администратора.");
       }
     };
 
-    fetchAdminData();
+      void fetchAdminData();
   }, [navigate]);
 
   // 🔹 4. Handle user deletion
@@ -181,6 +190,22 @@ function AdminDashboard() {
     }
   };
 
+  // 🔹 7.1. Handle membership paid
+    const handleToggleMembershipConfirm = async (paymentId) => {
+        try {
+            // вызываем существующий роут
+            const { data } = await api.post("/membership/admin/confirm", { paymentId });
+
+            // data.payment — обновлённый объект (см. контроллер)
+            setMemberships((prev) =>
+                prev.map((m) => (m.id === paymentId ? data.payment : m))
+            );
+        } catch (err) {
+            console.error("Error confirming membership:", err);
+            alert("Vahvistus epäonnistui.");
+        }
+    };
+
   // 🔹 8. Handle message reply
   if (error)
     return (
@@ -206,7 +231,7 @@ function AdminDashboard() {
     try {
       await api.post("/admin/trainers", form);
       setShowModal(false);
-      fetchTrainers();
+        void fetchTrainers();
       setForm({
         firstName: "",
         lastName: "",
@@ -223,7 +248,7 @@ function AdminDashboard() {
     if (!window.confirm("Poista tämä valmentaja?")) return;
     try {
       await api.delete(`/admin/trainers/${id}`);
-      fetchTrainers();
+        void fetchTrainers();
     } catch (err) {
       console.error("Virhe poistettaessa valmentajaa:", err);
     }
@@ -355,6 +380,7 @@ function AdminDashboard() {
               <th>Email</th>
               <th>Puhelin</th>
               <th>Rekisteröity pvm</th>
+              <th>Jäsenmaksu</th>
               <th>Kurssi</th>
               <th>Toiminnot</th>
             </tr>
@@ -372,6 +398,60 @@ function AdminDashboard() {
                 <td data-label="Rekisteröity pvm">
                   {new Date(u.createdAt).toLocaleDateString("fi-FI")}
                 </td>
+                  <td data-label="Jäsenmaksu">
+                      {(() => {
+                          const userMemberships = memberships
+                              .filter(m => m.user?.id === u.id)
+                              .sort((a, b) => b.year - a.year);
+
+                          if (userMemberships.length === 0)
+                              return <span className="w3-text-red">Ei maksettu</span>;
+
+                          return userMemberships.map(m => (
+                              <div key={m.id} style={{ marginBottom: "8px" }}>
+                                  <div
+                                      className="w3-tag w3-round w3-small"
+                                      style={{
+                                          display: "inline-block",
+                                          background: m.status === "paid" ? "#4CAF50" : "#f1c40f",
+                                          color: "white",
+                                          marginBottom: "4px",
+                                      }}
+                                  >
+                                      {m.year}: {m.status === "paid" ? "Maksettu" : "Käsittelyssä"}
+                                  </div>
+
+                                  {/* CONFIRMATION CHECKBOX */}
+                                  <div className="w3-margin-top">
+                                      <label
+                                          style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              gap: "8px",
+                                          }}
+                                      >
+                                          Vahvista maksun →
+                                          <input
+                                              type="checkbox"
+                                              checked={!!m.adminConfirmedAt}
+                                              onChange={() =>
+                                                  handleToggleMembershipConfirm(m.id)
+                                              }
+                                              disabled={!!m.adminConfirmedAt}
+                                              style={{
+                                                  width: "16px",
+                                                  height: "16px",
+                                                  accentColor:
+                                                      m.adminConfirmedAt ? "#4CAF50" : "#f0f0f0",
+                                                  opacity: m.adminConfirmedAt ? 1 : 0.6,
+                                              }}
+                                          />
+                                      </label>
+                                  </div>
+                              </div>
+                          ));
+                      })()}
+                  </td>
                 <td data-label="Kurssi">
                   {getUserEnrollments(u.id).length === 0 ? (
                     <em>Ei ole rekisteröintia</em>
@@ -439,7 +519,7 @@ function AdminDashboard() {
                                 height: "16px",
                                 accentColor: enr.paymentConfirmedByAdmin
                                   ? "#4CAF50"
-                                  : "#ccc",
+                                  : "#f0f0f0",
                                 opacity: enr.paymentConfirmedByAdmin ? 1 : 0.6,
                               }}
                             />
@@ -534,7 +614,7 @@ function AdminDashboard() {
                         await api.post(`/admin/contact/${m.id}/reply`, {
                           reply,
                         });
-                        fetchMessages();
+                          void fetchMessages();
                       }}
                     >
                       <input
