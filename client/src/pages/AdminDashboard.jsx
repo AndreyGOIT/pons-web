@@ -404,50 +404,76 @@ function AdminDashboard() {
                               .filter(m => m.user?.id === u.id)
                               .sort((a, b) => b.year - a.year);
 
-                          if (userMemberships.length === 0)
-                              return <span className="w3-text-red">Ei maksettu</span>;
+                          if (userMemberships.length === 0) {
+                              return <span className="w3-text-red">❌ Ei maksettu</span>;
+                          }
 
                           return userMemberships.map(m => (
                               <div key={m.id} style={{ marginBottom: "8px" }}>
-                                  <div
-                                      className="w3-tag w3-round w3-small"
-                                      style={{
-                                          display: "inline-block",
-                                          background: m.status === "paid" ? "#4CAF50" : "#f1c40f",
-                                          color: "white",
-                                          marginBottom: "4px",
-                                      }}
-                                  >
-                                      {m.year}: {m.status === "paid" ? "Maksettu" : "Käsittelyssä"}
-                                  </div>
+                                  {/* STATUS TAG */}
+                                  {m.status === "unpaid" && (
+                                      <span className="w3-text-red">
+                        ❌ {m.year}: Ei maksettu
+                    </span>
+                                  )}
 
-                                  {/* CONFIRMATION CHECKBOX */}
-                                  <div className="w3-margin-top">
-                                      <label
+                                  {m.status === "pending" && (
+                                      <>
+                                          <div
+                                              className="w3-tag w3-round w3-small"
+                                              style={{
+                                                  background: "#f1c40f",
+                                                  color: "white",
+                                                  marginBottom: "4px",
+                                                  display: "inline-block",
+                                              }}
+                                          >
+                                              {m.year}: Käsittelyssä
+                                          </div>
+
+                                          {/* CONFIRMATION CHECKBOX (ONLY FOR PENDING) */}
+                                          <div className="w3-margin-top">
+                                              <label
+                                                  style={{
+                                                      display: "flex",
+                                                      alignItems: "center",
+                                                      gap: "8px",
+                                                  }}
+                                              >
+                                                  Vahvista maksu →
+                                                  <input
+                                                      type="checkbox"
+                                                      onChange={() =>
+                                                          handleToggleMembershipConfirm(m.id)
+                                                      }
+                                                      style={{
+                                                          appearance: "none",
+                                                          WebkitAppearance: "none",
+                                                          width: "18px",
+                                                          height: "18px",
+                                                          border: "2px solid #555",
+                                                          borderRadius: "4px",
+                                                          backgroundColor: "#fff",
+                                                          cursor: "pointer",
+                                                      }}
+                                                  />
+                                              </label>
+                                          </div>
+                                      </>
+                                  )}
+
+                                  {m.status === "paid" && (
+                                      <div
+                                          className="w3-tag w3-round w3-small"
                                           style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: "8px",
+                                              background: "#4CAF50",
+                                              color: "white",
+                                              display: "inline-block",
                                           }}
                                       >
-                                          Vahvista maksun →
-                                          <input
-                                              type="checkbox"
-                                              checked={!!m.adminConfirmedAt}
-                                              onChange={() =>
-                                                  handleToggleMembershipConfirm(m.id)
-                                              }
-                                              disabled={!!m.adminConfirmedAt}
-                                              style={{
-                                                  width: "16px",
-                                                  height: "16px",
-                                                  accentColor:
-                                                      m.adminConfirmedAt ? "#4CAF50" : "#f0f0f0",
-                                                  opacity: m.adminConfirmedAt ? 1 : 0.6,
-                                              }}
-                                          />
-                                      </label>
-                                  </div>
+                                          {m.year}: Maksettu
+                                      </div>
+                                  )}
                               </div>
                           ));
                       })()}
@@ -510,19 +536,23 @@ function AdminDashboard() {
                             }}
                           >
                             Vahvista maksun vastaanottaminen ={">"}
-                            <input
-                              type="checkbox"
-                              checked={enr.paymentConfirmedByAdmin}
-                              onChange={() => handleToggleConfirm(enr.id)}
-                              style={{
-                                width: "16px",
-                                height: "16px",
-                                accentColor: enr.paymentConfirmedByAdmin
-                                  ? "#4CAF50"
-                                  : "#f0f0f0",
-                                opacity: enr.paymentConfirmedByAdmin ? 1 : 0.6,
-                              }}
-                            />
+                              <input
+                                  type="checkbox"
+                                  checked={enr.paymentConfirmedByAdmin}
+                                  onChange={() => handleToggleConfirm(enr.id)}
+                                  style={{
+                                      appearance: "none",
+                                      WebkitAppearance: "none", // Safari
+                                      width: "18px",
+                                      height: "18px",
+                                      border: "2px solid #555",
+                                      borderRadius: "4px",
+                                      backgroundColor: enr.paymentConfirmedByAdmin ? "#4CAF50" : "#ffffff",
+                                      display: "inline-block",
+                                      position: "relative",
+                                      cursor: "pointer",
+                                  }}
+                              />
                           </label>
                         </div>
                       </div>

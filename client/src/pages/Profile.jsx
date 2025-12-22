@@ -264,7 +264,7 @@ function Profile() {
                           )}
                           {e.invoiceAmount > 0 && (
                             <tr>
-                              <td>💰 Summa</td>
+                              <td style={{paddingTop: 12}}>💰 Summa</td>
                               <td className="w3-text-green w3-large">
                                 {e.invoiceAmount} €
                               </td>
@@ -334,6 +334,8 @@ function Profile() {
                               type="checkbox"
                               checked={!!e.invoicePaid}
                               onChange={() => handleMarkAsPaid(e.id)}
+                              style={{
+                                  width: "16px", height: "16px", accentColor: "#d0d0d0", cursor: "pointer", }}
                             />{" "}
                           </label>
                         </div>

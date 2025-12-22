@@ -55,7 +55,6 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
       const { token, user } = data;
 
       localStorage.setItem("token", token);
-      console.log("Token as a result of login saved:", token);
       setEmail("");
       setPassword("");
       onSuccess({ token, user });

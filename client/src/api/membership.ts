@@ -6,7 +6,7 @@ export const getUserPayments = async () => {
     return data;
 };
 
-export const markMembershipPaid = async (paymentId) => {
+export const markMembershipPaid = async (paymentId: number) => {
     const { data } = await api.post("/membership/user/mark-paid", { paymentId });
     return data;
 };
