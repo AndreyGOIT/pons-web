@@ -527,34 +527,34 @@ function AdminDashboard() {
                               : "Tarvitse tarkistusta"}
                           </span>
                         </div>
-                        <div className="w3-margin-top">
-                          <label
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            Vahvista maksun vastaanottaminen ={">"}
-                              <input
-                                  type="checkbox"
-                                  checked={enr.paymentConfirmedByAdmin}
-                                  onChange={() => handleToggleConfirm(enr.id)}
-                                  style={{
-                                      appearance: "none",
-                                      WebkitAppearance: "none", // Safari
-                                      width: "18px",
-                                      height: "18px",
-                                      border: "2px solid #555",
-                                      borderRadius: "4px",
-                                      backgroundColor: enr.paymentConfirmedByAdmin ? "#4CAF50" : "#ffffff",
-                                      display: "inline-block",
-                                      position: "relative",
-                                      cursor: "pointer",
-                                  }}
-                              />
-                          </label>
-                        </div>
+                          {/* ⬇️ ЧЕК-БОКС ТОЛЬКО ЕСЛИ НЕ ПОДТВЕРЖДЕНО */}
+                          {!enr.paymentConfirmedByAdmin && (
+                              <div className="w3-margin-top">
+                                  <label
+                                      style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: "8px",
+                                      }}
+                                  >
+                                      Vahvista maksun vastaanottaminen →
+                                      <input
+                                          type="checkbox"
+                                          onChange={() => handleToggleConfirm(enr.id)}
+                                          style={{
+                                              appearance: "none",
+                                              WebkitAppearance: "none",
+                                              width: "18px",
+                                              height: "18px",
+                                              border: "2px solid #555",
+                                              borderRadius: "4px",
+                                              backgroundColor: "#ffffff",
+                                              cursor: "pointer",
+                                          }}
+                                      />
+                                  </label>
+                              </div>
+                          )}
                       </div>
                     ))
                   )}

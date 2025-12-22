@@ -329,7 +329,8 @@ function Profile() {
                             }}
                           >
                             Kun maksu on suoritettu, ilmoita siitä klikkaamalla
-                            tähän {"> "}
+                            tähän
+                              <span style={{  padding: "2px 4px 0px 2px", boxShadow: "0 0 0 2px rgba(0,0,0,0.15)", }}>
                             <input
                               type="checkbox"
                               checked={!!e.invoicePaid}
@@ -337,6 +338,7 @@ function Profile() {
                               style={{
                                   width: "16px", height: "16px", accentColor: "#d0d0d0", cursor: "pointer", }}
                             />{" "}
+                              </span>
                           </label>
                         </div>
                       </div>
