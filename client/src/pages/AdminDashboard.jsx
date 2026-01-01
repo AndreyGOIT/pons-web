@@ -352,6 +352,29 @@ function AdminDashboard() {
     }
   };
 
+    // 🔹 14. Handler for deleting users enrollment
+    const handleDeleteEnrollment = async (enrollmentId, userId) => {
+        if (
+            !window.confirm(
+                "Haluatko varmasti poistaa käyttäjän tältä kurssilta?"
+            )
+        ) {
+            return;
+        }
+
+        try {
+            await api.delete(`/enrollments/${enrollmentId}`);
+
+            // обновляем локальный стейт
+            setEnrollments((prev) =>
+                prev.filter((e) => e.id !== enrollmentId)
+            );
+        } catch (err) {
+            console.error("Enrollment delete failed:", err);
+            alert("Kurssilta poistaminen epäonnistui.");
+        }
+    };
+
   return (
     <div
       className="w3-container w3-light-grey w3-padding-32"
@@ -553,6 +576,17 @@ function AdminDashboard() {
                                           }}
                                       />
                                   </label>
+                              </div>
+                          )}
+                          {/* 🗑️ ADMIN: remove user from course */}
+                          {admin && (
+                              <div className="w3-margin-top">
+                                  <button
+                                      className="w3-button w3-small w3-red w3-round w3-hover-pale-red"
+                                      onClick={() => handleDeleteEnrollment(enr.id, u.id)}
+                                  >
+                                      <i className="fa fa-trash"></i> Poista kurssilta
+                                  </button>
                               </div>
                           )}
                       </div>
