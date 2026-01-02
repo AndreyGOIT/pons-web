@@ -31,6 +31,13 @@ The project is now deployed in production at https://pons.fi and is actively use
 
 Built a scalable and modern website for PONS with a smooth user experience and admin capabilities. The site is live and actively serving the club.
 
+### Create admin user
+
+In production, admin is created manually:
+
+```bash
+node dist/scripts/createAdmin.js
+```
 ## 📄 License
 
 MIT

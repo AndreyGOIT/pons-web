@@ -7,9 +7,8 @@ import { catchAsync } from '../utils/catchAsync';
 import { getAdminProfile, updateAdminProfile, adminLogin, getUsers, getUsersPdf } from '../controllers/adminController';
 import { createTrainer, getTrainers, deleteTrainer, assignTrainerToCourse, unassignTrainerFromCourse } from "../controllers/adminController";
 import { createAdminUser } from "../controllers/adminController";
-import { generateCourseSessions,
-  getCourseSessions,
-  deleteCourseSession, } from "../controllers/adminController";
+import { generateCourseSessions, getCourseSessions, deleteCourseSession, } from "../controllers/adminController";
+import {createCourse} from "../controllers/courseController";
 
 const router = Router();
 

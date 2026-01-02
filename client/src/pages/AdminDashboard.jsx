@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import AdminCourseSchedule from "../components/AdminCourseSchedule";
+import {getCourses} from "../api/courses.ts";
+import {CourseRow} from "../components/admin/CourseRow.tsx";
 
 function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
@@ -25,7 +27,9 @@ function AdminDashboard() {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTrainer, setSelectedTrainer] = useState("");
   // state for membershipPayments
-    const [memberships, setMemberships] = useState([]);
+  const [memberships, setMemberships] = useState([]);
+  //state for courses
+  const [showInactive, setShowInactive] = useState(false);
 
   const navigate = useNavigate();
 
@@ -91,16 +95,15 @@ function AdminDashboard() {
     }
   };
 
-  // Fetch courses for assigning trainers
-  const fetchCourses = async () => {
-    try {
-      // Используем api.ts для получения только курсов тренера
-      const { data } = await api.get("/courses");
-      setCourses(data);
-    } catch (err) {
-      console.error("Error loading courses:", err);
-    }
-  };
+  // Fetch courses
+    const fetchCourses = async (active) => {
+        try {
+            const data = await getCourses(active);
+            setCourses(data);
+        } catch (err) {
+            console.error("Error loading courses:", err);
+        }
+    };
 
   // On component mount, check auth and fetch data
   useEffect(() => {
@@ -708,6 +711,43 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
+        {/* Courses */}
+        <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
+            <h3>Kurssit</h3>
+
+            <label className="w3-margin-bottom" style={{ display: "block" }}>
+                <input
+                    type="checkbox"
+                    checked={showInactive}
+                    onChange={() => setShowInactive(v => !v)}
+                />{" "}
+                Näytä myös ei-aktiiviset
+            </label>
+
+            <table className="w3-table w3-bordered w3-striped w3-small">
+                <thead className="w3-light-grey">
+                <tr>
+                    <th>Kurssi</th>
+                    <th>Kausi</th>
+                    <th>Hinta</th>
+                    <th>Alkaa</th>
+                    <th>Päättyy</th>
+                    <th>Tila</th>
+                    <th>Toiminnot</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {courses.map(c => (
+                    <CourseRow
+                        key={c.id}
+                        course={c}
+                        onUpdated={fetchCourses}
+                    />
+                ))}
+                </tbody>
+            </table>
+        </div>
       {/* Trainers Section */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Valmentajat</h3>

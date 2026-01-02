@@ -39,6 +39,18 @@ title!: CourseType;
   @Column({ type: 'date', nullable: true })
   endDate!: Date;
 
+  // ключ для указания сезона курса
+    @Column({
+        type: 'varchar',
+        length: 50,
+        default: 'legacy',
+    })
+    season!: string; // например: "2025-spring", "2025-autumn"
+
+  // ключ для отражения активности курса
+  @Column({ default: true })
+  isActive!: boolean;
+
   // Дата создания записи
   @CreateDateColumn()
   createdAt!: Date;

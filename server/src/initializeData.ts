@@ -19,29 +19,9 @@ export const initializeDatabase = async () => {
     // console.log(`🗑️ Удалено админов: ${admins.length}`);
     // ----конец кода удаления админов из базы данных-------
 
-    // === Администратор ===
-    if (process.env.NODE_ENV !== "production") {
-      const adminCount = await AppDataSource.getRepository(User).count({
-        where: { role: UserRole.ADMIN },
-      });
-
-      if (adminCount === 0) {
-        const admin = new User();
-        admin.name = "Mika";
-        admin.email = "mika@pons.fi";
-        admin.password = await bcrypt.hash("mika-admin-2025", 10);
-        admin.role = UserRole.ADMIN;
-
-        await AppDataSource.manager.save(admin);
-        console.log("✅ Admin created");
-      } else {
-        console.log("ℹ️ Admin already exists");
-      }
-    } else {
       console.log(
-        "⚠️ Production: creation of default admin is disabled. Use create-admin script or set ADMIN_* env vars."
+          "ℹ️ Admin creation is disabled here. Use createAdmin script."
       );
-    }
 
     // === Курсы ===
     //------очистка данных из базы---------
