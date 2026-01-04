@@ -145,10 +145,8 @@ const NewHome = () => {
       </section>
 
       {/*  Koulutuskurssit */}
-      <section
-        className="w3-container w3-padding-32 w3-center w3-asphalt"
-        id="koulutuskurssit"
-      >
+      <section className="w3-container w3-padding-32 w3-center w3-asphalt"
+        id="koulutuskurssit">
         {/* Заголовок и описание */}
         <div className="w3-row">
           <div className="w3-col m12 l3 w3-padding">
@@ -355,8 +353,8 @@ const NewHome = () => {
                   <p>
                     <i className="fa fa-clock-o w3-text-teal"></i> <b>Kesto:</b>{" "}
                     {course.title === "Nuoriso ryhmä"
-                      ? "30 treeniä"
-                      : "45 treeniä"}{" "}
+                      ? "46 treeniä"
+                      : "66 treeniä"}{" "}
                     (
                     {course.title === "Nuoriso ryhmä"
                       ? "2 krt/viikossa"
@@ -382,8 +380,8 @@ const NewHome = () => {
                     <span className="w3-small">
                       (
                       {course.title === "Nuoriso ryhmä"
-                        ? "3,60 €/treeni"
-                        : "2,95 €/treeni"}
+                        ? "2,94 €/treeni"
+                        : "2,65 €/treeni"}
                       )
                     </span>
                   </p>
