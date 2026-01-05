@@ -19,11 +19,8 @@ export class Course {
   @PrimaryGeneratedColumn()
   id!: number;
 
-@Column({
-  type: process.env.DB_TYPE === 'sqlite' ? 'text' : 'enum',
-  enum: process.env.DB_TYPE === 'sqlite' ? undefined : CourseType,
-})
-title!: CourseType;
+  @Column({ type: 'varchar', length: 50 })
+  title!: string;
 
   @Column({ type: 'text', nullable: true })
   description!: string;

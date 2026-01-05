@@ -16,7 +16,7 @@ export enum MembershipStatus {
     PAID = "paid",       // админ подтвердил оплату
 }
 
-@Entity()
+@Entity('membership_payments')
 @Index(["userId", "year"], { unique: true })
 export class MembershipPayment {
     @PrimaryGeneratedColumn()
@@ -38,8 +38,7 @@ export class MembershipPayment {
     amount!: number;
 
     @Column({
-        type: process.env.DB_TYPE === 'sqlite' ? 'text' : 'enum',
-        enum: process.env.DB_TYPE === 'sqlite' ? undefined : MembershipStatus,
+        type: 'text',
         default: MembershipStatus.UNPAID,
     })
     status!: MembershipStatus;
@@ -53,9 +52,9 @@ export class MembershipPayment {
     @Column({ type: "int", nullable: true })
     adminId!: number | null;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: "datetime" })
     createdAt!: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: "datetime" })
     updatedAt!: Date;
 }

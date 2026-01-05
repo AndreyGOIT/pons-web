@@ -57,14 +57,19 @@ export const markUserPaymentPending = async (req: Request, res: Response) => {
 // ===== ADMIN CONTROLLERS =====
 
 export const getAllPayments = async (req: Request, res: Response) => {
-    const repo = AppDataSource.getRepository(MembershipPayment);
+    try {
+        const repo = AppDataSource.getRepository(MembershipPayment);
 
-    const payments = await repo.find({
-        relations: ['user'],
-        order: { createdAt: 'DESC' }
-    });
+        const payments = await repo.find({
+            relations: ['user'],
+            order: { createdAt: 'DESC' }
+        });
 
-    res.json(payments);
+        res.json(payments);
+    } catch (error) {
+        console.error("❌ getAllPayments error:", error);
+        res.status(500).json({ error: "Failed to fetch membership payments" });
+    }
 };
 
 export const confirmPayment = async (req: Request, res: Response) => {

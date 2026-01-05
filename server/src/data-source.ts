@@ -8,11 +8,17 @@ import { TrialBooking } from './models/TrialBooking';
 import { ContactMessage } from './models/ContactMessage';
 import { Attendance } from './models/Attendance';
 import { CourseSession } from './models/CourseSession';
+import path from 'path';
 import dotenv from "dotenv";
 import {MembershipPayment} from "./models/MembershipPayment";
 
+const envFile =
+    process.env.NODE_ENV === "production"
+        ? ".env"
+        : ".env.development";
+
 dotenv.config({
-    path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development'
+    path: path.resolve(__dirname, `../${envFile}`),
 });
 
 const isProd = process.env.NODE_ENV === 'production';

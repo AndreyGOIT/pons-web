@@ -33,21 +33,41 @@ export default function MembershipCard() {
     }, []);
 
     const handleMarkPaid = async (paymentId: number) => {
-        await markMembershipPaid(paymentId);
-        setSubmitLoading(true)
-        loadMembership(); // обновляем UI
+        setSubmitLoading(true);
+        try {
+            if (paymentId === 0) {
+                // старый пользователь → backend сам создаст запись
+                await markMembershipPaid();
+            } else {
+                await markMembershipPaid(paymentId);
+            }
+            await loadMembership();
+        } finally {
+            setSubmitLoading(false);
+        }
     };
 
     if (loading) return <div>Ladataan...</div>;
     if (error) return <div className="w3-text-red">{error}</div>;
-    if (membership.length === 0)
-        return <p>Ei tietoja jäsenmaksusta.</p>;
+
+    const currentYear = new Date().getFullYear();
+
+    const paymentsToRender: MembershipPayment[] =
+        membership.length === 0
+            ? [
+                {
+                    id: 0, // виртуальный
+                    year: currentYear,
+                    status: "unpaid",
+                },
+            ]
+            : membership;
 
     return (
         <div className="w3-card w3-padding w3-light-grey w3-round">
             <h3>Jäsenmaksu</h3>
 
-            {membership.map((p) => (
+            {paymentsToRender.map((p) => (
                 <div
                     key={p.id}
                     className="w3-padding w3-margin-bottom w3-white w3-round w3-border"
