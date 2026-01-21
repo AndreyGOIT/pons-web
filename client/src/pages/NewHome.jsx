@@ -534,7 +534,7 @@ const NewHome = () => {
               <p>
                 <i className="fa fa-envelope w3-margin-right"></i>
                 <a
-                  href="mailto:mika.vuorinen@pons.fi"
+                  href="mailto:mikvuo.pns@gmail.com"
                   className="w3-text-dark-grey"
                 >
                   mikvuo.pns@gmail.com
@@ -548,7 +548,6 @@ const NewHome = () => {
       {/*<!-- Image of location/map -->*/}
       <img
         src="/images/Porvoon_Urheiluhalli.png"
-        // src="https://www.w3schools.com/w3images/map.jpg"
         className="w3-image w3-greyscale-min w3-margin-bottom"
         style={{ width: "100%" }}
       />

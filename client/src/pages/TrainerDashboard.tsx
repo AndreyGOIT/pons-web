@@ -1,6 +1,7 @@
 // client/src/pages/TrainerDashboard.jsx
 import React, { useEffect, useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import {getDisplayName} from "../utils/userDisplay";
 import api from "../api/api";
 import XLSX from "xlsx-js-style";
 
@@ -167,33 +168,12 @@ const TrainerDashboard: React.FC = () => {
     }
   };
 
-  // обработка отображения имени в ячейке таблицы
-  const getDisplayName = (user: {
-    firstName?: string | null;
-    lastName?: string | null;
-    name?: string | null;
-    email?: string;
-  }) => {
-    if (user.firstName || user.lastName) {
-      return [user.firstName, user.lastName]
-          .filter(Boolean)
-          .join(" ")
-          .trim();
-    }
-
-    if (user.name) {
-      return user.name.replace(/\s+/g, " ").trim();
-    }
-
-    return user.email; // fallback
-  };
-
   // Экспорт в Excel
   const exportExcel = () => {
     // Формируем данные для экспорта
     const data = enrollments.map((e) => {
       const row: { [key: string]: string } = {
-        Osallistuja: `${e.user.firstName} ${e.user.lastName}`,
+        Osallistuja: getDisplayName(e.user),
       };
 
       sessions.forEach((s) => {
