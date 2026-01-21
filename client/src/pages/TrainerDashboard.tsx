@@ -167,6 +167,27 @@ const TrainerDashboard: React.FC = () => {
     }
   };
 
+  // обработка отображения имени в ячейке таблицы
+  const getDisplayName = (user: {
+    firstName?: string | null;
+    lastName?: string | null;
+    name?: string | null;
+    email?: string;
+  }) => {
+    if (user.firstName || user.lastName) {
+      return [user.firstName, user.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+    }
+
+    if (user.name) {
+      return user.name.replace(/\s+/g, " ").trim();
+    }
+
+    return user.email; // fallback
+  };
+
   // Экспорт в Excel
   const exportExcel = () => {
     // Формируем данные для экспорта
@@ -350,7 +371,14 @@ const TrainerDashboard: React.FC = () => {
               <tbody>
                 {enrollments.map((e) => (
                   <tr key={e.user.id}>
-                    <td>
+                    <td
+                        style={{
+                          position: "sticky",
+                          left: 0,
+                          backgroundColor: "#fff",
+                          zIndex: 1,
+                        }}
+                    >
                       <div
                         style={{
                           display: "flex",
@@ -360,7 +388,7 @@ const TrainerDashboard: React.FC = () => {
                       >
                         {/* Имя и фамилия */}
                         <span>
-                          {e.user.firstName} {e.user.lastName}
+                          {getDisplayName(e.user)}
                         </span>
 
                         {/* Иконка: платеж произведён, но админ ещё не подтвердил */}
