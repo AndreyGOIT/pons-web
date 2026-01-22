@@ -24,7 +24,6 @@ function Profile() {
         // Correct user endpoint for fetching user's enrollments
         const { data } = await api.get(`/enrollments/mine?userId=${userId}`);
 
-        console.log("Регистрации пользователя:", data);
         setEnrollments(data);
       } catch (err) {
         console.error("Ошибка при получении регистраций:", err);

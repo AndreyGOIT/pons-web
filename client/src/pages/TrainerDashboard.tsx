@@ -3,7 +3,6 @@ import React, { useEffect, useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {getDisplayName} from "../utils/userDisplay";
 import api from "../api/api";
-import XLSX from "xlsx-js-style";
 
 // TypeScript interfaces
 interface User {
@@ -169,7 +168,8 @@ const TrainerDashboard: React.FC = () => {
   };
 
   // Экспорт в Excel
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    const XLSX = await import("xlsx-js-style");
     // Формируем данные для экспорта
     const data = enrollments.map((e) => {
       const row: { [key: string]: string } = {

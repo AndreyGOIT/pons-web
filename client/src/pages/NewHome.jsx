@@ -4,7 +4,6 @@ import api from "../api/api";
 
 const NewHome = () => {
   const { user } = useContext(AuthContext);
-  // console.log("User from AuthContext:", user);
   const [courses, setCourses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -17,7 +16,6 @@ const NewHome = () => {
     const fetchCourses = async () => {
       try {
         const { data } = await api.get("/courses");
-        console.log("data - courses: ", data);
         setCourses(data);
       } catch (error) {
         console.error("Ошибка при загрузке курсов:", error);
@@ -66,7 +64,6 @@ const NewHome = () => {
       IBAN: ${result.enrollment.paymentIban}\n
       Viitenumero: ${result.enrollment.paymentReference}\n
       Eräpäivä: ${result.enrollment.invoiceDueDate}`);
-      // setTimeout(() => handleCloseModal(), 2000);
     } catch (err) {
       console.error("Ошибка при записи на курс: ", err);
       setErrorMessage("Virhe ilmoittautumisessa. Yritä uudelleen.");

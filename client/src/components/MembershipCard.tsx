@@ -6,6 +6,7 @@ type MembershipPayment = {
     id: number;
     year: number;
     status: "unpaid" | "pending" | "paid";
+    createdAt?: string; // приходит с backend
 };
 
 export default function MembershipCard() {
@@ -47,97 +48,135 @@ export default function MembershipCard() {
         <div className="w3-card w3-padding w3-light-grey w3-round">
             <h3>Jäsenmaksu</h3>
 
-            {membership.map((p) => (
-                <div
-                    key={p.id}
-                    className="w3-padding w3-margin-bottom w3-white w3-round w3-border"
-                >
-                    <p>
-                        <strong>Vuosi:</strong> {p.year}
-                    </p>
+            {membership.map((p) => {
+                // 👉 eräpäivä = createdAt + 7 päivää
+                const created = p.createdAt ? new Date(p.createdAt) : null;
+                const dueDate = created
+                    ? new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000)
+                    : null;
 
-                    <p>
-                        <strong>Tila:</strong>{" "}
-                        {p.status === "unpaid" && "❌ Ei maksettu"}
-                        {p.status === "pending" && "🧭 Odottaa vahvistusta"}
-                        {p.status === "paid" && "✅ Hyväksytty"}
-                    </p>
+                const isOverdue =
+                    dueDate &&
+                    p.status === "unpaid" &&
+                    new Date() > dueDate;
 
-                    {/* Maksutiedot */}
-                    {p.status === "unpaid" && (
-                        <>
-                            <div
-                                className="w3-card w3-padding w3-pale-blue w3-border-red w3-round-large"
-                                style={{ maxWidth: "320px", margin: "0 auto" }}
-                            >
-                                <h4 className="w3-text-red" style={{ marginTop: 0 }}>
-                                    Maksutiedot
-                                </h4>
+                return (
+                    <div
+                        key={p.id}
+                        className="w3-padding w3-margin-bottom w3-white w3-round w3-border"
+                    >
+                        <p>
+                            <strong>Vuosi:</strong> {p.year}
+                        </p>
 
-                                <p>
-                                    <strong>Saaja:</strong> Porvoon Nyrkkeilyseura Ry
-                                </p>
-                                <p>
-                                    <strong>IBAN 💳:</strong> FI78 4055 0012 3222 24
-                                </p>
-                                <p>
-                                    <strong>Summa:</strong> 25 €
-                                </p>
-                                <p>
-                                    <strong>Viitenumero:</strong> 1163
-                                </p>
+                        <p>
+                            <strong>Tila:</strong>{" "}
+                            {p.status === "unpaid" && "❌ Ei maksettu"}
+                            {p.status === "pending" && "🧭 Odottaa vahvistusta"}
+                            {p.status === "paid" && "✅ Hyväksytty"}
+                        </p>
 
-                                <button
-                                    className="w3-button w3-blue w3-round w3-margin-top"
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(
-                                            `Saaja: Porvoon Nyrkkeilyseura Ry\nIBAN: FI78 4055 0012 3222 24\nSumma: 25 €\nViitenumero: 1163`
-                                        );
-                                        alert("Maksutiedot kopioitu leikepöydälle!");
-                                    }}
+                        {/* ===== Maksutiedot ===== */}
+                        {p.status === "unpaid" && (
+                            <>
+                                <div
+                                    className={`w3-card w3-padding w3-round-large ${
+                                        isOverdue
+                                            ? "w3-pale-red w3-border-red"
+                                            : "w3-pale-blue w3-border-blue"
+                                    }`}
+                                    style={{ maxWidth: "320px", margin: "0 auto" }}
                                 >
-                                    Kopioi maksutiedot
-                                </button>
-                            </div>
+                                    <h4 className="w3-text-red" style={{ marginTop: 0 }}>
+                                        Maksutiedot
+                                    </h4>
 
-                            <div className="w3-padding w3-center w3-margin-top w3-margin-bottom membership-pulse"
-                                 style={{ maxWidth: "320px", margin: "0 auto" }}>
-                                <label>
-                                    Olen maksanut jäsenmaksun{" "}
-                                    <input
-                                        type="checkbox"
-                                        onChange={() => handleMarkPaid(p.id)}
-                                        disabled={submitLoading}
-                                        style={{
-                                            marginLeft: "8px",
-                                            width: "16px",
-                                            height: "16px",
-                                            accentColor: "#4CAF50",
-                                            cursor: "pointer",
+                                    <p>
+                                        <strong>Saaja:</strong> Porvoon NYRKKEILYSEURA Ry
+                                    </p>
+                                    <p>
+                                        <strong>IBAN 💳:</strong> FI78 4055 0012 3222 24
+                                    </p>
+                                    <p>
+                                        <strong>Summa:</strong> 25 €
+                                    </p>
+                                    <p>
+                                        <strong>Viitenumero:</strong> 1163
+                                    </p>
+
+                                    {dueDate && (
+                                        <p
+                                            className={` ${
+                                                isOverdue ? "w3-text-red" : "w3-text-black"
+                                            }`}
+                                            style={{ marginTop: "8px" }}
+                                        >
+                                            <strong>
+                                            Eräpäivä:{" "}
+                                            </strong>
+                                                {dueDate.toLocaleDateString("fi-FI")}
+                                            {isOverdue && " (myöhässä)"}
+                                        </p>
+                                    )}
+
+                                    <button
+                                        className="w3-button w3-blue w3-round w3-margin-bottom"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(
+                                                `Saaja: Porvoon NYRKKEILYSEURA Ry\nIBAN: FI78 4055 0012 3222 24\nSumma: 25 €\nViitenumero: 1163`
+                                            );
+                                            alert("Maksutiedot kopioitu leikepöydälle!");
                                         }}
-                                    />
-                                </label>
-
-                                <div className="w3-small w3-text-grey" style={{ marginTop: "6px" }}>
-                                    Merkitse maksu suoritetuksi, jotta ylläpito voi vahvistaa sen
+                                    >
+                                        Kopioi maksutiedot
+                                    </button>
                                 </div>
-                            </div>
-                        </>
-                    )}
 
-                    {p.status === "pending" && (
-                        <p className="w3-text-orange">
-                            🧭 Odottaa ylläpitäjän vahvistusta…
-                        </p>
-                    )}
+                                {/* ===== Pehmeä подсказка ===== */}
+                                <div
+                                    className="w3-padding w3-center w3-margin-top w3-margin-bottom membership-pulse"
+                                    style={{ maxWidth: "320px", margin: "0 auto" }}
+                                >
+                                    <label>
+                                        Olen maksanut jäsenmaksun{" "}
+                                        <input
+                                            type="checkbox"
+                                            onChange={() => handleMarkPaid(p.id)}
+                                            disabled={submitLoading}
+                                            style={{
+                                                marginLeft: "8px",
+                                                width: "16px",
+                                                height: "16px",
+                                                accentColor: "#4CAF50",
+                                                cursor: "pointer",
+                                            }}
+                                        />
+                                    </label>
 
-                    {p.status === "paid" && (
-                        <p className="w3-text-green">
-                            ✅ Jäsenmaksu on hyväksytty
-                        </p>
-                    )}
-                </div>
-            ))}
+                                    <div
+                                        className="w3-small w3-text-grey"
+                                        style={{ marginTop: "6px" }}
+                                    >
+                                        Merkitse maksu suoritetuksi, jotta ylläpito voi vahvistaa sen
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {p.status === "pending" && (
+                            <p className="w3-text-orange">
+                                🧭 Odottaa ylläpitäjän vahvistusta…
+                            </p>
+                        )}
+
+                        {p.status === "paid" && (
+                            <p className="w3-text-green">
+                                ✅ Jäsenmaksu on hyväksytty
+                            </p>
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 }
