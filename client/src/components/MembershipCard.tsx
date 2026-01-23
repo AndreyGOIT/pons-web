@@ -144,7 +144,6 @@ export default function MembershipCard() {
                                             onChange={() => handleMarkPaid(p.id)}
                                             disabled={submitLoading}
                                             style={{
-                                                marginLeft: "8px",
                                                 width: "16px",
                                                 height: "16px",
                                                 accentColor: "#4CAF50",

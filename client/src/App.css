@@ -74,3 +74,10 @@
   border-radius: 10px;
   animation: softPulse 2.5s ease-in-out infinite;
 }
+
+.course-payment-pulse {
+  animation: pulse 2.5s infinite;
+  border-radius: 6px;
+  padding: 6px 8px;
+  /*background-color: rgba(255, 193, 7, 0.08); /* мягкий amber */
+}

@@ -261,19 +261,25 @@ function Profile() {
                               </td>
                             </tr>
                           )}
-                          {e.invoiceAmount > 0 && (
-                            <tr>
-                              <td style={{paddingTop: 12}}>💰 Summa</td>
-                              <td className="w3-text-green w3-large">
-                                {e.invoiceAmount} €
-                              </td>
-                            </tr>
-                          )}
+                          <tr>
+                            <td>🏛️ Saaja</td>
+                            <td>
+                              Porvoon NYRKKEILYSEURA Ry
+                            </td>
+                          </tr>
                           {e.paymentIban && (
                             <tr>
                               <td>🏦 IBAN</td>
                               <td>
-                                <strong>{e.paymentIban}</strong>
+                                {e.paymentIban}
+                              </td>
+                            </tr>
+                          )}
+                          {e.invoiceAmount > 0 && (
+                            <tr>
+                              <td style={{paddingTop: 12}}>💰 Summa</td>
+                              <td >
+                                {e.invoiceAmount} €
                               </td>
                             </tr>
                           )}
@@ -317,19 +323,20 @@ function Profile() {
                       </table>
                     </div>
                     {!e.adminConfirmedAt && (
-                      <div className="w3-small w3-margin-top">
-                        <div className="w3-margin-bottom">
+                      <div className="w3-small w3-padding w3-margin-top membership-pulse"
+                           style={{ maxWidth: "320px", margin: "0 auto" }}
+                      >
+
                           <label
                             className="w3-margin-right"
                             style={{
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "8px",
+                              fontSize: "14px",
                             }}
                           >
-                            Kun maksu on suoritettu, ilmoita siitä klikkaamalla
-                            tähän
-                              <span style={{  padding: "2px 4px 0px 2px", boxShadow: "0 0 0 2px rgba(0,0,0,0.15)", }}>
+                            Olen maksanut kurssimaksun{" "}
                             <input
                               type="checkbox"
                               checked={!!e.invoicePaid}
@@ -337,9 +344,14 @@ function Profile() {
                               style={{
                                   width: "16px", height: "16px", accentColor: "#d0d0d0", cursor: "pointer", }}
                             />{" "}
-                              </span>
                           </label>
-                        </div>
+
+                          <div
+                              className="w3-small w3-text-grey"
+                              style={{ marginTop: "6px" }}
+                          >
+                            Merkitse maksu suoritetuksi, jotta ylläpito voi vahvistaa sen
+                          </div>
                       </div>
                     )}
                   </div>

@@ -88,7 +88,6 @@ function AdminDashboard() {
   const fetchTrainers = async () => {
     try {
       const { data } = await api.get("/admin/trainers");
-      console.log("Fetched trainers in adminpanel: ", data);
       setTrainers(data);
     } catch (err) {
       console.error("Error loading trainers:", err);
