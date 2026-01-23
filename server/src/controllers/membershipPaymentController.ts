@@ -8,15 +8,58 @@ import { User } from '../models/User';
 // ===== USER CONTROLLERS =====
 
 export const getUserPayments = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
+    try {
+        const userId = req.user!.id;
+        const repo = AppDataSource.getRepository(MembershipPayment);
+        const currentYear = new Date().getFullYear();
 
-    const repo = AppDataSource.getRepository(MembershipPayment);
-    const payments = await repo.find({
-        where: { user: { id: userId } },
-        order: { createdAt: 'DESC' }
-    });
+        // 1. Пытаемся найти платеж за текущий год
+        let payment = await repo.findOne({
+            where: { userId, year: currentYear },
+        });
 
-    res.json(payments);
+        // 2. Если НЕТ — аккуратно создаём
+        if (!payment) {
+            payment = repo.create({
+                userId,
+                year: currentYear,
+                amount: 25,
+                status: MembershipStatus.UNPAID,
+            });
+
+            try {
+                await repo.save(payment);
+            } catch (err: any) {
+                // 🔒 защита от гонки / двойного запроса
+                if (err.code === "SQLITE_CONSTRAINT" || err.code === "ER_DUP_ENTRY") {
+                    payment = await repo.findOne({
+                        where: { userId, year: currentYear },
+                    });
+                } else {
+                    throw err;
+                }
+            }
+        }
+
+        // 3. Возвращаем ВСЕ платежи пользователя
+        const payments = await repo.find({
+            where: { userId },
+            order: { year: "DESC" },
+        });
+
+        if (payments.length === 0) {
+            payments.push({
+                id: 0,
+                year: currentYear,
+                status: MembershipStatus.UNPAID,
+            } as any);
+        }
+
+        res.json(payments);
+    } catch (error) {
+        console.error("getUserPayments failed:", error);
+        res.status(500).json({ message: "Failed to load membership payments" });
+    }
 };
 
 export const markUserPaymentPending = async (req: Request, res: Response) => {

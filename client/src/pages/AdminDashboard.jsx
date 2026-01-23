@@ -88,7 +88,6 @@ function AdminDashboard() {
   const fetchTrainers = async () => {
     try {
       const { data } = await api.get("/admin/trainers");
-      console.log("Fetched trainers in adminpanel: ", data);
       setTrainers(data);
     } catch (err) {
       console.error("Error loading trainers:", err);
@@ -230,7 +229,6 @@ function AdminDashboard() {
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleCreateTrainer = async () => {
-    console.log("Создаётся тренер:", form);
     try {
       await api.post("/admin/trainers", form);
       setShowModal(false);
@@ -308,7 +306,6 @@ function AdminDashboard() {
         { trainerId: selectedTrainer }
       );
       alert("✅ Valmentaja on onnistuneesti määritetty kurssille!");
-      console.log("Trainer assigned:", data);
 
       // Обновляем локальный список тренеров
       setTrainers((prevTrainers) =>
@@ -610,6 +607,7 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
+
       {/* trials */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>KN kokeilijat</h3>
@@ -647,6 +645,7 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
+
       {/* Saapuneet viestit */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Saapuneet viestit</h3>
@@ -711,7 +710,8 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
-        {/* Courses */}
+
+      {/* Courses */}
         <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
             <h3>Kurssit</h3>
 
@@ -748,6 +748,7 @@ function AdminDashboard() {
                 </tbody>
             </table>
         </div>
+
       {/* Trainers Section */}
       <div className="w3-card w3-white w3-padding w3-round-large w3-margin-bottom">
         <h3>Valmentajat</h3>
@@ -905,6 +906,7 @@ function AdminDashboard() {
           </tbody>
         </table>
       </div>
+
       {/* --- Assign Trainer to Course Section ---*/}
       <div className="w3-container w3-margin-top">
         <div
@@ -972,6 +974,7 @@ function AdminDashboard() {
           </div>
         </div>
       </div>
+
       {/* --- Course Schedule Generation Section --- */}
       <AdminCourseSchedule courses={courses} />
     </div>

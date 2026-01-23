@@ -1,8 +1,8 @@
 // client/src/pages/TrainerDashboard.jsx
 import React, { useEffect, useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import {getDisplayName} from "../utils/userDisplay";
 import api from "../api/api";
-import XLSX from "xlsx-js-style";
 
 // TypeScript interfaces
 interface User {
@@ -168,11 +168,12 @@ const TrainerDashboard: React.FC = () => {
   };
 
   // Экспорт в Excel
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    const XLSX = await import("xlsx-js-style");
     // Формируем данные для экспорта
     const data = enrollments.map((e) => {
       const row: { [key: string]: string } = {
-        Osallistuja: `${e.user.firstName} ${e.user.lastName}`,
+        Osallistuja: getDisplayName(e.user),
       };
 
       sessions.forEach((s) => {
@@ -350,7 +351,14 @@ const TrainerDashboard: React.FC = () => {
               <tbody>
                 {enrollments.map((e) => (
                   <tr key={e.user.id}>
-                    <td>
+                    <td
+                        style={{
+                          position: "sticky",
+                          left: 0,
+                          backgroundColor: "#fff",
+                          zIndex: 1,
+                        }}
+                    >
                       <div
                         style={{
                           display: "flex",
@@ -360,7 +368,7 @@ const TrainerDashboard: React.FC = () => {
                       >
                         {/* Имя и фамилия */}
                         <span>
-                          {e.user.firstName} {e.user.lastName}
+                          {getDisplayName(e.user)}
                         </span>
 
                         {/* Иконка: платеж произведён, но админ ещё не подтвердил */}
