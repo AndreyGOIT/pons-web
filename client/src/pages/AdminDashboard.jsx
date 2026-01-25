@@ -57,6 +57,7 @@ function AdminDashboard() {
   const fetchEnrollments = async () => {
     try {
       const { data } = await api.get("/enrollments");
+      console.log("enrollments: ", data);
       setEnrollments(data);
     } catch (err) {
       console.error(err);
@@ -98,6 +99,7 @@ function AdminDashboard() {
     const fetchCourses = async (active) => {
         try {
             const data = await getCourses(active);
+            console.log("courses: ", data);
             setCourses(data);
         } catch (err) {
             console.error("Error loading courses:", err);
@@ -510,20 +512,43 @@ function AdminDashboard() {
                         key={enr.id}
                         className="w3-padding-small w3-border w3-round-small "
                       >
-                        <div>
-                          <strong>Kurssi:</strong> {enr.course.title}
+                        <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                        >
+                          <div>
+                            <strong>Kurssi:</strong> {enr.course.title}
+                            <span className="w3-small w3-text-grey">
+                            {" "}({enr.course.season})
+                              {/* TODO: include course.season from API instead of client-side workaround */}
+                          </span>
+                          </div>
+                          {/* 🗑️ ADMIN: remove user from course */}
+                          {admin && (
+                              <button
+                                  className="w3-button  w3-round w3-hover-red"
+                                  title="Poista käyttäjä kurssilta"
+                                  onClick={() => handleDeleteEnrollment(enr.id, u.id)}
+                                  style={{
+                                    padding: "4px 8px",
+                                    backgroundColor: "transparent",
+                                    color: "#c0392b",
+                                    flexShrink: 0,
+                                  }}
+                              >
+                                <i className="fa fa-trash"></i>
+                              </button>
+                          )}
                         </div>
+
                         <div>
                           <strong>Summa:</strong> €{enr.invoiceAmount}
                         </div>
-                        <div>
-                          <strong>Lasku:</strong>{" "}
-                          <span>
-                            {enr.invoiceSent
-                              ? " on lähetetty ✅"
-                              : "Ei lähetetty"}
-                          </span>
-                        </div>
+
                         <div>
                           <strong>Maksun tilanne:</strong>{" "}
                           <span
@@ -550,8 +575,15 @@ function AdminDashboard() {
                               : "Tarvitse tarkistusta"}
                           </span>
                         </div>
-                          {/* ⬇️ ЧЕК-БОКС ТОЛЬКО ЕСЛИ НЕ ПОДТВЕРЖДЕНО */}
-                          {!enr.paymentConfirmedByAdmin && (
+
+                        {!enr.invoicePaid && !enr.paymentConfirmedByAdmin && (
+                            <div className="w3-small w3-text-grey w3-margin-top">
+                              Odottaa käyttäjän maksuilmoitusta
+                            </div>
+                        )}
+
+                          {/* ⬇️ ЧЕК-БОКС ТОЛЬКО ЕСЛИ ПОДТВЕРЖДЕНО ПОЛЬЗОВАТЕЛЕМ И НЕ ПОДТВЕРЖДЕНО АДМИНОМ */}
+                        {enr.invoicePaid && !enr.paymentConfirmedByAdmin && (
                               <div className="w3-margin-top">
                                   <label
                                       style={{
@@ -578,17 +610,7 @@ function AdminDashboard() {
                                   </label>
                               </div>
                           )}
-                          {/* 🗑️ ADMIN: remove user from course */}
-                          {admin && (
-                              <div className="w3-margin-top">
-                                  <button
-                                      className="w3-button w3-small w3-red w3-round w3-hover-pale-red"
-                                      onClick={() => handleDeleteEnrollment(enr.id, u.id)}
-                                  >
-                                      <i className="fa fa-trash"></i> Poista kurssilta
-                                  </button>
-                              </div>
-                          )}
+
                       </div>
                     ))
                   )}
