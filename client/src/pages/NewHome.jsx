@@ -233,11 +233,11 @@ const NewHome = () => {
                         Itsevarmuutta ja yhteishenkeä
                       </h4>
                       <p style={{flexGrow: 1}}>
-                        Turvallinen ympäristö 12-15-vuotiaille kehittyä fyysisesti
+                        Turvallinen ympäristö 10-15-vuotiaille kehittyä fyysisesti
                         ja vahvistaa itseluottamusta.
                       </p>
                       <p className="w3-text-grey">
-                        <i className="fa fa-user w3-margin-right"></i>12-15 vuotta
+                        <i className="fa fa-user w3-margin-right"></i>10-15 vuotta
                       </p>
                     </div>
                   </div>
@@ -312,7 +312,7 @@ const NewHome = () => {
                         {course.title === "KN - kuntonyrkkeily" &&
                             "KuntoNyrkkeily - Tehokas ja turvallinen treeni"}
                         {course.title === "Nuoriso ryhmä" &&
-                            "Nuorten Nyrkkeily - Hauska liikunta 12-15-vuotiaille"}
+                            "Nuorten Nyrkkeily - Hauska liikunta 10-15-vuotiaille"}
                         {course.title === "Kilparyhmä" &&
                             "KilpaNyrkkeily - Harrasta lajia ammattimaisesti"}
                       </p>
