@@ -94,10 +94,11 @@ const NewHome = () => {
           <p>Tapaa menestyksemme takana olevat upeat ihmiset</p>
 
           <div className="w3-row-padding w3-margin-top">
-            <div className="w3-half w3-margin-bottom">
+            {/* Mika */}
+            <div className="w3-quarter w3-margin-bottom">
               <img
                   src="/images/MikaVuorinen_pons.png"
-                  alt="Member 1"
+                  alt="Mika Vuorinen"
                   style={{
                     width: "200px",
                     height: "200px",
@@ -109,10 +110,11 @@ const NewHome = () => {
               <p>Puheenjohtaja &amp; vetäjä</p>
             </div>
 
-            <div className="w3-half w3-margin-bottom">
+            {/* Andy */}
+            <div className="w3-quarter w3-margin-bottom">
               <img
                   src="/images/AndyErokhin_pons.png"
-                  alt="Member 2"
+                  alt="Andy Erokhin"
                   style={{
                     width: "200px",
                     height: "200px",
@@ -124,20 +126,37 @@ const NewHome = () => {
               <p>KN-ryhmän ja Nuorten ryhmän vetäjä</p>
             </div>
 
-            {/* <div className="w3-third">
-            <img
-              src="/images/DimiZhuravel_pons.png"
-              alt="Member 3"
-              style={{
-                width: "200px",
-                height: "200px",
-                objectFit: "cover",
-              }}
-              className="w3-circle w3-hover-opacity"
-            />
-            <h3>Dimi Zhuravel</h3>
-            <p>Nuorten ja kilpa ryhmien vetäjä</p>
-          </div> */}
+            {/* Dimi */}
+            <div className="w3-quarter w3-margin-bottom">
+              <img
+                  src="/images/DimiZhuravel_pons.png"
+                  alt="Dimi Zhuravel"
+                  style={{
+                    width: "200px",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                  className="w3-circle w3-hover-opacity"
+              />
+              <h3>Dimi Zhuravel</h3>
+              <p>Nuorten ryhmän vetäjä</p>
+            </div>
+
+            {/* Jukka */}
+            <div className="w3-quarter w3-margin-bottom">
+              <img
+                  src="/images/JukkaLonnqvist_pons.jpg"
+                  alt="Jukka Lönnqvist"
+                  style={{
+                    width: "200px",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                  className="w3-circle w3-hover-opacity"
+              />
+              <h3>Jukka Lönnqvist</h3>
+              <p>KN-ryhmän vetäjä</p>
+            </div>
           </div>
         </section>
 
