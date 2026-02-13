@@ -23,6 +23,15 @@ dotenv.config({
 
 const isProd = process.env.NODE_ENV === 'production';
 const dbType = process.env.DB_TYPE || (isProd ? 'mysql' : 'sqlite');
+
+// 🔒 Production safety check
+if (isProd && dbType !== 'mysql') {
+  console.error(
+      `❌ FATAL: Production must use MySQL. Current DB_TYPE=${dbType}`
+  );
+  process.exit(1);
+}
+
 console.log(`🗄️  Using database type: ${dbType} (NODE_ENV=${process.env.NODE_ENV})`);
 
 let AppDataSource: DataSource;
