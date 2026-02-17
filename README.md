@@ -141,6 +141,16 @@ Version Control:
 
 ---
 
+## Running the Project Locally
+
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Configure environment variables
+4. Run backend: `npm run start`
+5. Run frontend: `npm run dev`
+
+---
+
 ## Author
 
 Andy Erokhin  
