@@ -1,47 +1,149 @@
-# PONS Web
+# Pons.fi – Enrollment & Administration Platform
 
-A modern website for the Finnish sports club **PONS**.
+## Overview
 
-## 🔍 Overview
+Pons.fi is a full-stack web application designed to manage user registrations and course enrollments for a local sports organization.
 
-This web application provides:
+The system replaces manual workflows (email + spreadsheets) with a structured, role-based and maintainable digital solution.
 
-- User registration with email confirmation
-- Private dashboard with personal info, invoices, notifications
-- Attendance tracking and course management
-- Admin panel for content, order, and attendance management
-- PDF invoice generation
-- REST API (Node.js + Express)
-- Frontend built with React and W3.CSS
-- Live data fetching of courses with trainers
+The application is used in a real operational environment and was developed iteratively based on user feedback.
 
-The project is now deployed in production at https://pons.fi and is actively used by the sports club.
+---
 
-## 📦 Tech Stack
+## Problem
 
-- **Frontend**: React, Vite, W3.CSS
-- **Backend**: Node.js, Express, MariaDB, TypeORM
-- **Auth**: Email/password (JWT), role-based access
-- **Attendance & Courses**: TypeORM entities, migrations, API endpoints
-- **PDF**: pdfkit
-- **Mail**: Nodemailer + SMTP (zone.fi)
-- **Deployment**: zone.fi (pm2, Apache reverse proxy)
+Before this system, the organization handled enrollments manually:
 
-## 🚀 Project Goals
+- Registrations via email
+- Manual validation and confirmations
+- Spreadsheet-based tracking
+- No structured role separation
+- High risk of duplicate or inconsistent data
 
-Built a scalable and modern website for PONS with a smooth user experience and admin capabilities. The site is live and actively serving the club.
+This led to:
 
-### Create admin user
+- Administrative overhead
+- Inefficient communication
+- Lack of centralized data integrity
+- Limited visibility into enrollment status
 
-In production, admin is created manually:
+---
 
-```bash
-node dist/scripts/createAdmin.js
-```
-## 📄 License
+## Solution
 
-MIT
+I designed and implemented a full-stack web application that provides:
 
-## 🌐 Live
+- Role-based access control (Admin / User)
+- Structured relational database model
+- RESTful backend API
+- Responsive React frontend
+- Centralized enrollment workflow
+- Clear separation between business logic and UI
 
-[https://pons.fi](https://pons.fi)
+---
+
+## Architecture
+
+### Frontend
+
+- React
+- TypeScript
+- Component-based architecture
+- REST API communication
+- Basic state management via hooks
+
+### Backend
+
+- Node.js
+- Express
+- RESTful API design
+- Authentication and authorization logic
+- Role-based access middleware
+- Clear separation of routes, controllers and services
+
+### Database
+
+- PostgreSQL / MariaDB
+- Normalized relational schema
+- Foreign key constraints
+- Structured entities (Users, Courses, Enrollments)
+
+---
+
+## Key Features
+
+- User registration and authentication
+- Role-based permissions
+- Enrollment management
+- Admin dashboard functionality
+- Basic data validation (client + server side)
+- Clean API structure for scalability
+
+---
+
+## Security & Design Considerations
+
+- Password hashing
+- Server-side validation
+- Role-based route protection
+- Separation of concerns
+- Structured database design to ensure integrity
+
+---
+
+## Development Approach
+
+- Iterative development
+- Built for real users
+- Refactoring based on feedback
+- Git-based version control
+- Focus on maintainable and readable code
+
+---
+
+## What I Learned
+
+- Designing data models early prevents downstream complexity
+- Authentication and access control must be considered from the start
+- Real users expose edge cases quickly
+- Maintainability is more important than short-term speed
+
+---
+
+## Future Improvements
+
+- Automated testing (unit + integration)
+- Dockerized deployment
+- CI/CD pipeline
+- Logging & monitoring improvements
+- Performance optimization
+- Improved error handling
+
+---
+
+## Tech Stack
+
+Frontend:
+- React
+- TypeScript
+- HTML
+- CSS
+
+Backend:
+- Node.js
+- Express
+
+Database:
+- SQL (PostgreSQL / MariaDB)
+
+Version Control:
+- Git
+
+---
+
+## Author
+
+Andy Erokhin  
+Junior Software Developer (Full Stack)  
+LinkedIn: https://www.linkedin.com/in/andyerokhin/  
+GitHub: https://github.com/AndreyGOIT
