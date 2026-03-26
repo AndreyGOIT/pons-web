@@ -157,8 +157,8 @@ Version Control:
 
 ## Documentation
 
-See strategy documentation:
-../pons-strategy/docs
+Project documentation and näyttö strategy:
+https://github.com/AndreyGOIT/pons-strategy
 
 ---
 
