@@ -124,19 +124,23 @@ I designed and implemented a full-stack web application that provides:
 ## Tech Stack
 
 Frontend:
+
 - React
 - TypeScript
 - HTML
 - CSS
 
 Backend:
+
 - Node.js
 - Express
 
 Database:
+
 - SQL (PostgreSQL / MariaDB)
 
 Version Control:
+
 - Git
 
 ---
@@ -148,6 +152,13 @@ Version Control:
 3. Configure environment variables
 4. Run backend: `npm run start`
 5. Run frontend: `npm run dev`
+
+---
+
+## Documentation
+
+See strategy documentation:
+../pons-strategy/docs
 
 ---
 
