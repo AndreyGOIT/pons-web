@@ -17,6 +17,7 @@ import trialRoutes from './routes/trialRoutes';
 import contactRoutes from './routes/contactRoutes';
 import trainerRoutes from './routes/trainerRoutes';
 import membershipRoutes from "./routes/membershipRoutes";
+import { errorHandler } from './middlewares/errorHandler';
 
 dotenv.config();
 
@@ -55,6 +56,9 @@ app.use('/api/trainer', trainerRoutes);
 
 // ---- membership payment routes ----
 app.use('/api/membership', membershipRoutes);
+
+// ---- error middleware ------
+app.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
