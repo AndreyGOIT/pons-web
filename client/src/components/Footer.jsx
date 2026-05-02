@@ -68,6 +68,28 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Sponsors */}
+        <div className="w3-container w3-center w3-margin-top">
+          <h5>Yhteistyössä:</h5>
+          <a
+              href="https://vbo.fi"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-block" }}
+          >
+            <img
+                src="/images/sponsors/S_VBO.svg"
+                alt="Varuboden-Osla"
+                style={{
+                  maxWidth: "80px",
+                  width: "100%",
+                  height: "auto",
+                }}
+                className="w3-hover-opacity"
+            />
+          </a>
+        </div>
+
         {/* Bottom section */}
         <div className="w3-margin-top">
           <p className="w3-small">
