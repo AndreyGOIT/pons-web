@@ -95,7 +95,7 @@ const NewHome = () => {
 
           <div className="w3-row-padding w3-margin-top">
             {/* Mika */}
-            <div className="w3-quarter w3-margin-bottom">
+            <div className="w3-third w3-margin-bottom">
               <img
                   src="/images/MikaVuorinen_pons.png"
                   alt="Mika Vuorinen"
@@ -111,7 +111,7 @@ const NewHome = () => {
             </div>
 
             {/* Andy */}
-            <div className="w3-quarter w3-margin-bottom">
+            <div className="w3-third w3-margin-bottom">
               <img
                   src="/images/AndyErokhin_pons.png"
                   alt="Andy Erokhin"
@@ -127,7 +127,7 @@ const NewHome = () => {
             </div>
 
             {/* Dimi */}
-            <div className="w3-quarter w3-margin-bottom">
+            <div className="w3-third w3-margin-bottom">
               <img
                   src="/images/DimiZhuravel_pons.png"
                   alt="Dimi Zhuravel"
@@ -140,22 +140,6 @@ const NewHome = () => {
               />
               <h3>Dimi Zhuravel</h3>
               <p>Nuorten ryhmän vetäjä</p>
-            </div>
-
-            {/* Jukka */}
-            <div className="w3-quarter w3-margin-bottom">
-              <img
-                  src="/images/JukkaLonnqvist_pons.jpg"
-                  alt="Jukka Lönnqvist"
-                  style={{
-                    width: "200px",
-                    height: "200px",
-                    objectFit: "cover",
-                  }}
-                  className="w3-circle w3-hover-opacity"
-              />
-              <h3>Jukka Lönnqvist</h3>
-              <p>KN-ryhmän vetäjä</p>
             </div>
           </div>
         </section>
@@ -235,7 +219,6 @@ const NewHome = () => {
                           width: "100%",
                           objectFit: "cover",
                         }}
-                        // style={{ height: "200px", objectFit: "cover" }}
                     />
                     <div
                         className="w3-container w3-padding-16"
@@ -475,6 +458,41 @@ const NewHome = () => {
               </div>
             </div>
         )}
+
+        {/* Sponsors */}
+        <section className="w3-container w3-padding-64 w3-center" id="sponsors">
+          <h2 className="w3-text-teal">Yhteistyökumppanit</h2>
+          <p>Yhteistyössä toimintaamme tukemassa</p>
+
+          <div
+              className="w3-row-padding w3-margin-top w3-center"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "40px",
+                flexWrap: "wrap",
+              }}
+          >
+            <a
+                href="https://vbo.fi"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "inline-block" }}
+            >
+              <img
+                  src="/images/sponsors/S_VARUBODEN-OSLA.svg"
+                  alt="Varuboden-Osla"
+                  style={{
+                    maxWidth: "220px",
+                    width: "100%",
+                    height: "auto",
+                  }}
+                  className="w3-hover-opacity"
+              />
+            </a>
+          </div>
+        </section>
 
         {/* Contact Us section */}
         <section className="w3-container w3-padding-64 w3-asphalt" id="contact">
