@@ -460,7 +460,14 @@ const NewHome = () => {
         )}
 
         {/* Sponsors */}
-        <section className="w3-container w3-padding-64 w3-center" id="sponsors">
+        <section
+            className="w3-container w3-center"
+            id="sponsors"
+            style={{ padding: "32px 0 64px 0", background: "#f5f5f5" }}
+        >
+
+
+
           <h2 className="w3-text-teal">Yhteistyökumppanit</h2>
           <p>Yhteistyössä toimintaamme tukemassa</p>
 
@@ -470,26 +477,50 @@ const NewHome = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                gap: "40px",
-                flexWrap: "wrap",
               }}
           >
+            {/* Sponsor card */}
             <a
                 href="https://vbo.fi"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: "inline-block" }}
+                aria-label="Varuboden-Osla yhteistyökumppani"
+                style={{ textDecoration: "none", color: "inherit" }}
             >
-              <img
-                  src="/images/sponsors/S_VARUBODEN-OSLA.svg"
-                  alt="Varuboden-Osla"
+              <div
+                  className="w3-card"
                   style={{
-                    maxWidth: "220px",
-                    width: "100%",
-                    height: "auto",
+                    padding: "30px 40px",
+                    borderRadius: "12px",
+                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                    cursor: "pointer",
                   }}
-                  className="w3-hover-opacity"
-              />
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "scale(1.05)";
+                    e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.boxShadow = "";
+                  }}
+              >
+                <img
+                    src="/images/sponsors/S_VARUBODEN-OSLA.svg"
+                    alt="Varuboden-Osla"
+                    style={{
+                      maxWidth: "180px",
+                      width: "100%",
+                      height: "auto",
+                    }}
+                />
+
+                <p
+                    className="w3-small w3-text-grey"
+                    style={{ marginTop: "12px" }}
+                >
+                  Pääyhteistyökumppani 2026
+                </p>
+              </div>
             </a>
           </div>
         </section>

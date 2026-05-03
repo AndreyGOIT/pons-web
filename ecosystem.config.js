@@ -14,7 +14,6 @@ module.exports = {
 
             env_production: {
                 NODE_ENV: "production",
-                DB_TYPE: "mysql",
                 PORT: 5050,
             },
         },
