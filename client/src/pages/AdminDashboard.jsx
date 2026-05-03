@@ -57,7 +57,6 @@ function AdminDashboard() {
   const fetchEnrollments = async () => {
     try {
       const { data } = await api.get("/enrollments");
-      console.log("enrollments: ", data);
       setEnrollments(data);
     } catch (err) {
       console.error(err);
@@ -99,7 +98,6 @@ function AdminDashboard() {
     const fetchCourses = async (active) => {
         try {
             const data = await getCourses(active);
-            console.log("courses: ", data);
             setCourses(data);
         } catch (err) {
             console.error("Error loading courses:", err);
