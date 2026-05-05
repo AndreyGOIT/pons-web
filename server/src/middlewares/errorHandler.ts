@@ -1,18 +1,27 @@
 // pons-web/server/src/middlewares/errorHandler.ts
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../types/errors";
+import { AppError } from "../utils/AppError";
 
 export function errorHandler(
-  err: AppError,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   console.error("Error:", err);
 
-  res.status(err.status || 500).json({
+  if (err instanceof AppError) {
+    return res.status(err.status).json({
+      success: false,
+      message: err.message,
+      code: err.code,
+      details: err.details,
+    });
+  }
+
+  return res.status(500).json({
     success: false,
-    message: err.message || "Internal server error",
-    code: err.code || "INTERNAL_ERROR"
+    message: "Internal server error",
+    code: "INTERNAL_ERROR",
   });
 }

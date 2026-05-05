@@ -11,7 +11,7 @@ import { validate } from 'class-validator';
 import { CourseSession } from "../models/CourseSession";
 import { Attendance } from "../models/Attendance";
 import { Between } from "typeorm";
-import { AppError } from "../types/errors";
+import { AppError } from "../utils/AppError";
 
 const userRepo = AppDataSource.getRepository(User);
 const courseRepo = AppDataSource.getRepository(Course);
@@ -21,18 +21,12 @@ export const adminLogin = catchAsync(async (req: Request, res: Response) => {
 
   const admin = await userRepo.findOne({ where: { email, role: UserRole.ADMIN } });
   if (!admin) {
-    const error: AppError = new Error("Invalid credentials");
-    error.status = 401;
-    error.code = "INVALID_CREDENTIALS";
-    throw error;
+    throw new AppError("Invalid credentials", 401, "INVALID_CREDENTIALS");
   }
 
   const isValid = await bcrypt.compare(password, admin.password);
   if (!isValid) {
-    const error: AppError = new Error("Invalid credentials");
-    error.status = 401;
-    error.code = "INVALID_CREDENTIALS";
-    throw error;
+    throw new AppError("Invalid credentials", 401, "INVALID_CREDENTIALS");
   }
 
   const token = jwt.sign(
@@ -54,27 +48,28 @@ export const adminLogin = catchAsync(async (req: Request, res: Response) => {
 });
 
 // Get admin profile
-export const getAdminProfile = async (req: Request, res: Response) => {
+export const getAdminProfile = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    throw new AppError("Unauthorized", 401, "UNAUTHORIZED");
   }
 
   const { id, name, email, role } = req.user;
 
-  return res.json({
+  res.json({
     id,
     name,
     email,
     role,
   });
-};
+});
 
 // Update admin profile
-export const updateAdminProfile = async (req: Request, res: Response) => {
-      const user = req.user; // 👈 теперь TypeScript точно знает, что он определён
+export const updateAdminProfile = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
   if (!user) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    throw new AppError("Unauthorized", 401, "UNAUTHORIZED");
   }
+
   const repo = AppDataSource.getRepository(User);
   const admin = await repo.findOneByOrFail({ id: user.id });
 
@@ -85,8 +80,8 @@ export const updateAdminProfile = async (req: Request, res: Response) => {
 
   await repo.save(admin);
 
-  res.json({ message: 'Данные обновлены', admin });
-};
+  res.json({ message: "Данные обновлены", admin });
+});
 
 export const getUsers = catchAsync(async (req: Request, res: Response) => {
   const users = await userRepo.find({
@@ -115,34 +110,28 @@ export const getUsers = catchAsync(async (req: Request, res: Response) => {
 });
 
 // download Users in PDF
-export const getUsersPdf = async (req: Request, res: Response) => {
+export const getUsersPdf = catchAsync(async (req: Request, res: Response) => {
   const users = await AppDataSource.getRepository(User).find({
     order: { name: "ASC" },
     relations: ["enrollments", "enrollments.course"],
   });
 
   generateUsersPdf(users, res);
-};
+});
 
-// Create a new trainer (only ADMIN)
+// Create a new trainer (only ADMIN) use AppError!
 export const createTrainer = catchAsync(async (req: Request, res: Response) => {
   const { firstName, lastName, email, password, phoneNumber } = req.body;
 
   // Access control
   if (!req.user || req.user.role !== UserRole.ADMIN) {
-    const error: AppError = new Error("Access denied");
-    error.status = 403;
-    error.code = "FORBIDDEN";
-    throw error;
+    throw new AppError("Access denied", 403, "FORBIDDEN");
   }
 
   // Check existing user
   const existing = await userRepo.findOne({ where: { email } });
   if (existing) {
-    const error: AppError = new Error("Email already in use");
-    error.status = 409;
-    error.code = "EMAIL_EXISTS";
-    throw error;
+    throw new AppError("Email already in use", 409, "EMAIL_EXISTS");
   }
 
   const user = new User();
@@ -156,11 +145,7 @@ export const createTrainer = catchAsync(async (req: Request, res: Response) => {
 
   const errors = await validate(user);
   if (errors.length > 0) {
-    const error: AppError = new Error("Validation failed");
-    error.status = 400;
-    error.code = "VALIDATION_ERROR";
-    error.details = errors;
-    throw error;
+    throw new AppError("Validation failed", 400, "VALIDATION_ERROR");
   }
 
   const savedTrainer = await userRepo.save(user);
@@ -171,13 +156,10 @@ export const createTrainer = catchAsync(async (req: Request, res: Response) => {
     trainer: trainerWithoutPassword,
   });
 });
-
+// with new AppError!
 export const getTrainers = catchAsync(async (req: Request, res: Response) => {
   if (!req.user || req.user.role !== UserRole.ADMIN) {
-    const error: AppError = new Error("Access denied: only admin can view trainers.");
-    error.status = 403;
-    error.code = "FORBIDDEN";
-    throw error;
+    throw new AppError("Access denied: only admin can view trainers.", 403, "FORBIDDEN");
   }
 
   const trainers = await userRepo.find({
@@ -209,10 +191,7 @@ export const deleteTrainer = catchAsync(async (req: Request, res: Response) => {
   });
 
   if (!trainer) {
-    const error: AppError = new Error("Trainer not found");
-    error.status = 404;
-    error.code = "TRAINER_NOT_FOUND";
-    throw error;
+    throw new AppError("Trainer not found", 404, "TRAINER_NOT_FOUND");
   }
 
   // 1️⃣ Remove relations
@@ -248,17 +227,11 @@ export const assignTrainerToCourse = catchAsync(async (req: Request, res: Respon
   });
 
   if (!course || !trainer) {
-    const error: AppError = new Error("Course or trainer not found");
-    error.status = 404;
-    error.code = "NOT_FOUND";
-    throw error;
+    throw new AppError("Course or trainer not found", 404, "NOT_FOUND");
   }
 
   if (course.trainers?.some((t) => t.id === trainer.id)) {
-    const error: AppError = new Error("Trainer already assigned to this course");
-    error.status = 409;
-    error.code = "ALREADY_ASSIGNED";
-    throw error;
+    throw new AppError("Trainer already assigned to this course", 409, "ALREADY_ASSIGNED");
   }
 
   course.trainers = [...(course.trainers || []), trainer];
@@ -280,10 +253,7 @@ export const unassignTrainerFromCourse = catchAsync(async (req: Request, res: Re
   });
 
   if (!trainer) {
-    const error: AppError = new Error("Trainer not found");
-    error.status = 404;
-    error.code = "TRAINER_NOT_FOUND";
-    throw error;
+    throw new AppError("Trainer not found", 404, "TRAINER_NOT_FOUND");
   }
 
   trainer.coursesAsTrainer = trainer.coursesAsTrainer.filter(
@@ -300,34 +270,27 @@ export const unassignTrainerFromCourse = catchAsync(async (req: Request, res: Re
 });
 
 // Create an admin user (for initial setup)
-export const createAdminUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { firstName, lastName, email, password } = req.body;
+export const createAdminUser = catchAsync(async (req: Request, res: Response) => {
+  const { firstName, lastName, email, password } = req.body;
 
-    // Проверяем существование
-    const existing = await userRepo.findOne({ where: { email } });
-    if (existing) {
-      res.status(409).json({ message: "Email already in use" });
-      return;
-    }
-
-    const user = new User();
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
-    user.email = email;
-    user.password = await bcrypt.hash(password, 10);
-    user.role = UserRole.ADMIN;
-
-    const saved = await userRepo.save(user);
-    const { password: _, ...userWithoutPassword } = saved;
-
-    res.status(201).json({ message: "Admin user created", user: userWithoutPassword });
-  } catch (err) {
-    console.error("Error creating admin:", err);
-    res.status(500).json({ message: "Server error", error: err });
+  const existing = await userRepo.findOne({ where: { email } });
+  if (existing) {
+    throw new AppError("Email already in use", 409, "EMAIL_EXISTS");
   }
-};
+
+  const user = new User();
+  user.firstName = firstName;
+  user.lastName = lastName;
+  user.name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+  user.email = email;
+  user.password = await bcrypt.hash(password, 10);
+  user.role = UserRole.ADMIN;
+
+  const saved = await userRepo.save(user);
+  const { password: _, ...userWithoutPassword } = saved;
+
+  res.status(201).json({ message: "Admin user created", user: userWithoutPassword });
+});
 
 
 // Generate course sessions based on weekdays and time (only ADMIN)
@@ -342,17 +305,11 @@ export const generateCourseSessions = catchAsync(async (req: Request, res: Respo
 
   const course = await courseRepo.findOne({ where: { id: Number(courseId) } });
   if (!course) {
-    const error: AppError = new Error("Course not found");
-    error.status = 404;
-    error.code = "COURSE_NOT_FOUND";
-    throw error;
+    throw new AppError("Course not found", 404, "COURSE_NOT_FOUND");
   }
 
   if (!Array.isArray(weekdays) || weekdays.length === 0) {
-    const error: AppError = new Error("No weekdays provided");
-    error.status = 400;
-    error.code = "INVALID_WEEKDAYS";
-    throw error;
+    throw new AppError("No weekdays provided", 400, "INVALID_WEEKDAYS");
   }
 
   const start = new Date(course.startDate);
@@ -408,10 +365,7 @@ export const deleteCourseSession = catchAsync(async (req: Request, res: Response
   const session = await sessionRepo.findOne({ where: { id: Number(sessionId) } });
 
   if (!session) {
-    const error: AppError = new Error("Session not found");
-    error.status = 404;
-    error.code = "SESSION_NOT_FOUND";
-    throw error;
+    throw new AppError("Session not found", 404, "SESSION_NOT_FOUND");
   }
 
   await sessionRepo.remove(session);
