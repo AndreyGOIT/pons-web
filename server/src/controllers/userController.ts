@@ -5,293 +5,239 @@ import {MembershipPayment, MembershipStatus} from "../models/MembershipPayment";
 import bcrypt from 'bcrypt';
 import { validate } from 'class-validator';
 import jwt from 'jsonwebtoken';
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
+
 
 const userRepo = AppDataSource.getRepository(User);
 const paymentRepo = AppDataSource.getRepository(MembershipPayment);
 
 //user registration
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { firstName, lastName, email, phoneNumber, password } = req.body;
+export const registerUser = catchAsync(async (req: Request, res: Response) => {
+  const { firstName, lastName, email, phoneNumber, password } = req.body;
 
-    const existing = await userRepo.findOne({ where: { email } });
-    if (existing) {
-      res.status(409).json({ message: 'Email already in use' });
-      return;
-    }
-
-    const user = new User();
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.name = `${firstName ?? ''} ${lastName ?? ''}`.trim();
-    user.email = email;
-    user.phoneNumber = phoneNumber;
-    user.password = await bcrypt.hash(password, 10);
-    user.role = UserRole.CLIENT; // фиксированная роль
-    
-    // Validate
-    const errors = await validate(user);
-    if (errors.length > 0) {
-      res.status(400).json(errors);
-      return;
-    }
-
-    const savedUser = await userRepo.save(user);
-
-    // ======================================================
-    // ✅ Create an initial MembershipPayment record
-    // ======================================================
-
-      const payment = new MembershipPayment();
-      payment.user = savedUser;
-      payment.year = new Date().getFullYear(); // текущий год
-      payment.status = MembershipStatus.UNPAID; // дефолтное значение
-
-      await paymentRepo.save(payment);
-
-      console.log(
-          `📌 Default membership payment created for ${savedUser.email} (year: ${payment.year})`
-      );
-
-      // ✅ Token generation and response
-    const token = jwt.sign({ id: savedUser.id, role: savedUser.role }, process.env.JWT_SECRET!, {
-      expiresIn: '1h',
-    });
-
-    const { password: _, ...userWithoutPassword } = savedUser;
-
-    // ✅ Response with token and user
-    res.status(201).json({
-      message: 'Registration successful',
-      user: userWithoutPassword,
-      token,
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err });
+  const existing = await userRepo.findOne({ where: { email } });
+  if (existing) {
+    throw new AppError('Email already in use', 409, 'EMAIL_EXISTS');
   }
-};
+
+  const user = new User();
+  user.firstName = firstName;
+  user.lastName = lastName;
+  user.name = `${firstName ?? ''} ${lastName ?? ''}`.trim();
+  user.email = email;
+  user.phoneNumber = phoneNumber;
+  user.password = await bcrypt.hash(password, 10);
+  user.role = UserRole.CLIENT; // фиксированная роль
+  
+  // Validate
+  const errors = await validate(user);
+  if (errors.length > 0) {
+    throw new AppError('Validation failed', 400, 'VALIDATION_ERROR', errors);
+  }
+
+  const savedUser = await userRepo.save(user);
+
+  // ======================================================
+  // ✅ Create an initial MembershipPayment record
+  // ======================================================
+
+  const payment = new MembershipPayment();
+  payment.user = savedUser;
+  payment.year = new Date().getFullYear(); // текущий год
+  payment.status = MembershipStatus.UNPAID; // дефолтное значение
+
+  await paymentRepo.save(payment);
+
+  console.log(
+    `📌 Default membership payment created for ${savedUser.email} (year: ${payment.year})`
+  );
+
+  // ✅ Token generation and response
+  const token = jwt.sign({ id: savedUser.id, role: savedUser.role }, process.env.JWT_SECRET!, {
+    expiresIn: '1h',
+  });
+
+  const { password: _, ...userWithoutPassword } = savedUser;
+
+  // ✅ Response with token and user
+  res.status(201).json({
+    success: true,
+    message: 'Registration successful',
+    user: userWithoutPassword,
+    token,
+  });
+});
 //user login
-export const loginUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { email, password, role } = req.body;
+export const loginUser = catchAsync(async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-    const user = await userRepo.findOne({ where: { email } });
-    console.log('user в логине из репо юзеров:', user);
-    if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' });
-      return;
-    }
+  const user = await userRepo.findOne({ where: { email } });
+  console.log('user в логине из репо юзеров:', user);
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      res.status(401).json({ message: 'Invalid credentials' });
-      return;
-    }
-
-    // 🔐 Генерация токена с более строгой типизацией payload
-    interface JwtPayload {
-      id: number;
-      role: UserRole;
-      iat?: number;
-      exp?: number;
-    }
-
-    const payload: JwtPayload = { id: user.id, role: user.role };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn: '1h',
-    });
-
-    // ✅ Ответ клиенту
-    res.json({
-      message: 'Login successful',
-      user: {
-        id: user.id,
-        name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-      },
-      token, // <-- добавляем токен
-    });
-    console.log('ответ клиенту с токеном:', res.json);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err });
+  if (!user) {
+    throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
   }
-};
 
-export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
-  console.log('✅ getCurrentUser called with req.user:', req.user);
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) {
+    throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
+  }
 
+  interface JwtPayload {
+    id: number;
+    role: UserRole;
+    iat?: number;
+    exp?: number;
+  }
+
+  const payload: JwtPayload = { id: user.id, role: user.role };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+    expiresIn: '1h',
+  });
+
+  res.json({
+    success: true,
+    message: 'Login successful',
+    user: {
+      id: user.id,
+      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+    },
+    token,
+  });
+});
+
+export const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) {
-    res.status(401).json({ message: 'Not authenticated' });
-    return;
+    throw new AppError('Not authenticated', 401, 'UNAUTHORIZED');
   }
 
-  const userId = Number(req.user.id); // или создать типизацию правильно
-  console.log('req.user:', req.user);
-  console.log('userId:', userId, typeof userId);
-
-  if (typeof userId !== 'number') {
-    res.status(400).json({ message: 'Invalid user context' });
-    return;
+  const userId = Number(req.user.id);
+  if (!userId) {
+    throw new AppError('Invalid user context', 400, 'INVALID_USER_CONTEXT');
   }
 
-  try {
-    const user = await AppDataSource.getRepository(User).findOne({
-      where: { id: userId },
-      select: ['id', 'name', 'firstName', 'lastName', 'email', 'role', 'createdAt', 'updatedAt'],
-    });
-    
-    if (!user) {
-      res.status(404).json({ message: 'User not found' });
-      return;
-    }
+  const user = await AppDataSource.getRepository(User).findOne({
+    where: { id: userId },
+    select: ['id', 'name', 'firstName', 'lastName', 'email', 'role', 'createdAt', 'updatedAt'],
+  });
 
-    try {
-      console.log('📤 Sending response with user data...');
-      res.json({
-        id: user.id,
-        name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      });
-      console.log('✅ Response successfully sent');
-    } catch (err) {
-      console.error('❌ Failed to send response:', err);
-      res.status(500).json({ message: 'Server error while sending response' });
-    }
-  } catch (err) {
-    console.error('getCurrentUser error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// Получить всех пользователей
-export const getUsers = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const users = await userRepo.find();
-      const withoutPasswords = users.map(({ password, ...rest }) => rest);
-      res.json(withoutPasswords);
-    } catch (err) {
-      res.status(500).json({ message: 'Server error', error: err });
-    }
-  };
-  
-  // Получить одного пользователя
-  export const getUserById = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const user = await userRepo.findOne({ where: { id: Number(req.params.id) } });
-      if (!user) {
-        res.status(404).json({ message: 'User not found' })
-        return;
-      }
-  
-      const { password, ...userData } = user;
-      res.json(userData);
-    } catch (err) {
-      res.status(500).json({ message: 'Server error', error: err });
-    }
-  };
-  
-  // Обновить пользователя
-export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-    res.status(401).json({ message: "Not authenticated" });
-    return; // важно return, чтобы дальше TS не ругался
-  }
-  
-    const userId = Number(req.user.id);
-    if (!userId) {
-      res.status(401).json({ message: "Not authenticated" });
-      return;
-    }
-  
-    try {
-      const user = await userRepo.findOne({ where: { id: userId } });
-  
-      if (!user) {
-        res.status(404).json({ message: "User not found" });
-        return;
-      }
-  
-      const { firstName, lastName, name, email, password } = req.body;
-  
-      if (firstName) user.firstName = firstName;
-      if (lastName) user.lastName = lastName;
-      user.name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
-      if (email) user.email = email;
-      if (password) {
-        // тут может быть хэширование, если используешь bcrypt
-        user.password = password;
-      }
-  
-      const updatedUser = await userRepo.save(user);
-  
-      res.json({
-        id: updatedUser.id,
-        name: updatedUser.name,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      });
-    } catch (err) {
-      console.error("Update error:", err);
-      res.status(500).json({ message: "Server error" });
-    }
-  };
-  
-  // Удалить пользователя
-export const deleteCurrentUser = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-    res.status(401).json({ message: "Not authenticated" });
-    return; // важно return, чтобы дальше TS не ругался
+  if (!user) {
+    throw new AppError('User not found', 404, 'USER_NOT_FOUND');
   }
 
-    const userId = Number(req.user.id);
-    if (!userId) {
-      res.status(401).json({ message: "Not authenticated" });
-      return;
-    }
-  
-    try {
-      const result = await userRepo.delete(userId);
-  
-      if (result.affected === 0) {
-        res.status(404).json({ message: "User not found" });
-        return;
-      }
-  
-      res.status(204).send(); // No content
-    } catch (err) {
-      res.status(500).json({ message: "Server error", error: err });
-    }
-  };
+  res.json({
+    success: true,
+    user,
+  });
+});
 
-  // Админ удаляет пользователя
-  export const deleteUserByAdmin = async (req: Request, res: Response): Promise<void> => {
+export const getUsers = catchAsync(async (req: Request, res: Response) => {
+  const users = await userRepo.find();
+  const withoutPasswords = users.map(({ password, ...rest }) => rest);
+
+  res.json({
+    success: true,
+    data: withoutPasswords,
+  });
+});
+
+export const getUserById = catchAsync(async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (!id) {
-    res.status(400).json({ message: "Missing user ID" });
-    return;
+    throw new AppError('Invalid user ID', 400, 'INVALID_ID');
   }
 
-  try {
-    const user = await userRepo.findOne({ where: { id } });
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-
-    await userRepo.remove(user);
-    res.status(204).send();
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err });
+  const user = await userRepo.findOne({ where: { id } });
+  if (!user) {
+    throw new AppError('User not found', 404, 'USER_NOT_FOUND');
   }
-};
+
+  const { password, ...userData } = user;
+
+  res.json({
+    success: true,
+    data: userData,
+  });
+});
+
+export const updateCurrentUser = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new AppError('Not authenticated', 401, 'UNAUTHORIZED');
+  }
+
+  const userId = Number(req.user.id);
+  if (!userId) {
+    throw new AppError('Invalid user context', 400, 'INVALID_USER_CONTEXT');
+  }
+
+  const user = await userRepo.findOne({ where: { id: userId } });
+  if (!user) {
+    throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+  }
+
+  const { firstName, lastName, email, password } = req.body;
+
+  if (firstName) user.firstName = firstName;
+  if (lastName) user.lastName = lastName;
+  user.name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
+  if (email) user.email = email;
+
+  if (password) {
+    user.password = await bcrypt.hash(password, 10);
+  }
+
+  const updatedUser = await userRepo.save(user);
+
+  res.json({
+    success: true,
+    data: {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    },
+  });
+});
+
+export const deleteCurrentUser = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new AppError('Not authenticated', 401, 'UNAUTHORIZED');
+  }
+
+  const userId = Number(req.user.id);
+  if (!userId) {
+    throw new AppError('Invalid user context', 400, 'INVALID_USER_CONTEXT');
+  }
+
+  const result = await userRepo.delete(userId);
+
+  if (result.affected === 0) {
+    throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+  }
+
+  res.status(204).send();
+});
+
+export const deleteUserByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (!id) {
+    throw new AppError('Missing user ID', 400, 'INVALID_ID');
+  }
+
+  const user = await userRepo.findOne({ where: { id } });
+  if (!user) {
+    throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+  }
+
+  await userRepo.remove(user);
+
+  res.status(204).send();
+});
