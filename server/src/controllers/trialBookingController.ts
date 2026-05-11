@@ -4,61 +4,62 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { TrialBooking } from '../models/TrialBooking';
 
+import { AppError } from '../utils/AppError';
+import { catchAsync } from '../utils/catchAsync';
+
 const trialBookingRepo = AppDataSource.getRepository(TrialBooking);
 
-// createTrialBooking
-export const createTrialBooking = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { firstName, lastName, email, phone } = req.body;
+export const createTrialBooking = catchAsync(async (req: Request, res: Response) => {
+    const { firstName, lastName, email, phone } = req.body;
 
-        // Проверка на существование email в базе данных
-        const existingUser = await trialBookingRepo.findOne({ where: { email } });
-        if (existingUser) {
-            res.status(400).json({ message: 'Email already exists' });
-            return;
-        }
-
-        // Создание новой записи в таблице TrialBooking
-        const trialBooking = new TrialBooking();
-        trialBooking.firstName = firstName;
-        trialBooking.lastName = lastName;
-        trialBooking.email = email;
-        trialBooking.phone = phone;
-        trialBooking.createdAt = new Date();
-
-        await trialBookingRepo.save(trialBooking);
-        console.log('Trial booking created:', trialBooking);
-        res.status(201).json(trialBooking);
-    } 
-    catch (err) {
-        res.status(500).json({ message: 'Server error', error: err });
+    const existingUser = await trialBookingRepo.findOne({ where: { email } });
+    if (existingUser) {
+        throw new AppError('Email already exists', 409, 'EMAIL_EXISTS');
     }
-};
 
-// getTrialBookings
-export const getTrialBookings = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const trialBookings = await trialBookingRepo.find();
-        res.json(trialBookings);
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err });
-    }
-};
+    const trialBooking = new TrialBooking();
+    trialBooking.firstName = firstName;
+    trialBooking.lastName = lastName;
+    trialBooking.email = email;
+    trialBooking.phone = phone;
+    trialBooking.createdAt = new Date();
 
-// deleteTrialBookings
-export const deleteTrialBookings = async (req: Request, res: Response): Promise<void> => {
+    await trialBookingRepo.save(trialBooking);
+
+    console.log('Trial booking created:', trialBooking);
+
+    res.status(201).json({
+        success: true,
+        data: trialBooking,
+    });
+});
+
+export const getTrialBookings = catchAsync(async (req: Request, res: Response) => {
+    const trialBookings = await trialBookingRepo.find();
+
+    res.json({
+        success: true,
+        data: trialBookings,
+    });
+});
+
+export const deleteTrialBookings = catchAsync(async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    try {
-        const trial = await trialBookingRepo.findOneBy({ id })
-        
-        if (!trial) {
-        res.status(404).json({ message: "Trial not found" });
-         return;
-        }
-        await trialBookingRepo.remove(trial);
-        res.json({message: "Trial deleted successfully"})
-    } catch (err) {
-        console.error("Error deleting trial:", err);
-        res.status(500).json({ message: "Error deleting trial", error: err });
+
+    if (isNaN(id)) {
+        throw new AppError('Invalid trial booking id', 400, 'INVALID_ID');
     }
-}
+
+    const trial = await trialBookingRepo.findOneBy({ id });
+
+    if (!trial) {
+        throw new AppError('Trial booking not found', 404, 'TRIAL_NOT_FOUND');
+    }
+
+    await trialBookingRepo.remove(trial);
+
+    res.json({
+        success: true,
+        message: 'Trial booking deleted successfully',
+    });
+});
